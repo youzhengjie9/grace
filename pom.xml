@@ -7,11 +7,42 @@
     <groupId>com.grace</groupId>
     <artifactId>grace</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>grace-core</module>
+        <module>grace-examples</module>
+        <module>grace-client</module>
+        <module>grace-server</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring.boot.version>2.7.5</spring.boot.version>
+        <fastjson2.version>2.0.31</fastjson2.version>
+        <spring.authorization.server.version>0.4.2</spring.authorization.server.version>
+        <hutool.version>5.8.17</hutool.version>
+        <druid.version>1.2.15</druid.version>
+        <mybatis-plus.version>3.5.2</mybatis-plus.version>
+        <oshi.version>6.4.0</oshi.version>
+        <UserAgentUtils.version>1.21</UserAgentUtils.version>
+        <jakarta.persistence-api.version>2.2.3</jakarta.persistence-api.version>
     </properties>
+
+
+    <!--    依赖管理  -->
+    <dependencyManagement>
+        <dependencies>
+            <!--            SpringBoot依赖  -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>
