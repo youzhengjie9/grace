@@ -1,0 +1,5 @@
+
+org.springframework.boot.autoconfigure.EnableAutoConfiguration = \
+  com.grace.core.config.mp.MybatisPlusConfig,\
+  com.grace.core.config.redis.RedisTemplateConfig,\
+  com.grace.core.autoconfigure.UtilsAutoConfiguration

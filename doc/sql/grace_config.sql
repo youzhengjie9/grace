@@ -218,8 +218,8 @@ CREATE TABLE `sys_service_instance` (
                                `id` bigint(20) NOT NULL COMMENT '主键,服务实例id',
                                `service_id` bigint(20) NOT NULL COMMENT '该实例所属的服务id',
                                `ip_addr` varchar(200) NOT NULL COMMENT '该实例的ip地址',
-                               `port` varchar(200) NOT NULL COMMENT '该实例的端口号',
-                               `weight` bigint(20) NOT NULL COMMENT '该实例的权重',
+                               `port` int(10) NOT NULL COMMENT '该实例的端口号',
+                               `weight` int(10) NOT NULL COMMENT '该实例的权重',
                                `meta_data` varchar(200) NOT NULL COMMENT '该实例的元数据',
                                `create_time` datetime DEFAULT NULL COMMENT '创建时间',
                                PRIMARY KEY (`id`)

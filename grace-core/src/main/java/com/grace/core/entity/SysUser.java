@@ -6,8 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import lombok.*;
-import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,13 +15,7 @@ import java.time.LocalDateTime;
  * 用户表(User)实体类
  *
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @TableName("sys_user")
-@EqualsAndHashCode
-@Builder
-@Accessors(chain = true)
 public class SysUser implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -101,4 +93,136 @@ public class SysUser implements Serializable {
     @TableLogic //逻辑删除（0代表未删除，1代表已删除）
     @TableField("del_flag")
     private Integer delFlag;
+
+    public SysUser() {
+    }
+
+    public SysUser(Long id, String userName, String nickName, String password, Integer status, String email, String phone, Integer sex, String avatar, LocalDate createTime, LocalDateTime updateTime, Integer delFlag) {
+        this.id = id;
+        this.userName = userName;
+        this.nickName = nickName;
+        this.password = password;
+        this.status = status;
+        this.email = email;
+        this.phone = phone;
+        this.sex = sex;
+        this.avatar = avatar;
+        this.createTime = createTime;
+        this.updateTime = updateTime;
+        this.delFlag = delFlag;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public Integer getSex() {
+        return sex;
+    }
+
+    public void setSex(Integer sex) {
+        this.sex = sex;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public LocalDate getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDate createTime) {
+        this.createTime = createTime;
+    }
+
+    public LocalDateTime getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(LocalDateTime updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public Integer getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(Integer delFlag) {
+        this.delFlag = delFlag;
+    }
+
+    @Override
+    public String toString() {
+        return "SysUser{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", nickName='" + nickName + '\'' +
+                ", password='" + password + '\'' +
+                ", status=" + status +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", sex=" + sex +
+                ", avatar='" + avatar + '\'' +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", delFlag=" + delFlag +
+                '}';
+    }
 }

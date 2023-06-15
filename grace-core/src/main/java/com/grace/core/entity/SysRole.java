@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import lombok.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -16,12 +15,7 @@ import java.time.LocalDateTime;
  * @author youzhengjie
  * @date 2022/10/13 12:04:51
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @TableName("sys_role")
-@EqualsAndHashCode
-@Builder
 public class SysRole implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -77,4 +71,95 @@ public class SysRole implements Serializable {
     @TableField("remark")
     private String remark;
 
+    public SysRole() {
+    }
+
+    public SysRole(Long id, String name, String roleKey, Integer status, int delFlag, LocalDateTime createTime, LocalDateTime updateTime, String remark) {
+        this.id = id;
+        this.name = name;
+        this.roleKey = roleKey;
+        this.status = status;
+        this.delFlag = delFlag;
+        this.createTime = createTime;
+        this.updateTime = updateTime;
+        this.remark = remark;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getRoleKey() {
+        return roleKey;
+    }
+
+    public void setRoleKey(String roleKey) {
+        this.roleKey = roleKey;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public int getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(int delFlag) {
+        this.delFlag = delFlag;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+    public LocalDateTime getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(LocalDateTime updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    @Override
+    public String toString() {
+        return "SysRole{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", roleKey='" + roleKey + '\'' +
+                ", status=" + status +
+                ", delFlag=" + delFlag +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", remark='" + remark + '\'' +
+                '}';
+    }
 }

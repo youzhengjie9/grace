@@ -5,16 +5,9 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import lombok.*;
-
 import java.io.Serializable;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @TableName("sys_role_menu")
-@EqualsAndHashCode
-@Builder
 public class SysRoleMenu implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -40,4 +33,45 @@ public class SysRoleMenu implements Serializable {
     @JsonSerialize(using = ToStringSerializer.class) //解决雪花算法生成的id过长导致前端js精度丢失问题（也就是js拿到的数据和后端不一致问题）
     private Long menuId;
 
+    public SysRoleMenu() {
+    }
+
+    public SysRoleMenu(Long id, Long roleId, Long menuId) {
+        this.id = id;
+        this.roleId = roleId;
+        this.menuId = menuId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
+
+    public Long getMenuId() {
+        return menuId;
+    }
+
+    public void setMenuId(Long menuId) {
+        this.menuId = menuId;
+    }
+
+    @Override
+    public String toString() {
+        return "SysRoleMenu{" +
+                "id=" + id +
+                ", roleId=" + roleId +
+                ", menuId=" + menuId +
+                '}';
+    }
 }

@@ -31,7 +31,6 @@
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
         <oshi.version>6.4.0</oshi.version>
         <UserAgentUtils.version>1.21</UserAgentUtils.version>
-        <lombok.version>1.18.24</lombok.version>
     </properties>
 
 

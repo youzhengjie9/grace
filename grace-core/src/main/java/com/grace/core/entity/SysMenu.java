@@ -7,11 +7,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,12 +17,8 @@ import java.util.List;
  * @author youzhengjie
  * @date 2023/06/15 21:40:32
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @TableName(value="sys_menu")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Builder
 public class SysMenu implements Serializable,Comparable<SysMenu> {
 
     private static final long serialVersionUID = 1L;
@@ -137,6 +128,156 @@ public class SysMenu implements Serializable,Comparable<SysMenu> {
      */
     private List<SysMenu> children;
 
+    public SysMenu() {
+    }
+
+    public SysMenu(Long id, Long parentId, String menuName, String path, String component, Integer status, Integer visible, String perms, Integer type, String icon, LocalDateTime createTime, LocalDateTime updateTime, Integer delFlag, int sort, String remark, List<SysMenu> children) {
+        this.id = id;
+        this.parentId = parentId;
+        this.menuName = menuName;
+        this.path = path;
+        this.component = component;
+        this.status = status;
+        this.visible = visible;
+        this.perms = perms;
+        this.type = type;
+        this.icon = icon;
+        this.createTime = createTime;
+        this.updateTime = updateTime;
+        this.delFlag = delFlag;
+        this.sort = sort;
+        this.remark = remark;
+        this.children = children;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
+
+    public String getMenuName() {
+        return menuName;
+    }
+
+    public void setMenuName(String menuName) {
+        this.menuName = menuName;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getComponent() {
+        return component;
+    }
+
+    public void setComponent(String component) {
+        this.component = component;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Integer getVisible() {
+        return visible;
+    }
+
+    public void setVisible(Integer visible) {
+        this.visible = visible;
+    }
+
+    public String getPerms() {
+        return perms;
+    }
+
+    public void setPerms(String perms) {
+        this.perms = perms;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+    public LocalDateTime getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(LocalDateTime updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public Integer getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(Integer delFlag) {
+        this.delFlag = delFlag;
+    }
+
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public List<SysMenu> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<SysMenu> children) {
+        this.children = children;
+    }
+
     //实现排序接口
     @Override
     public int compareTo(SysMenu o) {
@@ -144,5 +285,25 @@ public class SysMenu implements Serializable,Comparable<SysMenu> {
         return this.sort - o.getSort();
     }
 
-
+    @Override
+    public String toString() {
+        return "SysMenu{" +
+                "id=" + id +
+                ", parentId=" + parentId +
+                ", menuName='" + menuName + '\'' +
+                ", path='" + path + '\'' +
+                ", component='" + component + '\'' +
+                ", status=" + status +
+                ", visible=" + visible +
+                ", perms='" + perms + '\'' +
+                ", type=" + type +
+                ", icon='" + icon + '\'' +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", delFlag=" + delFlag +
+                ", sort=" + sort +
+                ", remark='" + remark + '\'' +
+                ", children=" + children +
+                '}';
+    }
 }
