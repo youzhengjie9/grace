@@ -6,7 +6,7 @@
 
     <groupId>com.grace</groupId>
     <artifactId>grace</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
     <modules>
         <module>grace-core</module>
@@ -16,9 +16,13 @@
     </modules>
 
     <properties>
+        <!--    grace项目版本   -->
+        <revision>1.0</revision>
+        <!--    JDK版本和项目编码方式    -->
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!--    引入的依赖版本   -->
         <spring.boot.version>2.7.5</spring.boot.version>
         <fastjson2.version>2.0.31</fastjson2.version>
         <spring.authorization.server.version>0.4.2</spring.authorization.server.version>
@@ -27,20 +31,36 @@
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
         <oshi.version>6.4.0</oshi.version>
         <UserAgentUtils.version>1.21</UserAgentUtils.version>
-        <jakarta.persistence-api.version>2.2.3</jakarta.persistence-api.version>
+        <lombok.version>1.18.24</lombok.version>
     </properties>
 
 
     <!--    依赖管理  -->
     <dependencyManagement>
         <dependencies>
-            <!--            SpringBoot依赖  -->
+            <!--    SpringBoot依赖  -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring.boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <!--      定义模块依赖版本      -->
+            <dependency>
+                <groupId>com.grace.client</groupId>
+                <artifactId>grace-client</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.grace.core</groupId>
+                <artifactId>grace-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.grace.server</groupId>
+                <artifactId>grace-server</artifactId>
+                <version>${revision}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
