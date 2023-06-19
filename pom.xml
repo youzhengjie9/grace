@@ -9,10 +9,10 @@
     <version>${revision}</version>
     <packaging>pom</packaging>
     <modules>
-        <module>grace-core</module>
         <module>grace-examples</module>
         <module>grace-client</module>
         <module>grace-server</module>
+        <module>grace-common</module>
     </modules>
 
     <properties>
@@ -52,8 +52,8 @@
                 <version>${revision}</version>
             </dependency>
             <dependency>
-                <groupId>com.grace.core</groupId>
-                <artifactId>grace-core</artifactId>
+                <groupId>com.grace.common</groupId>
+                <artifactId>grace-common</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>

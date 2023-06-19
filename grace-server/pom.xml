@@ -22,10 +22,9 @@
 
     <dependencies>
 
-        <!--     grace core-->
         <dependency>
-            <groupId>com.grace.core</groupId>
-            <artifactId>grace-core</artifactId>
+            <groupId>com.grace.common</groupId>
+            <artifactId>grace-common</artifactId>
         </dependency>
 
     </dependencies>

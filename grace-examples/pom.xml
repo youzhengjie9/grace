@@ -22,6 +22,11 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>com.grace.client</groupId>
+            <artifactId>grace-client</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>
