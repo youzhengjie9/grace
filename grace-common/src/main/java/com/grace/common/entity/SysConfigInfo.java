@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -16,7 +17,9 @@ import java.time.LocalDateTime;
  * @date 2023-06-16 08:47:09
  */
 @TableName("sys_name_space")
-public class SysConfigInfo {
+public class SysConfigInfo implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * 主键,命令空间id

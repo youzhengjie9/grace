@@ -31,6 +31,7 @@
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
         <oshi.version>6.4.0</oshi.version>
         <UserAgentUtils.version>1.21</UserAgentUtils.version>
+        <httpclient.version>4.5.13</httpclient.version>
     </properties>
 
 
