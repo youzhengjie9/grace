@@ -28,8 +28,6 @@ public class SysNamespaceController {
 
     @PostMapping(path = "/createNamespace")
     public ResponseResult<Boolean> createNamespace(@RequestBody CreateSysNamespaceDTO createSysNamespaceDTO){
-        System.out.println("=============");
-        System.out.println(createSysNamespaceDTO);
         return sysNamespaceService.createNamespace(createSysNamespaceDTO);
     }
 

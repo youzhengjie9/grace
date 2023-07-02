@@ -1,5 +1,6 @@
 package com.grace.common.entity;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -28,13 +29,13 @@ public class SysNamespace implements Serializable {
     /**
      * 命名空间名称
      */
-    @TableField("name")
+    @TableField("`name`")
     private String name;
 
     /**
      * 描述
      */
-    @TableField("desc")
+    @TableField("`desc`")
     private String desc;
 
     /**
@@ -72,48 +73,143 @@ public class SysNamespace implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public SysNamespace setId(Long id) {
         this.id = id;
+        return this;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public SysNamespace setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getDesc() {
         return desc;
     }
 
-    public void setDesc(String desc) {
+    public SysNamespace setDesc(String desc) {
         this.desc = desc;
+        return this;
     }
 
     public LocalDateTime getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(LocalDateTime createTime) {
+    public SysNamespace setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
+        return this;
     }
 
     public LocalDateTime getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(LocalDateTime updateTime) {
+    public SysNamespace setUpdateTime(LocalDateTime updateTime) {
         this.updateTime = updateTime;
+        return this;
     }
 
     public int getDelFlag() {
         return delFlag;
     }
 
-    public void setDelFlag(int delFlag) {
+    public SysNamespace setDelFlag(int delFlag) {
         this.delFlag = delFlag;
+        return this;
+    }
+
+    /**
+     * 获取建造者对象
+     *
+     * @return {@link SysNamespaceBuilder}
+     */
+    public static SysNamespaceBuilder builder(){
+        return new SysNamespaceBuilder();
+    }
+
+    /**
+     * SysNamespace建造者类
+     *
+     * @author youzhengjie
+     * @date 2023/07/02 21:56:30
+     */
+    private static final class SysNamespaceBuilder {
+
+        /**
+         * 主键,命令空间id
+         */
+        private Long id;
+
+        /**
+         * 命名空间名称
+         */
+        private String name;
+
+        /**
+         * 描述
+         */
+        private String desc;
+
+        /**
+         * 创建时间
+         */
+        private LocalDateTime createTime;
+
+        /**
+         * 最后一次修改时间
+         */
+        private LocalDateTime updateTime;
+
+        /**
+         * 删除标志（0代表未删除，1代表已删除）
+         */
+        private int delFlag;
+
+        public SysNamespaceBuilder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public SysNamespaceBuilder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public SysNamespaceBuilder desc(String desc) {
+            this.desc = desc;
+            return this;
+        }
+
+        public SysNamespaceBuilder createTime(LocalDateTime createTime) {
+            this.createTime = createTime;
+            return this;
+        }
+
+        public SysNamespaceBuilder updateTime(LocalDateTime updateTime) {
+            this.updateTime = updateTime;
+            return this;
+        }
+
+        public SysNamespaceBuilder delFlag(int delFlag) {
+            this.delFlag = delFlag;
+            return this;
+        }
+
+        /**
+         * 构建对象
+         *
+         * @return {@link SysNamespace}
+         */
+        public SysNamespace build(){
+            //使用bean拷贝,将当前对象（SysNamespaceBuilder），转成建造出来的对象（SysNamespace）
+            return BeanUtil.copyProperties(this, SysNamespace.class);
+        }
+
     }
 
     @Override
@@ -127,4 +223,5 @@ public class SysNamespace implements Serializable {
                 ", delFlag=" + delFlag +
                 '}';
     }
+
 }

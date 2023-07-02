@@ -20,3 +20,5 @@ spring:
         max-active: 8
         #使用redis默认值即可：-1
         max-wait: -1
+
+
