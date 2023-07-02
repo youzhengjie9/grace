@@ -1,9 +1,6 @@
 package com.grace.common.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import java.io.Serializable;
@@ -22,9 +19,8 @@ public class SysRole implements Serializable {
 
     /**
      * 主键
-     * mp会自动为@TableId("id")属性生成id（默认是雪花算法生成的分布式id）。
      */
-    @TableId("id")
+    @TableId(value = "id",type = IdType.INPUT)
     @JsonSerialize(using = ToStringSerializer.class) //解决雪花算法生成的id过长导致前端js精度丢失问题（也就是js拿到的数据和后端不一致问题）
     private Long id;
 

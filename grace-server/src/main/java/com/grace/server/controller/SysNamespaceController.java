@@ -1,8 +1,8 @@
 package com.grace.server.controller;
 
-import com.grace.common.dto.CreateNamespaceDTO;
+import com.grace.common.dto.CreateSysNamespaceDTO;
 import com.grace.common.utils.ResponseResult;
-import com.grace.server.service.NamespaceService;
+import com.grace.server.service.SysNamespaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,20 +17,20 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(path = "/grace/server/namespace")
-public class NamespaceController {
+public class SysNamespaceController {
 
-    private NamespaceService namespaceService;
+    private SysNamespaceService sysNamespaceService;
 
     @Autowired
-    public void setNamespaceService(NamespaceService namespaceService) {
-        this.namespaceService = namespaceService;
+    public void setNamespaceService(SysNamespaceService sysNamespaceService) {
+        this.sysNamespaceService = sysNamespaceService;
     }
 
     @PostMapping(path = "/createNamespace")
-    public ResponseResult<Boolean> createNamespace(@RequestBody CreateNamespaceDTO createNamespaceDTO){
+    public ResponseResult<Boolean> createNamespace(@RequestBody CreateSysNamespaceDTO createSysNamespaceDTO){
         System.out.println("=============");
-        System.out.println(createNamespaceDTO);
-        return namespaceService.createNamespace(createNamespaceDTO);
+        System.out.println(createSysNamespaceDTO);
+        return sysNamespaceService.createNamespace(createSysNamespaceDTO);
     }
 
 

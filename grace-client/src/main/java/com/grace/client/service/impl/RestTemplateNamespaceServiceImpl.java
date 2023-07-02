@@ -1,7 +1,7 @@
 package com.grace.client.service.impl;
 
 import com.grace.client.service.NamespaceService;
-import com.grace.common.dto.CreateNamespaceDTO;
+import com.grace.common.dto.CreateSysNamespaceDTO;
 import com.grace.common.utils.ResponseResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,10 +30,10 @@ public class RestTemplateNamespaceServiceImpl implements NamespaceService {
     @Override
     public ResponseResult<Boolean> createNamespace(String name,String desc) {
 
-        CreateNamespaceDTO createNamespaceDTO = new CreateNamespaceDTO(name, desc);
+        CreateSysNamespaceDTO createSysNamespaceDTO = new CreateSysNamespaceDTO(name, desc);
 
         return restTemplate.postForObject("http://localhost:8500/grace/server/namespace/createNamespace",
-                createNamespaceDTO, ResponseResult.class);
+                createSysNamespaceDTO, ResponseResult.class);
 
     }
 }

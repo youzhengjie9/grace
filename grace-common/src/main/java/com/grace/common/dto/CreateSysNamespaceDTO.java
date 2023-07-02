@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @author youzhengjie
  * @date 2023/06/19 22:39:26
  */
-public class CreateNamespaceDTO implements Serializable {
+public class CreateSysNamespaceDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -22,10 +22,10 @@ public class CreateNamespaceDTO implements Serializable {
      */
     private String desc;
 
-    public CreateNamespaceDTO() {
+    public CreateSysNamespaceDTO() {
     }
 
-    public CreateNamespaceDTO(String name, String desc) {
+    public CreateSysNamespaceDTO(String name, String desc) {
         this.name = name;
         this.desc = desc;
     }
