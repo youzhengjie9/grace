@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @EnableGraceRegistry
-public class SysNamespaceSpringBootExample {
+public class NamespaceSpringBootExample {
 
     private static NamespaceService namespaceService;
 
@@ -19,7 +19,7 @@ public class SysNamespaceSpringBootExample {
 
     public static void main(String[] args) {
 
-        SpringApplication.run(SysNamespaceSpringBootExample.class,args);
+        SpringApplication.run(NamespaceSpringBootExample.class,args);
 
         Boolean result = namespaceService.createNamespace("names", "123").getData();
         System.out.println(result);

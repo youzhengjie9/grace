@@ -29,8 +29,8 @@ public class SysNamespace implements Serializable {
     /**
      * 命名空间名称
      */
-    @TableField("`name`")
-    private String name;
+    @TableField("`namespace_name`")
+    private String namespaceName;
 
     /**
      * 描述
@@ -60,9 +60,9 @@ public class SysNamespace implements Serializable {
     public SysNamespace() {
     }
 
-    public SysNamespace(Long id, String name, String desc, LocalDateTime createTime, LocalDateTime updateTime, int delFlag) {
+    public SysNamespace(Long id, String namespaceName, String desc, LocalDateTime createTime, LocalDateTime updateTime, int delFlag) {
         this.id = id;
-        this.name = name;
+        this.namespaceName = namespaceName;
         this.desc = desc;
         this.createTime = createTime;
         this.updateTime = updateTime;
@@ -78,13 +78,12 @@ public class SysNamespace implements Serializable {
         return this;
     }
 
-    public String getName() {
-        return name;
+    public void setNamespaceName(String namespaceName) {
+        this.namespaceName = namespaceName;
     }
 
-    public SysNamespace setName(String name) {
-        this.name = name;
-        return this;
+    public String getNamespaceName() {
+        return namespaceName;
     }
 
     public String getDesc() {
@@ -148,7 +147,7 @@ public class SysNamespace implements Serializable {
         /**
          * 命名空间名称
          */
-        private String name;
+        private String namespaceName;
 
         /**
          * 描述
@@ -175,8 +174,8 @@ public class SysNamespace implements Serializable {
             return this;
         }
 
-        public SysNamespaceBuilder name(String name) {
-            this.name = name;
+        public SysNamespaceBuilder namespaceName(String namespaceName) {
+            this.namespaceName = namespaceName;
             return this;
         }
 
@@ -216,12 +215,11 @@ public class SysNamespace implements Serializable {
     public String toString() {
         return "SysNamespace{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", namespaceName='" + namespaceName + '\'' +
                 ", desc='" + desc + '\'' +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
                 ", delFlag=" + delFlag +
                 '}';
     }
-
 }

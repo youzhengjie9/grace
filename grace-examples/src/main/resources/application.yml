@@ -21,4 +21,15 @@ spring:
         #使用redis默认值即可：-1
         max-wait: -1
 
+# grace注册中心
+grace:
+  registry:
+    serverAddr: 192.168.184.100:8500
+    username: grace
+    password: grace
+
+
+
+
+
 

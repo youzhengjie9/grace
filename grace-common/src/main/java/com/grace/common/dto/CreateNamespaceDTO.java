@@ -8,34 +8,34 @@ import java.io.Serializable;
  * @author youzhengjie
  * @date 2023/06/19 22:39:26
  */
-public class CreateSysNamespaceDTO implements Serializable {
+public class CreateNamespaceDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * 命名空间名称
      */
-    private String name;
+    private String namespaceName;
 
     /**
      * 描述
      */
     private String desc;
 
-    public CreateSysNamespaceDTO() {
+    public CreateNamespaceDTO() {
     }
 
-    public CreateSysNamespaceDTO(String name, String desc) {
-        this.name = name;
+    public CreateNamespaceDTO(String namespaceName, String desc) {
+        this.namespaceName = namespaceName;
         this.desc = desc;
     }
 
-    public String getName() {
-        return name;
+    public void setNamespaceName(String namespaceName) {
+        this.namespaceName = namespaceName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getNamespaceName() {
+        return namespaceName;
     }
 
     public String getDesc() {
@@ -49,7 +49,7 @@ public class CreateSysNamespaceDTO implements Serializable {
     @Override
     public String toString() {
         return "CreateNamespaceDTO{" +
-                "name='" + name + '\'' +
+                "namespaceName='" + namespaceName + '\'' +
                 ", desc='" + desc + '\'' +
                 '}';
     }

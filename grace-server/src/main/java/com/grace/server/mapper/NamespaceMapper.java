@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
  */
 @Mapper
 @Repository
-public interface SysNamespaceMapper extends BaseMapper<SysNamespace> {
+public interface NamespaceMapper extends BaseMapper<SysNamespace> {
 
 
 

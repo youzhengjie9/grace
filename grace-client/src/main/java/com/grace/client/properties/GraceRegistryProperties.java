@@ -16,19 +16,19 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GraceRegistryProperties {
 
     /**
-     * grace服务端的ip地址（格式例如:192.168.184.100:9300）
+     * grace服务端的ip地址（格式例如:127.0.0.1:8500）
      */
-    private String serverAddr;
+    private String serverAddr = "127.0.0.1:8500";
 
     /**
      * grace用户名
      */
-    private String username;
+    private String username = "grace";
 
     /**
      * grace密码
      */
-    private String password;
+    private String password = "grace";
 
     /**
      * 命名空间（将该服务的实例注册到哪个命名空间上）

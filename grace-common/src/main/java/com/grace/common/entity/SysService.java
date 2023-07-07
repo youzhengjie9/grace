@@ -1,5 +1,6 @@
 package com.grace.common.entity;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -67,40 +68,112 @@ public class SysService implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public SysService setId(Long id) {
         this.id = id;
+        return this;
     }
 
     public String getServiceName() {
         return serviceName;
     }
 
-    public void setServiceName(String serviceName) {
+    public SysService setServiceName(String serviceName) {
         this.serviceName = serviceName;
+        return this;
     }
 
     public String getGroupName() {
         return groupName;
     }
 
-    public void setGroupName(String groupName) {
+    public SysService setGroupName(String groupName) {
         this.groupName = groupName;
+        return this;
     }
 
     public String getMetaData() {
         return metaData;
     }
 
-    public void setMetaData(String metaData) {
+    public SysService setMetaData(String metaData) {
         this.metaData = metaData;
+        return this;
     }
 
     public LocalDateTime getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(LocalDateTime createTime) {
+    public SysService setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
+        return this;
+    }
+
+    /**
+     * SysService建造者类
+     *
+     * @author youzhengjie
+     * @date 2023-07-07 19:15:38
+     */
+    private static final class SysServiceBuilder {
+
+        /**
+         * 主键。服务名id
+         */
+        private Long id;
+
+        /**
+         * 服务名称
+         */
+        private String serviceName;
+
+        /**
+         * 分组名称
+         */
+        private String groupName;
+
+        /**
+         * 元数据
+         */
+        private String metaData;
+
+        /**
+         * 创建时间
+         */
+        private LocalDateTime createTime;
+
+        public SysServiceBuilder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public SysServiceBuilder serviceName(String serviceName) {
+            this.serviceName = serviceName;
+            return this;
+        }
+
+        public SysServiceBuilder groupName(String groupName) {
+            this.groupName = groupName;
+            return this;
+        }
+
+        public SysServiceBuilder metaData(String metaData) {
+            this.metaData = metaData;
+            return this;
+        }
+
+        public SysServiceBuilder createTime(LocalDateTime createTime) {
+            this.createTime = createTime;
+            return this;
+        }
+
+        /**
+         * 构建对象
+         */
+        public SysService build(){
+            return BeanUtil.copyProperties(this, SysService.class);
+        }
+
     }
 
     @Override

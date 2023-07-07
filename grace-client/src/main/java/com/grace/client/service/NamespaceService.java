@@ -10,9 +10,20 @@ import com.grace.common.utils.ResponseResult;
  */
 public interface NamespaceService {
 
+    ResponseResult<Boolean> createNamespace(String namespace);
 
-    ResponseResult<Boolean> createNamespace(String name,String desc);
+    ResponseResult<Boolean> createNamespace(String namespace,String desc);
 
+    ResponseResult<Boolean> createService(String serviceName);
 
+    ResponseResult<Boolean> createService(String serviceName,String groupName);
+
+    ResponseResult<Boolean> createService(String serviceName,String groupName,String metaData);
+
+    ResponseResult<Boolean> registerServiceInstance(String serviceName, String ipAddr, int port);
+
+    ResponseResult<Boolean> registerServiceInstance(String serviceName, String ipAddr, int port,int weight);
+
+    ResponseResult<Boolean> registerServiceInstance(String serviceName, String ipAddr, int port,int weight,String metaData);
 
 }
