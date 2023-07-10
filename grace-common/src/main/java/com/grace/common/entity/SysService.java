@@ -30,6 +30,13 @@ public class SysService implements Serializable {
     private Long id;
 
     /**
+     * 命名空间id
+     */
+    @JsonSerialize(using = ToStringSerializer.class) //解决雪花算法生成的id过长导致前端js精度丢失问题（也就是js拿到的数据和后端不一致问题）
+    @TableField("namespace_id")
+    private Long namespaceId;
+
+    /**
      * 服务名称
      */
     @TableField("service_name")
@@ -56,8 +63,9 @@ public class SysService implements Serializable {
     public SysService() {
     }
 
-    public SysService(Long id, String serviceName, String groupName, String metaData, LocalDateTime createTime) {
+    public SysService(Long id, Long namespaceId, String serviceName, String groupName, String metaData, LocalDateTime createTime) {
         this.id = id;
+        this.namespaceId = namespaceId;
         this.serviceName = serviceName;
         this.groupName = groupName;
         this.metaData = metaData;
@@ -71,6 +79,15 @@ public class SysService implements Serializable {
     public SysService setId(Long id) {
         this.id = id;
         return this;
+    }
+
+    public SysService setNamespaceId(Long namespaceId) {
+        this.namespaceId = namespaceId;
+        return this;
+    }
+
+    public Long getNamespaceId() {
+        return namespaceId;
     }
 
     public String getServiceName() {
@@ -123,6 +140,11 @@ public class SysService implements Serializable {
         private Long id;
 
         /**
+         * 命名空间id
+         */
+        private Long namespaceId;
+
+        /**
          * 服务名称
          */
         private String serviceName;
@@ -146,7 +168,10 @@ public class SysService implements Serializable {
             this.id = id;
             return this;
         }
-
+        public SysServiceBuilder namespaceId(Long namespaceId) {
+            this.namespaceId = namespaceId;
+            return this;
+        }
         public SysServiceBuilder serviceName(String serviceName) {
             this.serviceName = serviceName;
             return this;
@@ -180,6 +205,7 @@ public class SysService implements Serializable {
     public String toString() {
         return "SysService{" +
                 "id=" + id +
+                ", namespaceId=" + namespaceId +
                 ", serviceName='" + serviceName + '\'' +
                 ", groupName='" + groupName + '\'' +
                 ", metaData='" + metaData + '\'' +

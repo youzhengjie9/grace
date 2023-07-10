@@ -7,6 +7,7 @@ import com.grace.client.service.NamespaceService;
 import com.grace.common.constant.PropertiesKeyConstant;
 import com.grace.common.constant.PropertiesValueConstant;
 import com.grace.common.dto.CreateNamespaceDTO;
+import com.grace.common.dto.CreateServiceDTO;
 import com.grace.common.utils.ResponseResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,8 @@ import java.util.Properties;
 public class DefaultNamespaceServiceImpl implements NamespaceService {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultNamespaceServiceImpl.class);
+
+    private static final String DEFAULT_GROUP = "DEFAULT_GROUP";
 
     private String serverAddr;
 
@@ -90,27 +93,52 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
 
             return JSON.parseObject(body, ResponseResult.class);
         }else {
-            log.error("createNamespace请求失败");
+            log.error("createNamespace 请求失败");
             return ResponseResult.fail(false);
         }
     }
 
     @Override
     public ResponseResult<Boolean> createService(String serviceName) {
-        return null;
+        return createService(serviceName,DEFAULT_GROUP,"","");
     }
 
     @Override
-    public ResponseResult<Boolean> createService(String serviceName, String groupName) {
-        return null;
+    public ResponseResult<Boolean> createService(String serviceName, String namespace) {
+        return createService(serviceName, namespace,"","");
     }
 
     @Override
-    public ResponseResult<Boolean> createService(String serviceName, String groupName, String metaData) {
+    public ResponseResult<Boolean> createService(String serviceName, String namespace, String groupName) {
+        return createService(serviceName, namespace,"","");
+    }
 
+    @Override
+    public ResponseResult<Boolean> createService(String serviceName, String namespace, String groupName, String metaData) {
+        CreateServiceDTO createServiceDTO = new CreateServiceDTO();
+        createServiceDTO.setServiceName(serviceName);
+        createServiceDTO.setGroupName(groupName);
+        createServiceDTO.setMetaData(metaData);
 
+        String json = JSON.toJSONString(createServiceDTO);
 
-        return null;
+        // 使用hutool的HttpRequest类发送post请求
+        HttpResponse httpResponse = HttpRequest.post("http://"+ serverAddr +"/grace/server/service/createService")
+                .body(json)
+                .execute();
+
+        // 返回http状态码
+        int status = httpResponse.getStatus();
+
+        if(status == HttpStatus.OK.value()){
+            // 返回响应内容
+            String body = httpResponse.body();
+
+            return JSON.parseObject(body, ResponseResult.class);
+        }else {
+            log.error("createService 请求失败");
+            return ResponseResult.fail(false);
+        }
     }
 
     @Override
@@ -148,7 +176,7 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
             ResponseResult<Boolean> responseResult = JSON.parseObject(body, ResponseResult.class);
             return responseResult.getData();
         }else {
-            log.error("hasNamespace请求失败");
+            log.error("hasNamespace 请求失败");
             return false;
         }
     }

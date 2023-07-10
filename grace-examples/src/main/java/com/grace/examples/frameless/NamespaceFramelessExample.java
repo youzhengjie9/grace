@@ -17,7 +17,8 @@ public class NamespaceFramelessExample {
         properties.setProperty(PropertiesKeyConstant.AUTO_CREATE_NAMESPACE, PropertiesValueConstant.ON);
         NamespaceService namespaceService = new DefaultNamespaceServiceImpl(properties);
 
-        namespaceService
+        namespaceService.createService("abc-service");
+
 
 
 

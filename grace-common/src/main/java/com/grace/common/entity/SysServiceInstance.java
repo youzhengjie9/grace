@@ -1,5 +1,6 @@
 package com.grace.common.entity;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -82,56 +83,149 @@ public class SysServiceInstance implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public SysServiceInstance setId(Long id) {
         this.id = id;
+        return this;
     }
 
     public Long getServiceId() {
         return serviceId;
     }
 
-    public void setServiceId(Long serviceId) {
+    public SysServiceInstance setServiceId(Long serviceId) {
         this.serviceId = serviceId;
+        return this;
     }
 
     public String getIpAddr() {
         return ipAddr;
     }
 
-    public void setIpAddr(String ipAddr) {
+    public SysServiceInstance setIpAddr(String ipAddr) {
         this.ipAddr = ipAddr;
+        return this;
     }
 
     public int getPort() {
         return port;
     }
 
-    public void setPort(int port) {
+    public SysServiceInstance setPort(int port) {
         this.port = port;
+        return this;
     }
 
     public int getWeight() {
         return weight;
     }
 
-    public void setWeight(int weight) {
+    public SysServiceInstance setWeight(int weight) {
         this.weight = weight;
+        return this;
     }
 
     public String getMetaData() {
         return metaData;
     }
 
-    public void setMetaData(String metaData) {
+    public SysServiceInstance setMetaData(String metaData) {
         this.metaData = metaData;
+        return this;
     }
 
     public LocalDateTime getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(LocalDateTime createTime) {
+    public SysServiceInstance setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
+        return this;
+    }
+
+
+    /**
+     * SysServiceInstance建造者类
+     *
+     * @author youzhengjie
+     * @date 2023-07-07 22:26:31
+     */
+    private static final class SysServiceInstanceBuilder {
+
+        /**
+         * 主键,服务实例id
+         */
+        private Long id;
+
+        /**
+         * 该实例所属的服务id
+         */
+        private Long serviceId;
+
+        /**
+         * 该实例的ip地址
+         */
+        private String ipAddr;
+
+        /**
+         * 该实例的端口号
+         */
+        private int port;
+
+        /**
+         * 该实例的权重
+         */
+        private int weight;
+
+        /**
+         * 该实例的元数据
+         */
+        private String metaData;
+
+        /**
+         * 创建时间
+         */
+        private LocalDateTime createTime;
+
+        public SysServiceInstanceBuilder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public SysServiceInstanceBuilder serviceId(Long serviceId) {
+            this.serviceId = serviceId;
+            return this;
+        }
+
+        public SysServiceInstanceBuilder ipAddr(String ipAddr) {
+            this.ipAddr = ipAddr;
+            return this;
+        }
+
+        public SysServiceInstanceBuilder port(int port) {
+            this.port = port;
+            return this;
+        }
+
+        public SysServiceInstanceBuilder weight(int weight) {
+            this.weight = weight;
+            return this;
+        }
+
+        public SysServiceInstanceBuilder metaData(String metaData) {
+            this.metaData = metaData;
+            return this;
+        }
+
+        public SysServiceInstanceBuilder createTime(LocalDateTime createTime) {
+            this.createTime = createTime;
+            return this;
+        }
+        /**
+         * 构建对象
+         */
+        public SysServiceInstance build(){
+            return BeanUtil.copyProperties(this, SysServiceInstance.class);
+        }
     }
 
     @Override

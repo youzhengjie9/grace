@@ -40,6 +40,11 @@ public class RestTemplateNamespaceServiceImpl implements NamespaceService {
     }
 
     @Override
+    public ResponseResult<Boolean> createNamespace(String namespace) {
+        return null;
+    }
+
+    @Override
     public ResponseResult<Boolean> createNamespace(String name,String desc) {
 
         CreateNamespaceDTO createNamespaceDTO = new CreateNamespaceDTO(name, desc);
@@ -49,5 +54,40 @@ public class RestTemplateNamespaceServiceImpl implements NamespaceService {
         return restTemplate.postForObject("http://"+ serverAddr +"/grace/server/namespace/createNamespace",
                 createNamespaceDTO, ResponseResult.class);
 
+    }
+
+    @Override
+    public ResponseResult<Boolean> createService(String serviceName) {
+        return null;
+    }
+
+    @Override
+    public ResponseResult<Boolean> createService(String serviceName, String namespace) {
+        return null;
+    }
+
+    @Override
+    public ResponseResult<Boolean> createService(String serviceName, String namespace, String groupName) {
+        return null;
+    }
+
+    @Override
+    public ResponseResult<Boolean> createService(String serviceName, String namespace, String groupName, String metaData) {
+        return null;
+    }
+
+    @Override
+    public ResponseResult<Boolean> registerServiceInstance(String serviceName, String ipAddr, int port) {
+        return null;
+    }
+
+    @Override
+    public ResponseResult<Boolean> registerServiceInstance(String serviceName, String ipAddr, int port, int weight) {
+        return null;
+    }
+
+    @Override
+    public ResponseResult<Boolean> registerServiceInstance(String serviceName, String ipAddr, int port, int weight, String metaData) {
+        return null;
     }
 }

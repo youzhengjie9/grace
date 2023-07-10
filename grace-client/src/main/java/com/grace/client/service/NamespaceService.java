@@ -16,9 +16,11 @@ public interface NamespaceService {
 
     ResponseResult<Boolean> createService(String serviceName);
 
-    ResponseResult<Boolean> createService(String serviceName,String groupName);
+    ResponseResult<Boolean> createService(String serviceName,String namespace);
 
-    ResponseResult<Boolean> createService(String serviceName,String groupName,String metaData);
+    ResponseResult<Boolean> createService(String serviceName,String namespace,String groupName);
+
+    ResponseResult<Boolean> createService(String serviceName,String namespace,String groupName,String metaData);
 
     ResponseResult<Boolean> registerServiceInstance(String serviceName, String ipAddr, int port);
 
