@@ -12,6 +12,11 @@ public class CreateServiceDTO implements Serializable {
     private String serviceName;
 
     /**
+     * 命名空间
+     */
+    private String namespaceName;
+
+    /**
      * 分组名称
      */
     private String groupName;
@@ -24,8 +29,9 @@ public class CreateServiceDTO implements Serializable {
     public CreateServiceDTO() {
     }
 
-    public CreateServiceDTO(String serviceName, String groupName, String metaData) {
+    public CreateServiceDTO(String serviceName, String namespaceName, String groupName, String metaData) {
         this.serviceName = serviceName;
+        this.namespaceName = namespaceName;
         this.groupName = groupName;
         this.metaData = metaData;
     }
@@ -36,6 +42,14 @@ public class CreateServiceDTO implements Serializable {
 
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
+    }
+
+    public String getNamespaceName() {
+        return namespaceName;
+    }
+
+    public void setNamespaceName(String namespaceName) {
+        this.namespaceName = namespaceName;
     }
 
     public String getGroupName() {
@@ -58,6 +72,7 @@ public class CreateServiceDTO implements Serializable {
     public String toString() {
         return "CreateServiceDTO{" +
                 "serviceName='" + serviceName + '\'' +
+                ", namespaceName='" + namespaceName + '\'' +
                 ", groupName='" + groupName + '\'' +
                 ", metaData='" + metaData + '\'' +
                 '}';

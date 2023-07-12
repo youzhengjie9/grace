@@ -55,7 +55,7 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
         log.info(">>>>>>DefaultNamespaceServiceImpl开始初始化<<<<<<");
         this.serverAddr = properties.getProperty(PropertiesKeyConstant.SERVER_ADDR);
         this.namespace = properties.getProperty(PropertiesKeyConstant.NAMESPACE);
-        String autoCreateNamespace = properties.getProperty(PropertiesKeyConstant.AUTO_CREATE_NAMESPACE, PropertiesValueConstant.ON);
+        String autoCreateNamespace = properties.getProperty(PropertiesKeyConstant.AUTO_CREATE_NAMESPACE, PropertiesValueConstant.OFF);
         //如果开启了自动创建命名空间
         if(autoCreateNamespace.equals(PropertiesValueConstant.ON)) {
             //如果该namespace没有被创建则创建
@@ -100,23 +100,24 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
 
     @Override
     public ResponseResult<Boolean> createService(String serviceName) {
-        return createService(serviceName,DEFAULT_GROUP,"","");
+        return createService(serviceName,namespace,DEFAULT_GROUP,"");
     }
 
     @Override
     public ResponseResult<Boolean> createService(String serviceName, String namespace) {
-        return createService(serviceName, namespace,"","");
+        return createService(serviceName, namespace,DEFAULT_GROUP,"");
     }
 
     @Override
     public ResponseResult<Boolean> createService(String serviceName, String namespace, String groupName) {
-        return createService(serviceName, namespace,"","");
+        return createService(serviceName, namespace,groupName,"");
     }
 
     @Override
     public ResponseResult<Boolean> createService(String serviceName, String namespace, String groupName, String metaData) {
         CreateServiceDTO createServiceDTO = new CreateServiceDTO();
         createServiceDTO.setServiceName(serviceName);
+        createServiceDTO.setNamespaceName(namespace);
         createServiceDTO.setGroupName(groupName);
         createServiceDTO.setMetaData(metaData);
 

@@ -13,10 +13,9 @@ public class NamespaceFramelessExample {
 
         Properties properties = new Properties();
         properties.setProperty(PropertiesKeyConstant.SERVER_ADDR,"localhost:8500");
-        properties.setProperty(PropertiesKeyConstant.NAMESPACE,"ns_1001");
+        properties.setProperty(PropertiesKeyConstant.NAMESPACE,"ns_1002");
         properties.setProperty(PropertiesKeyConstant.AUTO_CREATE_NAMESPACE, PropertiesValueConstant.ON);
         NamespaceService namespaceService = new DefaultNamespaceServiceImpl(properties);
-
         namespaceService.createService("abc-service");
 
 
