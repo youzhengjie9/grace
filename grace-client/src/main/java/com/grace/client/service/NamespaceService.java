@@ -22,10 +22,10 @@ public interface NamespaceService {
 
     ResponseResult<Boolean> createService(String serviceName,String namespace,String groupName,String metaData);
 
-    ResponseResult<Boolean> registerServiceInstance(String serviceName, String ipAddr, int port);
+    ResponseResult<Boolean> registerInstance(String serviceName, String ipAddr, int port);
 
-    ResponseResult<Boolean> registerServiceInstance(String serviceName, String ipAddr, int port,int weight);
+    ResponseResult<Boolean> registerInstance(String serviceName, String ipAddr, int port,int weight);
 
-    ResponseResult<Boolean> registerServiceInstance(String serviceName, String ipAddr, int port,int weight,String metaData);
+    ResponseResult<Boolean> registerInstance(String serviceName, String ipAddr, int port,int weight,String metaData);
 
 }

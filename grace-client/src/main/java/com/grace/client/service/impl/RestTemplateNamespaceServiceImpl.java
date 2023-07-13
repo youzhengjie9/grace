@@ -77,17 +77,19 @@ public class RestTemplateNamespaceServiceImpl implements NamespaceService {
     }
 
     @Override
-    public ResponseResult<Boolean> registerServiceInstance(String serviceName, String ipAddr, int port) {
+    public ResponseResult<Boolean> registerInstance(String serviceName, String ipAddr, int port) {
         return null;
     }
 
     @Override
-    public ResponseResult<Boolean> registerServiceInstance(String serviceName, String ipAddr, int port, int weight) {
+    public ResponseResult<Boolean> registerInstance(String serviceName, String ipAddr, int port, int weight) {
         return null;
     }
 
     @Override
-    public ResponseResult<Boolean> registerServiceInstance(String serviceName, String ipAddr, int port, int weight, String metaData) {
+    public ResponseResult<Boolean> registerInstance(String serviceName, String ipAddr, int port, int weight, String metaData) {
         return null;
     }
+
+
 }

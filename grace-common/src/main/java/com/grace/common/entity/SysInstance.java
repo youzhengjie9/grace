@@ -12,13 +12,13 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * grace注册中心的服务实例表实体类
+ * grace注册中心的实例表实体类
  *
  * @author youzhengjie
  * @date 2023/06/16 01:02:52
  */
-@TableName("sys_service_instance")
-public class SysServiceInstance implements Serializable {
+@TableName("sys_instance")
+public class SysInstance implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -66,10 +66,10 @@ public class SysServiceInstance implements Serializable {
     @TableField("create_time")
     private LocalDateTime createTime;
 
-    public SysServiceInstance() {
+    public SysInstance() {
     }
 
-    public SysServiceInstance(Long id, Long serviceId, String ipAddr, int port, int weight, String metaData, LocalDateTime createTime) {
+    public SysInstance(Long id, Long serviceId, String ipAddr, int port, int weight, String metaData, LocalDateTime createTime) {
         this.id = id;
         this.serviceId = serviceId;
         this.ipAddr = ipAddr;
@@ -83,7 +83,7 @@ public class SysServiceInstance implements Serializable {
         return id;
     }
 
-    public SysServiceInstance setId(Long id) {
+    public SysInstance setId(Long id) {
         this.id = id;
         return this;
     }
@@ -92,7 +92,7 @@ public class SysServiceInstance implements Serializable {
         return serviceId;
     }
 
-    public SysServiceInstance setServiceId(Long serviceId) {
+    public SysInstance setServiceId(Long serviceId) {
         this.serviceId = serviceId;
         return this;
     }
@@ -101,7 +101,7 @@ public class SysServiceInstance implements Serializable {
         return ipAddr;
     }
 
-    public SysServiceInstance setIpAddr(String ipAddr) {
+    public SysInstance setIpAddr(String ipAddr) {
         this.ipAddr = ipAddr;
         return this;
     }
@@ -110,7 +110,7 @@ public class SysServiceInstance implements Serializable {
         return port;
     }
 
-    public SysServiceInstance setPort(int port) {
+    public SysInstance setPort(int port) {
         this.port = port;
         return this;
     }
@@ -119,7 +119,7 @@ public class SysServiceInstance implements Serializable {
         return weight;
     }
 
-    public SysServiceInstance setWeight(int weight) {
+    public SysInstance setWeight(int weight) {
         this.weight = weight;
         return this;
     }
@@ -128,7 +128,7 @@ public class SysServiceInstance implements Serializable {
         return metaData;
     }
 
-    public SysServiceInstance setMetaData(String metaData) {
+    public SysInstance setMetaData(String metaData) {
         this.metaData = metaData;
         return this;
     }
@@ -137,19 +137,19 @@ public class SysServiceInstance implements Serializable {
         return createTime;
     }
 
-    public SysServiceInstance setCreateTime(LocalDateTime createTime) {
+    public SysInstance setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
         return this;
     }
 
 
     /**
-     * SysServiceInstance建造者类
+     * SysInstance建造者类
      *
      * @author youzhengjie
      * @date 2023-07-07 22:26:31
      */
-    private static final class SysServiceInstanceBuilder {
+    private static final class SysInstanceBuilder {
 
         /**
          * 主键,服务实例id
@@ -186,51 +186,51 @@ public class SysServiceInstance implements Serializable {
          */
         private LocalDateTime createTime;
 
-        public SysServiceInstanceBuilder id(Long id) {
+        public SysInstanceBuilder id(Long id) {
             this.id = id;
             return this;
         }
 
-        public SysServiceInstanceBuilder serviceId(Long serviceId) {
+        public SysInstanceBuilder serviceId(Long serviceId) {
             this.serviceId = serviceId;
             return this;
         }
 
-        public SysServiceInstanceBuilder ipAddr(String ipAddr) {
+        public SysInstanceBuilder ipAddr(String ipAddr) {
             this.ipAddr = ipAddr;
             return this;
         }
 
-        public SysServiceInstanceBuilder port(int port) {
+        public SysInstanceBuilder port(int port) {
             this.port = port;
             return this;
         }
 
-        public SysServiceInstanceBuilder weight(int weight) {
+        public SysInstanceBuilder weight(int weight) {
             this.weight = weight;
             return this;
         }
 
-        public SysServiceInstanceBuilder metaData(String metaData) {
+        public SysInstanceBuilder metaData(String metaData) {
             this.metaData = metaData;
             return this;
         }
 
-        public SysServiceInstanceBuilder createTime(LocalDateTime createTime) {
+        public SysInstanceBuilder createTime(LocalDateTime createTime) {
             this.createTime = createTime;
             return this;
         }
         /**
          * 构建对象
          */
-        public SysServiceInstance build(){
-            return BeanUtil.copyProperties(this, SysServiceInstance.class);
+        public SysInstance build(){
+            return BeanUtil.copyProperties(this, SysInstance.class);
         }
     }
 
     @Override
     public String toString() {
-        return "SysServiceInstance{" +
+        return "SysInstance{" +
                 "id=" + id +
                 ", serviceId=" + serviceId +
                 ", ipAddr='" + ipAddr + '\'' +
