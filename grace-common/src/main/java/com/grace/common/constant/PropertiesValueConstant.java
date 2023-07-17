@@ -6,7 +6,7 @@ package com.grace.common.constant;
  * @author youzhengjie
  * @date 2023-07-07 17:46:38
  */
-public class PropertiesValueConstant {
+public final class PropertiesValueConstant {
 
     /**
      * 开启

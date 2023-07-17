@@ -1,5 +1,6 @@
 package com.grace.common.entity;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -13,8 +14,8 @@ import java.time.LocalDateTime;
  * @author youzhengjie
  * @date 2023-06-16 08:47:09
  */
-@TableName("sys_name_space")
-public class SysConfigInfo implements Serializable {
+@TableName("sys_config_info")
+public class ConfigInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -100,10 +101,10 @@ public class SysConfigInfo implements Serializable {
     @TableField("del_flag")
     private int delFlag;
 
-    public SysConfigInfo() {
+    public ConfigInfo() {
     }
 
-    public SysConfigInfo(Long id, String configName, String groupName, String content, String md5, String desc, Long nameSpaceId, String type, Long userId, String ip, LocalDateTime createTime, LocalDateTime updateTime, int delFlag) {
+    public ConfigInfo(Long id, String configName, String groupName, String content, String md5, String desc, Long nameSpaceId, String type, Long userId, String ip, LocalDateTime createTime, LocalDateTime updateTime, int delFlag) {
         this.id = id;
         this.configName = configName;
         this.groupName = groupName;
@@ -223,9 +224,156 @@ public class SysConfigInfo implements Serializable {
         this.delFlag = delFlag;
     }
 
+    /**
+     * 获取建造者对象
+     *
+     * @return {@link ConfigInfoBuilder}
+     */
+    public static ConfigInfoBuilder builder(){
+        return new ConfigInfoBuilder();
+    }
+
+
+    /**
+     * ConfigInfo建造者类
+     *
+     * @author youzhengjie
+     * @date 2023-07-13 23:44:26
+     */
+    private static final class ConfigInfoBuilder {
+
+        /**
+         * 主键,命令空间id
+         */
+        private Long id;
+
+        /**
+         * 配置信息的名称
+         */
+        private String configName;
+
+        /**
+         * 该配置信息所属的分组名称
+         */
+        private String groupName;
+
+        /**
+         * 配置信息的内容
+         */
+        private String content;
+
+        /**
+         * md5值,每一次修改配置内容这个值都要重新生成,用于判断配置文件是否被修改
+         */
+        private String md5;
+
+        /**
+         * 描述
+         */
+        private String desc;
+
+        /**
+         * 该配置所属的命名空间id
+         */
+        private Long nameSpaceId;
+
+        /**
+         * 配置信息内容的类型(例如:text、yml或yaml、properties、json、xml)
+         */
+        private String type;
+
+        /**
+         * 创建该配置信息的用户id
+         */
+        private Long userId;
+
+        /**
+         * 创建该配置信息的用户的ip地址
+         */
+        private String ip;
+
+        /**
+         * 创建时间
+         */
+        private LocalDateTime createTime;
+
+        /**
+         * 最后一次修改时间
+         */
+        private LocalDateTime updateTime;
+
+        /**
+         * 删除标志（0代表未删除，1代表已删除）
+         */
+        private int delFlag;
+
+        public ConfigInfoBuilder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public ConfigInfoBuilder configName(String configName) {
+            this.configName = configName;
+            return this;
+        }
+
+        public ConfigInfoBuilder groupName(String groupName) {
+            this.groupName = groupName;
+            return this;
+        }
+
+        public ConfigInfoBuilder md5(String md5) {
+            this.md5 = md5;
+            return this;
+        }
+
+        public ConfigInfoBuilder desc(String desc) {
+            this.desc = desc;
+            return this;
+        }
+        public ConfigInfoBuilder nameSpaceId(Long nameSpaceId) {
+            this.nameSpaceId = nameSpaceId;
+            return this;
+        }
+        public ConfigInfoBuilder type(String type) {
+            this.type = type;
+            return this;
+        }
+
+        public ConfigInfoBuilder userId(Long userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public ConfigInfoBuilder ip(String ip) {
+            this.ip = ip;
+            return this;
+        }
+        public ConfigInfoBuilder createTime(LocalDateTime createTime) {
+            this.createTime = createTime;
+            return this;
+        }
+
+        public ConfigInfoBuilder updateTime(LocalDateTime updateTime) {
+            this.updateTime = updateTime;
+            return this;
+        }
+
+        public ConfigInfoBuilder delFlag(int delFlag) {
+            this.delFlag = delFlag;
+            return this;
+        }
+        /**
+         * 构建对象
+         */
+        public ConfigInfo build(){
+            return BeanUtil.copyProperties(this, ConfigInfo.class);
+        }
+    }
+
     @Override
     public String toString() {
-        return "SysConfigInfo{" +
+        return "ConfigInfo{" +
                 "id=" + id +
                 ", configName='" + configName + '\'' +
                 ", groupName='" + groupName + '\'' +

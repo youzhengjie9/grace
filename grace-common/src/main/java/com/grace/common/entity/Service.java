@@ -1,12 +1,6 @@
 package com.grace.common.entity;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -17,53 +11,44 @@ import java.time.LocalDateTime;
  * @author youzhengjie
  * @date 2023/06/16 00:54:38
  */
-@TableName("sys_service")
-public class SysService implements Serializable {
+public class Service implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键。服务名id
+     * 服务名id
      */
-    @JsonSerialize(using = ToStringSerializer.class) //解决雪花算法生成的id过长导致前端js精度丢失问题（也就是js拿到的数据和后端不一致问题）
-    @TableId(value = "id",type = IdType.INPUT)
     private Long id;
 
     /**
      * 命名空间id
      */
-    @JsonSerialize(using = ToStringSerializer.class) //解决雪花算法生成的id过长导致前端js精度丢失问题（也就是js拿到的数据和后端不一致问题）
-    @TableField("namespace_id")
     private Long namespaceId;
 
     /**
      * 服务名称
      */
-    @TableField("service_name")
     private String serviceName;
 
     /**
      * 分组名称
      */
-    @TableField("group_name")
     private String groupName;
 
     /**
      * 元数据
      */
-    @TableField("meta_data")
     private String metaData;
 
     /**
      * 创建时间
      */
-    @TableField("create_time")
     private LocalDateTime createTime;
 
-    public SysService() {
+    public Service() {
     }
 
-    public SysService(Long id, Long namespaceId, String serviceName, String groupName, String metaData, LocalDateTime createTime) {
+    public Service(Long id, Long namespaceId, String serviceName, String groupName, String metaData, LocalDateTime createTime) {
         this.id = id;
         this.namespaceId = namespaceId;
         this.serviceName = serviceName;
@@ -76,12 +61,12 @@ public class SysService implements Serializable {
         return id;
     }
 
-    public SysService setId(Long id) {
+    public Service setId(Long id) {
         this.id = id;
         return this;
     }
 
-    public SysService setNamespaceId(Long namespaceId) {
+    public Service setNamespaceId(Long namespaceId) {
         this.namespaceId = namespaceId;
         return this;
     }
@@ -94,7 +79,7 @@ public class SysService implements Serializable {
         return serviceName;
     }
 
-    public SysService setServiceName(String serviceName) {
+    public Service setServiceName(String serviceName) {
         this.serviceName = serviceName;
         return this;
     }
@@ -103,7 +88,7 @@ public class SysService implements Serializable {
         return groupName;
     }
 
-    public SysService setGroupName(String groupName) {
+    public Service setGroupName(String groupName) {
         this.groupName = groupName;
         return this;
     }
@@ -112,7 +97,7 @@ public class SysService implements Serializable {
         return metaData;
     }
 
-    public SysService setMetaData(String metaData) {
+    public Service setMetaData(String metaData) {
         this.metaData = metaData;
         return this;
     }
@@ -121,21 +106,21 @@ public class SysService implements Serializable {
         return createTime;
     }
 
-    public SysService setCreateTime(LocalDateTime createTime) {
+    public Service setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
         return this;
     }
 
     /**
-     * SysService建造者类
+     * Service建造者类
      *
      * @author youzhengjie
      * @date 2023-07-07 19:15:38
      */
-    private static final class SysServiceBuilder {
+    private static final class ServiceBuilder {
 
         /**
-         * 主键。服务名id
+         * 服务名id
          */
         private Long id;
 
@@ -164,30 +149,30 @@ public class SysService implements Serializable {
          */
         private LocalDateTime createTime;
 
-        public SysServiceBuilder id(Long id) {
+        public ServiceBuilder id(Long id) {
             this.id = id;
             return this;
         }
-        public SysServiceBuilder namespaceId(Long namespaceId) {
+        public ServiceBuilder namespaceId(Long namespaceId) {
             this.namespaceId = namespaceId;
             return this;
         }
-        public SysServiceBuilder serviceName(String serviceName) {
+        public ServiceBuilder serviceName(String serviceName) {
             this.serviceName = serviceName;
             return this;
         }
 
-        public SysServiceBuilder groupName(String groupName) {
+        public ServiceBuilder groupName(String groupName) {
             this.groupName = groupName;
             return this;
         }
 
-        public SysServiceBuilder metaData(String metaData) {
+        public ServiceBuilder metaData(String metaData) {
             this.metaData = metaData;
             return this;
         }
 
-        public SysServiceBuilder createTime(LocalDateTime createTime) {
+        public ServiceBuilder createTime(LocalDateTime createTime) {
             this.createTime = createTime;
             return this;
         }
@@ -195,15 +180,15 @@ public class SysService implements Serializable {
         /**
          * 构建对象
          */
-        public SysService build(){
-            return BeanUtil.copyProperties(this, SysService.class);
+        public Service build(){
+            return BeanUtil.copyProperties(this, Service.class);
         }
 
     }
 
     @Override
     public String toString() {
-        return "SysService{" +
+        return "Service{" +
                 "id=" + id +
                 ", namespaceId=" + namespaceId +
                 ", serviceName='" + serviceName + '\'' +

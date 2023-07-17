@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * @date 2023/06/16 08:43:03
  */
 @TableName("sys_name_space")
-public class SysNamespace implements Serializable {
+public class Namespace implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -57,10 +57,10 @@ public class SysNamespace implements Serializable {
     @TableField("del_flag")
     private int delFlag;
 
-    public SysNamespace() {
+    public Namespace() {
     }
 
-    public SysNamespace(Long id, String namespaceName, String desc, LocalDateTime createTime, LocalDateTime updateTime, int delFlag) {
+    public Namespace(Long id, String namespaceName, String desc, LocalDateTime createTime, LocalDateTime updateTime, int delFlag) {
         this.id = id;
         this.namespaceName = namespaceName;
         this.desc = desc;
@@ -73,7 +73,7 @@ public class SysNamespace implements Serializable {
         return id;
     }
 
-    public SysNamespace setId(Long id) {
+    public Namespace setId(Long id) {
         this.id = id;
         return this;
     }
@@ -90,7 +90,7 @@ public class SysNamespace implements Serializable {
         return desc;
     }
 
-    public SysNamespace setDesc(String desc) {
+    public Namespace setDesc(String desc) {
         this.desc = desc;
         return this;
     }
@@ -99,7 +99,7 @@ public class SysNamespace implements Serializable {
         return createTime;
     }
 
-    public SysNamespace setCreateTime(LocalDateTime createTime) {
+    public Namespace setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
         return this;
     }
@@ -108,7 +108,7 @@ public class SysNamespace implements Serializable {
         return updateTime;
     }
 
-    public SysNamespace setUpdateTime(LocalDateTime updateTime) {
+    public Namespace setUpdateTime(LocalDateTime updateTime) {
         this.updateTime = updateTime;
         return this;
     }
@@ -117,7 +117,7 @@ public class SysNamespace implements Serializable {
         return delFlag;
     }
 
-    public SysNamespace setDelFlag(int delFlag) {
+    public Namespace setDelFlag(int delFlag) {
         this.delFlag = delFlag;
         return this;
     }
@@ -125,19 +125,19 @@ public class SysNamespace implements Serializable {
     /**
      * 获取建造者对象
      *
-     * @return {@link SysNamespaceBuilder}
+     * @return {@link NamespaceBuilder}
      */
-    public static SysNamespaceBuilder builder(){
-        return new SysNamespaceBuilder();
+    public static NamespaceBuilder builder(){
+        return new NamespaceBuilder();
     }
 
     /**
-     * SysNamespace建造者类
+     * Namespace建造者类
      *
      * @author youzhengjie
      * @date 2023/07/02 21:56:30
      */
-    private static final class SysNamespaceBuilder {
+    private static final class NamespaceBuilder {
 
         /**
          * 主键,命令空间id
@@ -169,32 +169,32 @@ public class SysNamespace implements Serializable {
          */
         private int delFlag;
 
-        public SysNamespaceBuilder id(Long id) {
+        public NamespaceBuilder id(Long id) {
             this.id = id;
             return this;
         }
 
-        public SysNamespaceBuilder namespaceName(String namespaceName) {
+        public NamespaceBuilder namespaceName(String namespaceName) {
             this.namespaceName = namespaceName;
             return this;
         }
 
-        public SysNamespaceBuilder desc(String desc) {
+        public NamespaceBuilder desc(String desc) {
             this.desc = desc;
             return this;
         }
 
-        public SysNamespaceBuilder createTime(LocalDateTime createTime) {
+        public NamespaceBuilder createTime(LocalDateTime createTime) {
             this.createTime = createTime;
             return this;
         }
 
-        public SysNamespaceBuilder updateTime(LocalDateTime updateTime) {
+        public NamespaceBuilder updateTime(LocalDateTime updateTime) {
             this.updateTime = updateTime;
             return this;
         }
 
-        public SysNamespaceBuilder delFlag(int delFlag) {
+        public NamespaceBuilder delFlag(int delFlag) {
             this.delFlag = delFlag;
             return this;
         }
@@ -202,18 +202,18 @@ public class SysNamespace implements Serializable {
         /**
          * 构建对象
          *
-         * @return {@link SysNamespace}
+         * @return {@link Namespace}
          */
-        public SysNamespace build(){
-            //使用bean拷贝,将当前对象（SysNamespaceBuilder），转成建造出来的对象（SysNamespace）
-            return BeanUtil.copyProperties(this, SysNamespace.class);
+        public Namespace build(){
+            //使用bean拷贝,将当前对象（NamespaceBuilder），转成建造出来的对象（Namespace）
+            return BeanUtil.copyProperties(this, Namespace.class);
         }
 
     }
 
     @Override
     public String toString() {
-        return "SysNamespace{" +
+        return "Namespace{" +
                 "id=" + id +
                 ", namespaceName='" + namespaceName + '\'' +
                 ", desc='" + desc + '\'' +

@@ -11,8 +11,8 @@ public enum ResponseType {
     /**
      * 通用状态
      */
-    SUCCESS(200,"接口请求成功"),
-    ERROR(500,"接口请求失败"),
+    SUCCESS(200,"请求接口成功"),
+    ERROR(500,"请求接口异常"),
 
     UNAUTHORIZED(401,"认证失败"),
     FORBIDDEN(403,"权限不足,拒绝访问"),

@@ -1,21 +1,25 @@
 package com.grace.server.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.grace.common.dto.RegisterInstanceDTO;
-import com.grace.common.entity.SysInstance;
-import com.grace.common.entity.SysNamespace;
-import com.grace.common.entity.SysService;
+import com.grace.common.entity.Instance;
+import com.grace.common.entity.Namespace;
+import com.grace.common.entity.Service;
 import com.grace.common.utils.ResponseResult;
 import com.grace.common.utils.SnowId;
-import com.grace.server.mapper.InstanceMapper;
 import com.grace.server.service.InstanceService;
 import com.grace.server.service.NamespaceService;
 import com.grace.server.service.SvcService;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * instance service impl
@@ -23,19 +27,19 @@ import java.time.LocalDateTime;
  * @author youzhengjie
  * @date 2023/07/13 17:19:51
  */
-@Service
-public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, SysInstance> implements InstanceService {
+@org.springframework.stereotype.Service
+public class InstanceServiceImpl implements InstanceService {
 
-    private InstanceMapper instanceMapper;
+    private static final Logger log = LoggerFactory.getLogger(InstanceServiceImpl.class);
 
     private SvcService svcService;
 
     private NamespaceService namespaceService;
 
-    @Autowired
-    public void setInstanceMapper(InstanceMapper instanceMapper) {
-        this.instanceMapper = instanceMapper;
-    }
+    /**
+     * 存储instance的map（key=service的id,value=instance的集合）
+     */
+    private static final Map<Long, List<Instance>> instanceMap = new ConcurrentHashMap<>();
 
     @Autowired
     public void setSvcService(SvcService svcService) {
@@ -49,28 +53,53 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, SysInstance
 
     @Override
     public ResponseResult<Boolean> registerInstance(RegisterInstanceDTO registerInstanceDTO) {
-        SysInstance sysInstance = BeanUtil.copyProperties(registerInstanceDTO, SysInstance.class);
+        Instance instance = BeanUtil.copyProperties(registerInstanceDTO, Instance.class);
         String namespace = registerInstanceDTO.getNamespace();
         String serviceName = registerInstanceDTO.getServiceName();
-        // 根据命名空间名称查询命名空间的id
-        SysNamespace sysNamespace = namespaceService.lambdaQuery()
-                .select(SysNamespace::getId)
-                .eq(SysNamespace::getNamespaceName, namespace)
-                .one();
-        // 根据服务名查询服务的id
-        SysService sysService = svcService.lambdaQuery()
-                .select(SysService::getId)
-                .eq(SysService::getServiceName, serviceName)
-                .one();
-
+        // 如果命名空间名称为空
+        if(StringUtils.isBlank(namespace)){
+            log.error("传入的namespace名称为空");
+            return ResponseResult.ok(false);
+        }
+        // 如果service名称为空
+        if(StringUtils.isBlank(serviceName)){
+            log.error("传入的service名称为空");
+            return ResponseResult.ok(false);
+        }
+        Boolean hasService = svcService.hasService(namespace, serviceName).getData();
+        if(!hasService){
+            log.error("传入的service不存在");
+        }
+        // 查询service
+        Service service = svcService.getService(namespace, serviceName).getData();
         long instanceId = SnowId.nextId();
-        Long namespaceId = sysNamespace.getId();
-        Long serviceId = sysService.getId();
-        sysInstance.setId(instanceId)
+        Long serviceId = service.getId();
+        instance.setId(instanceId)
                 .setServiceId(serviceId)
                 .setCreateTime(LocalDateTime.now());
-
-
-        return null;
+        List<Instance> instances = instanceMap.get(serviceId);
+        // 防止instances集合为空，如果instances集合为空则进行初始化集合
+        if(instances == null){
+            instances = new CopyOnWriteArrayList<>();
+        }
+        if(instances.size()>0){
+            String ipAddr = instance.getIpAddr();
+            int port = instance.getPort();
+            for (Instance ins : instances) {
+                if(ins.getIpAddr().equals(ipAddr) && ins.getPort() == port){
+                    log.error("该instance已经存在");
+                    return ResponseResult.ok(false);
+                }
+            }
+        }
+        try {
+            instances.add(instance);
+            // 将数据保存起来
+            instanceMap.put(serviceId,instances);
+            return ResponseResult.ok(true);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseResult.fail(false);
+        }
     }
 }

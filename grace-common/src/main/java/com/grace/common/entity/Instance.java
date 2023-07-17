@@ -1,75 +1,59 @@
 package com.grace.common.entity;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * grace注册中心的实例表实体类
+ * grace注册中心的实例
  *
  * @author youzhengjie
  * @date 2023/06/16 01:02:52
  */
-@TableName("sys_instance")
-public class SysInstance implements Serializable {
+public class Instance implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键,服务实例id
+     * 服务实例id
      */
-    @JsonSerialize(using = ToStringSerializer.class) //解决雪花算法生成的id过长导致前端js精度丢失问题（也就是js拿到的数据和后端不一致问题）
-    @TableId(value = "id",type = IdType.INPUT)
     private Long id;
 
     /**
      * 该实例所属的服务id
      */
-    @JsonSerialize(using = ToStringSerializer.class) //解决雪花算法生成的id过长导致前端js精度丢失问题（也就是js拿到的数据和后端不一致问题）
-    @TableId("service_id")
     private Long serviceId;
 
     /**
      * 该实例的ip地址
      */
-    @TableField("ip_addr")
     private String ipAddr;
 
     /**
      * 该实例的端口号
      */
-    @TableField("port")
     private int port;
 
     /**
      * 该实例的权重
      */
-    @TableField("weight")
     private int weight;
 
     /**
      * 该实例的元数据
      */
-    @TableField("meta_data")
     private String metaData;
 
     /**
      * 创建时间
      */
-    @TableField("create_time")
     private LocalDateTime createTime;
 
-    public SysInstance() {
+    public Instance() {
     }
 
-    public SysInstance(Long id, Long serviceId, String ipAddr, int port, int weight, String metaData, LocalDateTime createTime) {
+    public Instance(Long id, Long serviceId, String ipAddr, int port, int weight, String metaData, LocalDateTime createTime) {
         this.id = id;
         this.serviceId = serviceId;
         this.ipAddr = ipAddr;
@@ -83,7 +67,7 @@ public class SysInstance implements Serializable {
         return id;
     }
 
-    public SysInstance setId(Long id) {
+    public Instance setId(Long id) {
         this.id = id;
         return this;
     }
@@ -92,7 +76,7 @@ public class SysInstance implements Serializable {
         return serviceId;
     }
 
-    public SysInstance setServiceId(Long serviceId) {
+    public Instance setServiceId(Long serviceId) {
         this.serviceId = serviceId;
         return this;
     }
@@ -101,7 +85,7 @@ public class SysInstance implements Serializable {
         return ipAddr;
     }
 
-    public SysInstance setIpAddr(String ipAddr) {
+    public Instance setIpAddr(String ipAddr) {
         this.ipAddr = ipAddr;
         return this;
     }
@@ -110,7 +94,7 @@ public class SysInstance implements Serializable {
         return port;
     }
 
-    public SysInstance setPort(int port) {
+    public Instance setPort(int port) {
         this.port = port;
         return this;
     }
@@ -119,7 +103,7 @@ public class SysInstance implements Serializable {
         return weight;
     }
 
-    public SysInstance setWeight(int weight) {
+    public Instance setWeight(int weight) {
         this.weight = weight;
         return this;
     }
@@ -128,7 +112,7 @@ public class SysInstance implements Serializable {
         return metaData;
     }
 
-    public SysInstance setMetaData(String metaData) {
+    public Instance setMetaData(String metaData) {
         this.metaData = metaData;
         return this;
     }
@@ -137,19 +121,26 @@ public class SysInstance implements Serializable {
         return createTime;
     }
 
-    public SysInstance setCreateTime(LocalDateTime createTime) {
+    public Instance setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
         return this;
     }
-
+    /**
+     * 获取建造者对象
+     *
+     * @return {@link InstanceBuilder}
+     */
+    public static InstanceBuilder builder(){
+        return new InstanceBuilder();
+    }
 
     /**
-     * SysInstance建造者类
+     * Instance建造者类
      *
      * @author youzhengjie
      * @date 2023-07-07 22:26:31
      */
-    private static final class SysInstanceBuilder {
+    private static final class InstanceBuilder {
 
         /**
          * 主键,服务实例id
@@ -186,51 +177,51 @@ public class SysInstance implements Serializable {
          */
         private LocalDateTime createTime;
 
-        public SysInstanceBuilder id(Long id) {
+        public InstanceBuilder id(Long id) {
             this.id = id;
             return this;
         }
 
-        public SysInstanceBuilder serviceId(Long serviceId) {
+        public InstanceBuilder serviceId(Long serviceId) {
             this.serviceId = serviceId;
             return this;
         }
 
-        public SysInstanceBuilder ipAddr(String ipAddr) {
+        public InstanceBuilder ipAddr(String ipAddr) {
             this.ipAddr = ipAddr;
             return this;
         }
 
-        public SysInstanceBuilder port(int port) {
+        public InstanceBuilder port(int port) {
             this.port = port;
             return this;
         }
 
-        public SysInstanceBuilder weight(int weight) {
+        public InstanceBuilder weight(int weight) {
             this.weight = weight;
             return this;
         }
 
-        public SysInstanceBuilder metaData(String metaData) {
+        public InstanceBuilder metaData(String metaData) {
             this.metaData = metaData;
             return this;
         }
 
-        public SysInstanceBuilder createTime(LocalDateTime createTime) {
+        public InstanceBuilder createTime(LocalDateTime createTime) {
             this.createTime = createTime;
             return this;
         }
         /**
          * 构建对象
          */
-        public SysInstance build(){
-            return BeanUtil.copyProperties(this, SysInstance.class);
+        public Instance build(){
+            return BeanUtil.copyProperties(this, Instance.class);
         }
     }
 
     @Override
     public String toString() {
-        return "SysInstance{" +
+        return "Instance{" +
                 "id=" + id +
                 ", serviceId=" + serviceId +
                 ", ipAddr='" + ipAddr + '\'' +
