@@ -3,9 +3,7 @@ package com.grace.server.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.grace.common.dto.RegisterInstanceDTO;
 import com.grace.common.entity.Instance;
-import com.grace.common.entity.Namespace;
 import com.grace.common.entity.Service;
-import com.grace.common.utils.ResponseResult;
 import com.grace.common.utils.SnowId;
 import com.grace.server.service.InstanceService;
 import com.grace.server.service.NamespaceService;
@@ -52,26 +50,28 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    public ResponseResult<Boolean> registerInstance(RegisterInstanceDTO registerInstanceDTO) {
+    public boolean registerInstance(RegisterInstanceDTO registerInstanceDTO) {
         Instance instance = BeanUtil.copyProperties(registerInstanceDTO, Instance.class);
         String namespace = registerInstanceDTO.getNamespace();
         String serviceName = registerInstanceDTO.getServiceName();
         // 如果命名空间名称为空
         if(StringUtils.isBlank(namespace)){
             log.error("传入的namespace名称为空");
-            return ResponseResult.ok(false);
+            return false;
         }
         // 如果service名称为空
         if(StringUtils.isBlank(serviceName)){
             log.error("传入的service名称为空");
-            return ResponseResult.ok(false);
+            return false;
         }
-        Boolean hasService = svcService.hasService(namespace, serviceName).getData();
+        boolean hasService = svcService.hasService(namespace, serviceName);
+        // TODO: 2023/7/19 如果传入的service不存在则创建该service
         if(!hasService){
             log.error("传入的service不存在");
+            return false;
         }
         // 查询service
-        Service service = svcService.getService(namespace, serviceName).getData();
+        Service service = svcService.getService(namespace, serviceName);
         long instanceId = SnowId.nextId();
         Long serviceId = service.getId();
         instance.setId(instanceId)
@@ -88,7 +88,7 @@ public class InstanceServiceImpl implements InstanceService {
             for (Instance ins : instances) {
                 if(ins.getIpAddr().equals(ipAddr) && ins.getPort() == port){
                     log.error("该instance已经存在");
-                    return ResponseResult.ok(false);
+                    return false;
                 }
             }
         }
@@ -96,10 +96,10 @@ public class InstanceServiceImpl implements InstanceService {
             instances.add(instance);
             // 将数据保存起来
             instanceMap.put(serviceId,instances);
-            return ResponseResult.ok(true);
+            return true;
         }catch (Exception e){
             e.printStackTrace();
-            return ResponseResult.fail(false);
+            return false;
         }
     }
 }

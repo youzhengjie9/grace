@@ -1,10 +1,7 @@
 package com.grace.server.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.grace.common.dto.CreateServiceDTO;
-import com.grace.common.entity.Namespace;
 import com.grace.common.entity.Service;
-import com.grace.common.utils.ResponseResult;
 import com.grace.common.utils.SnowId;
 import com.grace.server.service.NamespaceService;
 import com.grace.server.service.SvcService;
@@ -15,7 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -37,19 +36,19 @@ public class SvcServiceImpl implements SvcService {
     }
 
     @Override
-    public ResponseResult<Boolean> createService(CreateServiceDTO createServiceDTO) {
+    public boolean createService(CreateServiceDTO createServiceDTO) {
         Service service = BeanUtil.copyProperties(createServiceDTO, Service.class);
         String namespaceName = createServiceDTO.getNamespaceName();
         // 如果命名空间名称为空
         if(StringUtils.isBlank(namespaceName)){
             log.error("传入的namespace名称为空");
-            return ResponseResult.ok(false);
+            return false;
         }
-        Boolean hasNamespace = namespaceService.hasNamespace(namespaceName).getData();
+        boolean hasNamespace = namespaceService.hasNamespace(namespaceName);
         // 如果传入的namespace不存在则范湖false
         if(!hasNamespace){
             log.error("传入的namespace不存在");
-            return ResponseResult.ok(false);
+            return false;
         }
         // 根据命名空间名称查询该命名空间的id
         Long namespaceId = namespaceService.getNamespaceId(namespaceName);
@@ -69,7 +68,7 @@ public class SvcServiceImpl implements SvcService {
             // 如果在sys_service表中有某条记录同时等于createServiceDTO获取到的service名称和namespace的id，则不能创建这个service
             if(count > 0){
                 log.error("该service名称已经存在");
-                return ResponseResult.ok(false);
+                return false;
             }
         }
         // 填充其余的属性
@@ -80,28 +79,28 @@ public class SvcServiceImpl implements SvcService {
             services.add(service);
             // 将数据保存起来
             serviceMap.put(namespaceId,services);
-            return ResponseResult.ok(true);
+            return true;
         }catch (Exception e){
             e.printStackTrace();
-            return ResponseResult.fail(false);
+            return false;
         }
     }
 
     @Override
-    public ResponseResult<Boolean> hasService(String namespace, String serviceName) {
+    public boolean hasService(String namespace, String serviceName) {
         // 如果命名空间名称为空
         if(StringUtils.isBlank(namespace)){
             log.error("传入的namespace名称为空");
-            return ResponseResult.ok(false);
+            return false;
         }
-        Boolean hasNamespace = namespaceService.hasNamespace(namespace).getData();
+        boolean hasNamespace = namespaceService.hasNamespace(namespace);
         // 如果传入的namespace不存在则范湖false
         if(!hasNamespace){
             log.error("传入的namespace不存在");
-            return ResponseResult.ok(false);
+            return false;
         }
         // 根据命名空间名称查询该命名空间的id
-        Long namespaceId = namespaceService.getNamespaceId(namespace);
+        long namespaceId = namespaceService.getNamespaceId(namespace);
         // 根据命名空间id获取其对应的存储service对象的集合
         List<Service> services = serviceMap.get(namespaceId);
         if(services.size()>0){
@@ -111,55 +110,54 @@ public class SvcServiceImpl implements SvcService {
                     .distinct()
                     .filter(svcName -> svcName.equals(serviceName))
                     .count();
-            return ResponseResult.ok(count>0);
+            return count>0;
         }
-        return ResponseResult.ok(false);
+        return false;
     }
 
     @Override
-    public ResponseResult<List<Service>> getAllServices(String namespace) {
+    public List<Service> getAllServices(String namespace) {
         // 如果命名空间名称为空
         if(StringUtils.isBlank(namespace)){
             log.error("传入的namespace名称为空");
-            return ResponseResult.ok(new ArrayList<>());
+            return new ArrayList<>();
         }
-        Boolean hasNamespace = namespaceService.hasNamespace(namespace).getData();
+        boolean hasNamespace = namespaceService.hasNamespace(namespace);
         // 如果传入的namespace不存在则范湖false
         if(!hasNamespace){
             log.error("传入的namespace不存在");
-            return ResponseResult.ok(new ArrayList<>());
+            return new ArrayList<>();
         }
         // 根据命名空间名称查询该命名空间的id
-        Long namespaceId = namespaceService.getNamespaceId(namespace);
+        long namespaceId = namespaceService.getNamespaceId(namespace);
         // 根据命名空间id获取其对应的存储service对象的集合
-        List<Service> services = serviceMap.get(namespaceId);
-        return ResponseResult.ok(services);
+        return serviceMap.get(namespaceId);
     }
 
     @Override
-    public ResponseResult<Service> getService(String namespace, String serviceName) {
+    public Service getService(String namespace, String serviceName) {
         // 如果命名空间名称为空
         if(StringUtils.isBlank(namespace)){
             log.error("传入的namespace名称为空");
-            return ResponseResult.ok(null);
+            return null;
         }
-        Boolean hasNamespace = namespaceService.hasNamespace(namespace).getData();
+        boolean hasNamespace = namespaceService.hasNamespace(namespace);
         // 如果传入的namespace不存在则范湖false
         if(!hasNamespace){
             log.error("传入的namespace不存在");
-            return ResponseResult.ok(null);
+            return null;
         }
         // 根据命名空间名称查询该命名空间的id
-        Long namespaceId = namespaceService.getNamespaceId(namespace);
+        long namespaceId = namespaceService.getNamespaceId(namespace);
         // 根据命名空间id获取其对应的存储service对象的集合
         List<Service> services = serviceMap.get(namespaceId);
         for (Service service : services) {
             String svcName = service.getServiceName();
             if(svcName.equals(serviceName)){
-                return ResponseResult.ok(service);
+                return service;
             }
         }
-        return ResponseResult.ok(null);
+        return null;
     }
 
 

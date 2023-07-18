@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.grace.common.dto.CreateNamespaceDTO;
 import com.grace.common.entity.Namespace;
-import com.grace.common.utils.ResponseResult;
 import com.grace.common.utils.SnowId;
 import com.grace.server.mapper.NamespaceMapper;
 import com.grace.server.service.NamespaceService;
@@ -35,7 +34,7 @@ public class NamespaceServiceImpl extends ServiceImpl<NamespaceMapper, Namespace
     }
 
     @Override
-    public ResponseResult<Boolean> createNamespace(CreateNamespaceDTO createNamespaceDTO) {
+    public boolean createNamespace(CreateNamespaceDTO createNamespaceDTO) {
 
         Namespace namespace = BeanUtil.copyProperties(createNamespaceDTO, Namespace.class);
         if(namespace != null) {
@@ -44,19 +43,19 @@ public class NamespaceServiceImpl extends ServiceImpl<NamespaceMapper, Namespace
             try {
                 int res = namespaceMapper.insert(namespace);
                 if(res == 0){
-                    return ResponseResult.ok(false);
+                    return false;
                 }
-                return ResponseResult.ok(true);
+                return true;
             }catch (Exception e){
                 e.printStackTrace();
-                return ResponseResult.fail(false);
+                return false;
             }
         }
-        return ResponseResult.ok(false);
+        return false;
     }
 
     @Override
-    public Long getNamespaceId(String namespaceName) {
+    public long getNamespaceId(String namespaceName) {
         return this.lambdaQuery()
                 .select(Namespace::getId)
                 .eq(Namespace::getNamespaceName, namespaceName)
@@ -65,13 +64,13 @@ public class NamespaceServiceImpl extends ServiceImpl<NamespaceMapper, Namespace
     }
 
     @Override
-    public ResponseResult<Boolean> hasNamespace(String namespaceName) {
+    public boolean hasNamespace(String namespaceName) {
 
         LambdaQueryWrapper<Namespace> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Namespace::getNamespaceName,namespaceName);
 
         Long count = namespaceMapper.selectCount(queryWrapper);
 
-        return count>0?ResponseResult.ok(true) : ResponseResult.ok(false);
+        return count>0 ;
     }
 }

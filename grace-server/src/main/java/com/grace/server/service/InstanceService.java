@@ -1,9 +1,6 @@
 package com.grace.server.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.grace.common.dto.RegisterInstanceDTO;
-import com.grace.common.entity.Instance;
-import com.grace.common.utils.ResponseResult;
 
 /**
  * instance service
@@ -14,6 +11,13 @@ import com.grace.common.utils.ResponseResult;
 public interface InstanceService {
 
 
-    ResponseResult<Boolean> registerInstance(RegisterInstanceDTO registerInstanceDTO);
+    /**
+     * 注册实例
+     *
+     * @param registerInstanceDTO 注册实例dto
+     * @return boolean
+     */
+    boolean registerInstance(RegisterInstanceDTO registerInstanceDTO);
+
 
 }

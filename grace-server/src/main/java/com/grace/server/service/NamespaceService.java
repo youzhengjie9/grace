@@ -3,7 +3,6 @@ package com.grace.server.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.grace.common.dto.CreateNamespaceDTO;
 import com.grace.common.entity.Namespace;
-import com.grace.common.utils.ResponseResult;
 
 /**
  * 命名空间服务
@@ -17,26 +16,28 @@ public interface NamespaceService extends IService<Namespace> {
     /**
      * 创建命名空间
      *
-     * @param createNamespaceDTO 创建名称空间dto
-     * @return {@link ResponseResult}<{@link Boolean}>
+     * @param createNamespaceDTO 创建命名空间dto
+     * @return boolean
      */
-    ResponseResult<Boolean> createNamespace(CreateNamespaceDTO createNamespaceDTO);
+    boolean createNamespace(CreateNamespaceDTO createNamespaceDTO);
+
 
     /**
      * 获取命名空间id
      *
      * @param namespaceName 命名空间名称
-     * @return {@link Long}
+     * @return long
      */
-    Long getNamespaceId(String namespaceName);
+    long getNamespaceId(String namespaceName);
+
 
     /**
      * 是否存在该命名空间
      *
      * @param namespaceName 命名空间名称
-     * @return {@link ResponseResult}<{@link Boolean}>
+     * @return boolean
      */
-    ResponseResult<Boolean> hasNamespace(String namespaceName);
+    boolean hasNamespace(String namespaceName);
 
 
 
