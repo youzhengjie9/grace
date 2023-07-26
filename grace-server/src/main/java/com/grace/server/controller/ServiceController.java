@@ -1,5 +1,6 @@
 package com.grace.server.controller;
 
+import com.grace.common.constant.ParentMappingConstant;
 import com.grace.common.dto.CreateServiceDTO;
 import com.grace.common.entity.Service;
 import com.grace.common.utils.ResponseResult;
@@ -16,7 +17,7 @@ import java.util.List;
  * @date 2023/07/07 12:59:58
  */
 @RestController
-@RequestMapping(path = "/grace/server/service")
+@RequestMapping(path = ParentMappingConstant.SERVICE_CONTROLLER)
 public class ServiceController {
 
     private SvcService svcService;
@@ -28,12 +29,12 @@ public class ServiceController {
 
     @PostMapping(path = "/createService")
     public ResponseResult<Boolean> createService(@RequestBody CreateServiceDTO createServiceDTO){
-        return svcService.createService(createServiceDTO);
+        return ResponseResult.ok(svcService.createService(createServiceDTO));
     }
 
     @GetMapping(path = "/getAllServices/{namespace}")
     public ResponseResult<List<Service>> getAllServices(@PathVariable("namespace") String namespace){
-        return svcService.getAllServices(namespace);
+        return ResponseResult.ok(svcService.getAllServices(namespace));
     }
 
 }

@@ -102,4 +102,58 @@ public class InstanceServiceImpl implements InstanceService {
             return false;
         }
     }
+
+    @Override
+    public List<Instance> getAllInstances(String namespace, String serviceName) {
+
+        // 如果命名空间名称为空
+        if(StringUtils.isBlank(namespace)){
+            log.error("传入的namespace名称为空");
+            return null;
+        }
+        // 如果service名称为空
+        if(StringUtils.isBlank(serviceName)){
+            log.error("传入的service名称为空");
+            return null;
+        }
+        boolean hasService = svcService.hasService(namespace, serviceName);
+        if(!hasService){
+            log.error("传入的service不存在");
+            return null;
+        }
+        // 查询service
+        Service service = svcService.getService(namespace, serviceName);
+
+        return instanceMap.get(service.getId());
+    }
+
+    @Override
+    public Instance getInstance(String namespace, String serviceName, String ipAddr, int port) {
+
+        // 如果命名空间名称为空
+        if(StringUtils.isBlank(namespace)){
+            log.error("传入的namespace名称为空");
+            return null;
+        }
+        // 如果service名称为空
+        if(StringUtils.isBlank(serviceName)){
+            log.error("传入的service名称为空");
+            return null;
+        }
+        boolean hasService = svcService.hasService(namespace, serviceName);
+        if(!hasService){
+            log.error("传入的service不存在");
+            return null;
+        }
+        // 查询service
+        Service service = svcService.getService(namespace, serviceName);
+
+        return instanceMap.get(service.getId())
+                .stream()
+                .filter(instance -> instance.getIpAddr().equals(ipAddr) && instance.getPort() == port)
+                .findFirst()
+                .orElse(null);
+    }
+
+
 }

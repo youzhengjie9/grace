@@ -3,6 +3,7 @@ package com.grace.client.service.impl;
 import com.grace.client.properties.GraceRegistryProperties;
 import com.grace.client.service.NamespaceService;
 import com.grace.common.dto.CreateNamespaceDTO;
+import com.grace.common.entity.Instance;
 import com.grace.common.utils.ResponseResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -40,54 +42,65 @@ public class RestTemplateNamespaceServiceImpl implements NamespaceService {
     }
 
     @Override
-    public ResponseResult<Boolean> createNamespace(String namespace) {
-        return null;
+    public boolean createNamespace(String namespace) {
+        return false;
     }
 
     @Override
-    public ResponseResult<Boolean> createNamespace(String name,String desc) {
+    public boolean createNamespace(String name,String desc) {
 
         CreateNamespaceDTO createNamespaceDTO = new CreateNamespaceDTO(name, desc);
 
         String serverAddr = graceRegistryProperties.getServerAddr();
 
-        return restTemplate.postForObject("http://"+ serverAddr +"/grace/server/namespace/createNamespace",
+        ResponseResult<Boolean> result = restTemplate.postForObject("http://" + serverAddr + "/grace/server/namespace/createNamespace",
                 createNamespaceDTO, ResponseResult.class);
 
+        return result.getData();
     }
 
     @Override
-    public ResponseResult<Boolean> createService(String serviceName) {
+    public boolean createService(String serviceName) {
+        return false;
+    }
+
+    @Override
+    public boolean createService(String serviceName, String namespace) {
+        return false;
+    }
+
+    @Override
+    public boolean createService(String serviceName, String namespace, String groupName) {
+        return false;
+    }
+
+    @Override
+    public boolean createService(String serviceName, String namespace, String groupName, String metaData) {
+        return false;
+    }
+
+    @Override
+    public boolean registerInstance(String serviceName, String ipAddr, int port) {
+        return false;
+    }
+
+    @Override
+    public boolean registerInstance(String serviceName, String ipAddr, int port, int weight) {
+        return false;
+    }
+
+    @Override
+    public boolean registerInstance(String serviceName, String ipAddr, int port, int weight, String metaData) {
+        return false;
+    }
+
+    @Override
+    public List<Instance> getAllInstances(String namespace, String serviceName) {
         return null;
     }
 
     @Override
-    public ResponseResult<Boolean> createService(String serviceName, String namespace) {
-        return null;
-    }
-
-    @Override
-    public ResponseResult<Boolean> createService(String serviceName, String namespace, String groupName) {
-        return null;
-    }
-
-    @Override
-    public ResponseResult<Boolean> createService(String serviceName, String namespace, String groupName, String metaData) {
-        return null;
-    }
-
-    @Override
-    public ResponseResult<Boolean> registerInstance(String serviceName, String ipAddr, int port) {
-        return null;
-    }
-
-    @Override
-    public ResponseResult<Boolean> registerInstance(String serviceName, String ipAddr, int port, int weight) {
-        return null;
-    }
-
-    @Override
-    public ResponseResult<Boolean> registerInstance(String serviceName, String ipAddr, int port, int weight, String metaData) {
+    public Instance getInstance(String namespace, String serviceName, String ipAddr, int port) {
         return null;
     }
 

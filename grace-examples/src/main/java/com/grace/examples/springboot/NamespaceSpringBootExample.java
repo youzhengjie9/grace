@@ -21,7 +21,7 @@ public class NamespaceSpringBootExample {
 
         SpringApplication.run(NamespaceSpringBootExample.class,args);
 
-        Boolean result = namespaceService.createNamespace("names", "123").getData();
+        boolean result = namespaceService.createNamespace("names", "123");
         System.out.println(result);
     }
 

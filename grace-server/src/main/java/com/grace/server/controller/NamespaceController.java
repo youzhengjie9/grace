@@ -1,5 +1,6 @@
 package com.grace.server.controller;
 
+import com.grace.common.constant.ParentMappingConstant;
 import com.grace.common.dto.CreateNamespaceDTO;
 import com.grace.common.utils.ResponseResult;
 import com.grace.server.service.NamespaceService;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
  * @date 2023/06/19 22:23:38
  */
 @RestController
-@RequestMapping(path = "/grace/server/namespace")
+@RequestMapping(path = ParentMappingConstant.NAMESPACE_CONTROLLER)
 public class NamespaceController {
 
     private NamespaceService namespaceService;
@@ -25,11 +26,11 @@ public class NamespaceController {
 
     @PostMapping(path = "/createNamespace")
     public ResponseResult<Boolean> createNamespace(@RequestBody CreateNamespaceDTO createNamespaceDTO){
-        return namespaceService.createNamespace(createNamespaceDTO);
+        return ResponseResult.ok(namespaceService.createNamespace(createNamespaceDTO));
     }
     @GetMapping(path = "/hasNamespace/{namespaceName}")
     public ResponseResult<Boolean> hasNamespace(@PathVariable("namespaceName") String namespaceName){
-        return namespaceService.hasNamespace(namespaceName);
+        return ResponseResult.ok(namespaceService.hasNamespace(namespaceName));
     }
 
 }
