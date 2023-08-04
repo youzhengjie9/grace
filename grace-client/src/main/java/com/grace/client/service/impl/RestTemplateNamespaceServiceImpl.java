@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.Properties;
 
 /**
  * 基于RestTemplate的名称空间服务impl

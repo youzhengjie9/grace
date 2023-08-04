@@ -197,12 +197,12 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
     }
 
     @Override
-    public List<Instance> getAllInstances(String namespace, String serviceName) {
+    public List<Instance> getAllInstances(String serviceName) {
 
         // 使用hutool的HttpRequest类发送post请求
         HttpResponse httpResponse = HttpRequest.get(
                         "http://"+ serverAddr + ParentMappingConstant.INSTANCE_CONTROLLER
-                                +"/getAllInstances/"+ namespace + "/" + serviceName)
+                                +"/getAllInstances/"+ this.namespace + "/" + serviceName)
                 .execute();
 
         // 返回http状态码
@@ -222,12 +222,12 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
     }
 
     @Override
-    public Instance getInstance(String namespace, String serviceName, String ipAddr, int port) {
+    public Instance getInstance(String serviceName, String ipAddr, int port) {
 
         // 使用hutool的HttpRequest类发送post请求
         HttpResponse httpResponse = HttpRequest.get(
                         "http://"+ serverAddr + ParentMappingConstant.INSTANCE_CONTROLLER
-                                +"/getInstance/"+ namespace + "/" + serviceName + "/" +ipAddr +"/" + port)
+                                +"/getInstance/"+ this.namespace + "/" + serviceName + "/" +ipAddr +"/" + port)
                 .execute();
 
         // 返回http状态码
