@@ -1,7 +1,6 @@
 package com.grace.server.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.grace.common.dto.CreateNamespaceDTO;
 import com.grace.common.entity.Namespace;
 
 /**
@@ -16,10 +15,10 @@ public interface NamespaceService extends IService<Namespace> {
     /**
      * 创建命名空间
      *
-     * @param createNamespaceDTO 创建命名空间dto
+     * @param namespace 命名空间
      * @return boolean
      */
-    boolean createNamespace(CreateNamespaceDTO createNamespaceDTO);
+    boolean createNamespace(Namespace namespace);
 
 
     /**
@@ -38,8 +37,5 @@ public interface NamespaceService extends IService<Namespace> {
      * @return boolean
      */
     boolean hasNamespace(String namespaceName);
-
-
-
 
 }

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface NamespaceClientProxy {
 
-    void registerInstance(String serviceName, String groupName, RegisterInstanceDTO registerInstanceDTO);
+    void registerInstance(String serviceName, String groupName, Instance instance);
 
     void batchRegisterInstance(String serviceName, String groupName, List<Instance> instances);
 

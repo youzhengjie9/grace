@@ -4,6 +4,8 @@ import cn.hutool.core.bean.BeanUtil;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * grace注册中心的实例
@@ -38,12 +40,22 @@ public class Instance implements Serializable {
     /**
      * 该实例的权重
      */
-    private int weight;
+    private double weight = 1.0D;
+
+    /**
+     * 实例是否健康
+     */
+    private boolean healthy = true;
+
+    /**
+     * 是否为临时实例
+     */
+    private boolean ephemeral = true;
 
     /**
      * 该实例的元数据
      */
-    private String metaData;
+    private Map<String, String> metadata = new HashMap<>();
 
     /**
      * 创建时间
@@ -53,13 +65,15 @@ public class Instance implements Serializable {
     public Instance() {
     }
 
-    public Instance(Long id, Long serviceId, String ipAddr, int port, int weight, String metaData, LocalDateTime createTime) {
+    public Instance(Long id, Long serviceId, String ipAddr, int port, double weight, boolean healthy, boolean ephemeral, Map<String, String> metadata, LocalDateTime createTime) {
         this.id = id;
         this.serviceId = serviceId;
         this.ipAddr = ipAddr;
         this.port = port;
         this.weight = weight;
-        this.metaData = metaData;
+        this.healthy = healthy;
+        this.ephemeral = ephemeral;
+        this.metadata = metadata;
         this.createTime = createTime;
     }
 
@@ -99,21 +113,21 @@ public class Instance implements Serializable {
         return this;
     }
 
-    public int getWeight() {
+    public double getWeight() {
         return weight;
     }
 
-    public Instance setWeight(int weight) {
+    public Instance setWeight(double weight) {
         this.weight = weight;
         return this;
     }
 
-    public String getMetaData() {
-        return metaData;
+    public Map<String, String> getMetadata() {
+        return metadata;
     }
 
-    public Instance setMetaData(String metaData) {
-        this.metaData = metaData;
+    public Instance setMetadata(Map<String,String> metadata) {
+        this.metadata = metadata;
         return this;
     }
 
@@ -121,10 +135,29 @@ public class Instance implements Serializable {
         return createTime;
     }
 
+    public Instance setEphemeral(boolean ephemeral) {
+        this.ephemeral = ephemeral;
+        return this;
+    }
+
+    public boolean isHealthy() {
+        return healthy;
+    }
+
+    public Instance setHealthy(boolean healthy) {
+        this.healthy = healthy;
+        return this;
+    }
+
+    public boolean isEphemeral() {
+        return ephemeral;
+    }
+
     public Instance setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
         return this;
     }
+
     /**
      * 获取建造者对象
      *
@@ -165,12 +198,22 @@ public class Instance implements Serializable {
         /**
          * 该实例的权重
          */
-        private int weight;
+        private double weight = 1.00;
+
+        /**
+         * 实例是否健康
+         */
+        private boolean healthy = true;
+
+        /**
+         * 是否为临时实例
+         */
+        private boolean ephemeral = true;
 
         /**
          * 该实例的元数据
          */
-        private String metaData;
+        private Map<String, String> metadata = new HashMap<>();
 
         /**
          * 创建时间
@@ -197,13 +240,23 @@ public class Instance implements Serializable {
             return this;
         }
 
-        public InstanceBuilder weight(int weight) {
+        public InstanceBuilder weight(double weight) {
             this.weight = weight;
             return this;
         }
 
-        public InstanceBuilder metaData(String metaData) {
-            this.metaData = metaData;
+        public InstanceBuilder healthy(boolean healthy) {
+            this.healthy = healthy;
+            return this;
+        }
+
+        public InstanceBuilder ephemeral(boolean ephemeral) {
+            this.ephemeral = ephemeral;
+            return this;
+        }
+
+        public InstanceBuilder metadata(Map<String,String> metadata) {
+            this.metadata = metadata;
             return this;
         }
 
@@ -219,16 +272,4 @@ public class Instance implements Serializable {
         }
     }
 
-    @Override
-    public String toString() {
-        return "Instance{" +
-                "id=" + id +
-                ", serviceId=" + serviceId +
-                ", ipAddr='" + ipAddr + '\'' +
-                ", port=" + port +
-                ", weight=" + weight +
-                ", metaData='" + metaData + '\'' +
-                ", createTime=" + createTime +
-                '}';
-    }
 }

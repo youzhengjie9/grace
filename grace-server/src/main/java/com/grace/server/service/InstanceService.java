@@ -17,10 +17,10 @@ public interface InstanceService {
     /**
      * 注册实例
      *
-     * @param registerInstanceDTO 注册实例dto
+     * @param instance 实例
      * @return boolean
      */
-    boolean registerInstance(RegisterInstanceDTO registerInstanceDTO);
+    boolean registerInstance(Instance instance);
 
 
     /**

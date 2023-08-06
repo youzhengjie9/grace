@@ -2,12 +2,10 @@ package com.grace.server.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.grace.common.dto.CreateNamespaceDTO;
 import com.grace.common.entity.Namespace;
 import com.grace.common.utils.SnowId;
 import com.grace.server.mapper.NamespaceMapper;
 import com.grace.server.service.NamespaceService;
-import net.dreamlu.mica.core.utils.BeanUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +32,8 @@ public class NamespaceServiceImpl extends ServiceImpl<NamespaceMapper, Namespace
     }
 
     @Override
-    public boolean createNamespace(CreateNamespaceDTO createNamespaceDTO) {
+    public boolean createNamespace(Namespace namespace) {
 
-        Namespace namespace = BeanUtil.copyProperties(createNamespaceDTO, Namespace.class);
         if(namespace != null) {
             namespace.setId(SnowId.nextId())
                     .setCreateTime(LocalDateTime.now());

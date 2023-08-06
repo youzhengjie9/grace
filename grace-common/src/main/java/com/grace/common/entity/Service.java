@@ -4,6 +4,10 @@ import cn.hutool.core.bean.BeanUtil;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * grace注册中心的服务表实体类
@@ -36,9 +40,14 @@ public class Service implements Serializable {
     private String groupName;
 
     /**
+     * 该service下的所有实例
+     */
+    private List<Instance> instances = new ArrayList<>();
+
+    /**
      * 元数据
      */
-    private String metaData;
+    private Map<String, String> metadata = new HashMap<>();
 
     /**
      * 创建时间
@@ -48,12 +57,13 @@ public class Service implements Serializable {
     public Service() {
     }
 
-    public Service(Long id, Long namespaceId, String serviceName, String groupName, String metaData, LocalDateTime createTime) {
+    public Service(Long id, Long namespaceId, String serviceName, String groupName, List<Instance> instances, Map<String, String> metadata, LocalDateTime createTime) {
         this.id = id;
         this.namespaceId = namespaceId;
         this.serviceName = serviceName;
         this.groupName = groupName;
-        this.metaData = metaData;
+        this.instances = instances;
+        this.metadata = metadata;
         this.createTime = createTime;
     }
 
@@ -93,12 +103,21 @@ public class Service implements Serializable {
         return this;
     }
 
-    public String getMetaData() {
-        return metaData;
+    public List<Instance> getInstances() {
+        return instances;
     }
 
-    public Service setMetaData(String metaData) {
-        this.metaData = metaData;
+    public Service setInstances(List<Instance> instances) {
+        this.instances = instances;
+        return this;
+    }
+
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public Service setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
         return this;
     }
 
@@ -140,9 +159,14 @@ public class Service implements Serializable {
         private String groupName;
 
         /**
+         * 该service下的所有实例
+         */
+        private List<Instance> instances = new ArrayList<>();
+
+        /**
          * 元数据
          */
-        private String metaData;
+        private Map<String, String> metadata = new HashMap<>();
 
         /**
          * 创建时间
@@ -167,8 +191,13 @@ public class Service implements Serializable {
             return this;
         }
 
-        public ServiceBuilder metaData(String metaData) {
-            this.metaData = metaData;
+        public ServiceBuilder instances(List<Instance> instances) {
+            this.instances = instances;
+            return this;
+        }
+
+        public ServiceBuilder metadata(Map<String, String> metadata) {
+            this.metadata = metadata;
             return this;
         }
 
@@ -193,7 +222,8 @@ public class Service implements Serializable {
                 ", namespaceId=" + namespaceId +
                 ", serviceName='" + serviceName + '\'' +
                 ", groupName='" + groupName + '\'' +
-                ", metaData='" + metaData + '\'' +
+                ", instances=" + instances +
+                ", metadata=" + metadata +
                 ", createTime=" + createTime +
                 '}';
     }

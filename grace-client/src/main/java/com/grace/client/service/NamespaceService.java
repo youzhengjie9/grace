@@ -3,6 +3,7 @@ package com.grace.client.service;
 import com.grace.common.entity.Instance;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 命名空间服务
@@ -21,9 +22,9 @@ public interface NamespaceService {
 
     void registerInstance(String serviceName, String groupName, String ipAddr, int port,int weight);
 
-    void registerInstance(String serviceName, String ipAddr, int port,int weight,String metaData);
+    void registerInstance(String serviceName, String ipAddr, int port, int weight, Map<String,String> metadata);
 
-    void registerInstance(String serviceName, String groupName, String ipAddr, int port,int weight,String metaData);
+    void registerInstance(String serviceName, String groupName, String ipAddr, int port,int weight, Map<String,String> metadata);
 
     void registerInstance(String serviceName, Instance instance);
 

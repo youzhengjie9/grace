@@ -36,9 +36,8 @@ public class SvcServiceImpl implements SvcService {
     }
 
     @Override
-    public boolean createService(CreateServiceDTO createServiceDTO) {
-        Service service = BeanUtil.copyProperties(createServiceDTO, Service.class);
-        String namespaceName = createServiceDTO.getNamespaceName();
+    public boolean createService(Service service) {
+
         // 如果命名空间名称为空
         if(StringUtils.isBlank(namespaceName)){
             log.error("传入的namespace名称为空");

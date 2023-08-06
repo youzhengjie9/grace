@@ -28,8 +28,8 @@ public class ServiceController {
     }
 
     @PostMapping(path = "/createService")
-    public ResponseResult<Boolean> createService(@RequestBody CreateServiceDTO createServiceDTO){
-        return ResponseResult.ok(svcService.createService(createServiceDTO));
+    public ResponseResult<Boolean> createService(@RequestBody Service service){
+        return ResponseResult.ok(svcService.createService(service));
     }
 
     @GetMapping(path = "/getAllServices/{namespace}")

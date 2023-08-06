@@ -50,10 +50,8 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    public boolean registerInstance(RegisterInstanceDTO registerInstanceDTO) {
-        Instance instance = BeanUtil.copyProperties(registerInstanceDTO, Instance.class);
-        String namespace = registerInstanceDTO.getNamespace();
-        String serviceName = registerInstanceDTO.getServiceName();
+    public boolean registerInstance(Instance instance) {
+
         // 如果命名空间名称为空
         if(StringUtils.isBlank(namespace)){
             log.error("传入的namespace名称为空");

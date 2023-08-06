@@ -1,45 +1,34 @@
 package com.grace.client.service.remote.http;
 
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
-import com.alibaba.fastjson2.JSON;
+import com.grace.client.core.ServerListManager;
 import com.grace.client.service.remote.NamespaceClientProxy;
-import com.grace.common.constant.ParentMappingConstant;
-import com.grace.common.dto.RegisterInstanceDTO;
 import com.grace.common.entity.Instance;
 import com.grace.common.entity.Service;
 import com.grace.common.utils.ListView;
-import com.grace.common.utils.ResponseResult;
-import org.springframework.http.HttpStatus;
 
 import java.util.List;
+import java.util.Properties;
 
 public class NamespaceHttpClientProxy implements NamespaceClientProxy {
 
+    private static final int DEFAULT_SERVER_PORT = 8500;
+
+    private final String namespaceId;
+
+    private final ServerListManager serverListManager;
+
+    private int serverPort = DEFAULT_SERVER_PORT;
+
+    public NamespaceHttpClientProxy(String namespaceId, ServerListManager serverListManager,
+                                 Properties properties) {
+        this.serverListManager = serverListManager;
+        this.setServerPort(DEFAULT_SERVER_PORT);
+        this.namespaceId = namespaceId;
+    }
 
     @Override
-    public void registerInstance(String serviceName, String groupName, RegisterInstanceDTO registerInstanceDTO) {
-        String json = JSON.toJSONString(registerInstanceDTO);
+    public void registerInstance(String serviceName, String groupName, Instance instance) {
 
-        // 使用hutool的HttpRequest类发送post请求
-        HttpResponse httpResponse = HttpRequest.post(
-                        "http://"+ serverAddr + ParentMappingConstant.INSTANCE_CONTROLLER +"/registerInstance")
-                .body(json)
-                .execute();
-
-        // 返回http状态码
-        int status = httpResponse.getStatus();
-
-        if(status == HttpStatus.OK.value()){
-            // 返回响应内容
-            String body = httpResponse.body();
-
-            ResponseResult<Boolean> result=JSON.parseObject(body, ResponseResult.class);
-            return result.getData();
-        }else {
-            log.error("registerInstance 请求失败");
-            return false;
-        }
     }
 
     @Override
@@ -85,5 +74,9 @@ public class NamespaceHttpClientProxy implements NamespaceClientProxy {
     @Override
     public ListView<String> getServiceList(int page, int size, String groupName) {
         return null;
+    }
+
+    public void setServerPort(int serverPort) {
+        this.serverPort = serverPort;
     }
 }

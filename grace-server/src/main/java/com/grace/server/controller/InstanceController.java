@@ -22,9 +22,9 @@ public class InstanceController {
     }
 
     @PostMapping(path = "/registerInstance")
-    public ResponseResult<Boolean> registerInstance(@RequestBody RegisterInstanceDTO registerInstanceDTO){
+    public ResponseResult<Boolean> registerInstance(@RequestBody Instance instance){
 
-        return ResponseResult.ok(instanceService.registerInstance(registerInstanceDTO));
+        return ResponseResult.ok(instanceService.registerInstance(instance));
     }
 
 

@@ -11,10 +11,10 @@ public interface SvcService{
     /**
      * 创建service
      *
-     * @param createServiceDTO 创建服务dto
+     * @param service service
      * @return boolean
      */
-    boolean createService(CreateServiceDTO createServiceDTO);
+    boolean createService(Service service);
 
 
     /**
