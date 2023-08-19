@@ -54,7 +54,7 @@
 //    }
 //
 //    @Override
-//    public ListView<String> getServiceList(int page, int size, String groupName) {
+//    public ListView<String> getServiceNameList(int page, int size, String groupName) {
 //        return null;
 //    }
 //}

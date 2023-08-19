@@ -8,20 +8,26 @@ package com.grace.common.constant;
  */
 public final class ParentMappingConstant {
 
+
+    /**
+     * grace-server基础的url
+     */
+    public static final String GRACE_SERVER_BASE_URL = "/grace/server";
+
     /**
      * InstanceController接口的顶层路径
      */
-    public static final String INSTANCE_CONTROLLER= "/grace/server/instance";
+    public static final String INSTANCE_CONTROLLER= GRACE_SERVER_BASE_URL+"/instance";
 
     /**
      * NamespaceController接口的顶层路径
      */
-    public static final String NAMESPACE_CONTROLLER= "/grace/server/namespace";
+    public static final String NAMESPACE_CONTROLLER= GRACE_SERVER_BASE_URL+"/namespace";
 
     /**
      * ServiceController接口的顶层路径
      */
-    public static final String SERVICE_CONTROLLER= "/grace/server/service";
+    public static final String SERVICE_CONTROLLER= GRACE_SERVER_BASE_URL+"/service";
 
 
 }

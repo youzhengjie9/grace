@@ -1,7 +1,6 @@
 package com.grace.server.controller;
 
 import com.grace.common.constant.ParentMappingConstant;
-import com.grace.common.dto.CreateNamespaceDTO;
 import com.grace.common.entity.Namespace;
 import com.grace.common.utils.ResponseResult;
 import com.grace.server.service.NamespaceService;

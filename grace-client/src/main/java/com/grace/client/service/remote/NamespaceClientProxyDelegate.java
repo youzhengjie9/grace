@@ -29,10 +29,10 @@ public class NamespaceClientProxyDelegate implements NamespaceClientProxy {
     
     private ScheduledExecutorService executorService;
 
-    public NamespaceClientProxyDelegate(String namespace, Properties properties) {
+    public NamespaceClientProxyDelegate(Long namespaceId, Properties properties) {
 
-        this.serverListManager = new ServerListManager(properties, namespace);
-        this.httpClientProxy = new NamespaceHttpClientProxy(namespace, serverListManager, properties);
+        this.serverListManager = new ServerListManager(properties, namespaceId);
+        this.httpClientProxy = new NamespaceHttpClientProxy(namespaceId, serverListManager, properties);
     }
 
     @Override
@@ -91,8 +91,13 @@ public class NamespaceClientProxyDelegate implements NamespaceClientProxy {
     }
 
     @Override
-    public ListView<String> getServiceList(int page, int size, String groupName) {
-        return httpClientProxy.getServiceList(page, size, groupName);
+    public ListView<String> getServiceNameList(int page, int size, String groupName) {
+        return httpClientProxy.getServiceNameList(page, size, groupName);
+    }
+
+    @Override
+    public List<Instance> getAllInstances(String serviceName, String groupName, boolean healthyOnly) {
+        return httpClientProxy.getAllInstances(serviceName, groupName, healthyOnly);
     }
 
     // TODO: 2023/8/5 instance.isEphemeral()

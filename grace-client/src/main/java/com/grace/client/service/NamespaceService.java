@@ -1,6 +1,7 @@
 package com.grace.client.service;
 
 import com.grace.common.entity.Instance;
+import com.grace.common.utils.ListView;
 
 import java.util.List;
 import java.util.Map;
@@ -18,13 +19,9 @@ public interface NamespaceService {
 
     void registerInstance(String serviceName, String groupName, String ipAddr, int port);
 
-    void registerInstance(String serviceName, String ipAddr, int port,int weight);
+    void registerInstance(String serviceName, String ipAddr, int port, Map<String,String> metadata);
 
-    void registerInstance(String serviceName, String groupName, String ipAddr, int port,int weight);
-
-    void registerInstance(String serviceName, String ipAddr, int port, int weight, Map<String,String> metadata);
-
-    void registerInstance(String serviceName, String groupName, String ipAddr, int port,int weight, Map<String,String> metadata);
+    void registerInstance(String serviceName, String groupName, String ipAddr, int port, Map<String,String> metadata);
 
     void registerInstance(String serviceName, Instance instance);
 
@@ -42,13 +39,9 @@ public interface NamespaceService {
 
     void deregisterInstance(String serviceName, String groupName, String ipAddr, int port);
 
-    void deregisterInstance(String serviceName, String ipAddr, int port,int weight);
+    void deregisterInstance(String serviceName, String ipAddr, int port,Map<String,String> metadata);
 
-    void deregisterInstance(String serviceName, String groupName, String ipAddr, int port,int weight);
-
-    void deregisterInstance(String serviceName, String ipAddr, int port,int weight,String metaData);
-
-    void deregisterInstance(String serviceName, String groupName, String ipAddr, int port,int weight,String metaData);
+    void deregisterInstance(String serviceName, String groupName, String ipAddr, int port,Map<String,String> metadata);
 
     void deregisterInstance(String serviceName, Instance instance);
 
@@ -69,17 +62,6 @@ public interface NamespaceService {
      * @return {@link List}<{@link Instance}>
      */
     List<Instance> getAllInstances(String serviceName, String groupName);
-
-    /**
-     * 获取实例
-     *
-     * @param serviceName 服务名称
-     * @param ipAddr      ip addr
-     * @param port        港口
-     * @return {@link Instance}
-     */
-    Instance getInstance(String serviceName, String groupName ,String ipAddr,int port);
-
 
     /**
      * Get qualified instances of service.
@@ -117,6 +99,25 @@ public interface NamespaceService {
      * @return qualified instance
      */
     Instance selectOneHealthyInstance(String serviceName, String groupName);
+
+    /**
+     * 分页获取服务名称列表
+     *
+     * @param page   page index
+     * @param size page size
+     * @return list of service names
+     */
+    ListView<String> getServiceNameList(int page, int size);
+
+    /**
+     * 分页获取服务名称列表
+     *
+     * @param page   page index
+     * @param size page size
+     * @param groupName group name
+     * @return list of service names
+     */
+    ListView<String> getServiceNameList(int page, int size, String groupName);
 
 
 //    void createNamespace(String namespace);

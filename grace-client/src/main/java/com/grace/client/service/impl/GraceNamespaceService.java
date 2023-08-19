@@ -4,14 +4,13 @@ import com.grace.client.service.NamespaceService;
 import com.grace.client.service.remote.NamespaceClientProxy;
 import com.grace.client.service.remote.NamespaceClientProxyDelegate;
 import com.grace.common.constant.PropertiesKeyConstant;
-import com.grace.common.constant.PropertiesValueConstant;
 import com.grace.common.entity.Instance;
+import com.grace.common.utils.CollectionUtils;
+import com.grace.common.utils.ListView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public class GraceNamespaceService implements NamespaceService {
 
@@ -20,8 +19,6 @@ public class GraceNamespaceService implements NamespaceService {
     private static final String DEFAULT_NAMESPACE = "DEFAULT";
 
     private static final String DEFAULT_GROUP = "DEFAULT_GROUP";
-
-    private static final int DEFAULT_WEIGHT = 1;
 
     private String namespace;
 
@@ -69,136 +66,152 @@ public class GraceNamespaceService implements NamespaceService {
 
     @Override
     public void registerInstance(String serviceName, String ipAddr, int port) {
-
+        registerInstance(serviceName, DEFAULT_GROUP, ipAddr, port);
     }
 
     @Override
     public void registerInstance(String serviceName, String groupName, String ipAddr, int port) {
-
+        registerInstance(serviceName, groupName, ipAddr, port,null);
     }
 
     @Override
-    public void registerInstance(String serviceName, String ipAddr, int port, int weight) {
-
+    public void registerInstance(String serviceName, String ipAddr, int port, Map<String, String> metadata) {
+        registerInstance(serviceName, DEFAULT_GROUP, ipAddr, port,metadata);
     }
 
     @Override
-    public void registerInstance(String serviceName, String groupName, String ipAddr, int port, int weight) {
-
-    }
-
-    @Override
-    public void registerInstance(String serviceName, String ipAddr, int port, int weight, Map<String, String> metadata) {
-
-    }
-
-    @Override
-    public void registerInstance(String serviceName, String groupName, String ipAddr, int port, int weight, Map<String, String> metadata) {
-
+    public void registerInstance(String serviceName, String groupName, String ipAddr, int port, Map<String, String> metadata) {
+        Instance instance = Instance.builder()
+                .ipAddr(ipAddr)
+                .port(port)
+                .metadata(metadata)
+                .build();
+        registerInstance(serviceName,groupName,instance);
     }
 
     @Override
     public void registerInstance(String serviceName, Instance instance) {
-
+        registerInstance(serviceName, DEFAULT_GROUP, instance);
     }
 
     @Override
     public void registerInstance(String serviceName, String groupName, Instance instance) {
-
+        clientProxy.registerInstance(serviceName, groupName, instance);
     }
 
     @Override
     public void batchRegisterInstance(String serviceName, List<Instance> instances) {
-
+        clientProxy.batchRegisterInstance(serviceName, DEFAULT_GROUP, instances);
     }
 
     @Override
     public void batchRegisterInstance(String serviceName, String groupName, List<Instance> instances) {
-
+        clientProxy.batchRegisterInstance(serviceName, groupName, instances);
     }
 
     @Override
     public void batchDeregisterInstance(String serviceName, List<Instance> instances) {
-
+        clientProxy.batchDeregisterInstance(serviceName, DEFAULT_GROUP, instances);
     }
 
     @Override
     public void batchDeregisterInstance(String serviceName, String groupName, List<Instance> instances) {
-
+        clientProxy.batchDeregisterInstance(serviceName, groupName, instances);
     }
 
     @Override
     public void deregisterInstance(String serviceName, String ipAddr, int port) {
-
+        deregisterInstance(serviceName, DEFAULT_GROUP, ipAddr, port, null);
     }
 
     @Override
     public void deregisterInstance(String serviceName, String groupName, String ipAddr, int port) {
-
+        deregisterInstance(serviceName, groupName, ipAddr, port, null);
     }
 
     @Override
-    public void deregisterInstance(String serviceName, String ipAddr, int port, int weight) {
-
+    public void deregisterInstance(String serviceName, String ipAddr, int port, Map<String, String> metadata) {
+        deregisterInstance(serviceName, DEFAULT_GROUP, ipAddr, port, metadata);
     }
 
     @Override
-    public void deregisterInstance(String serviceName, String groupName, String ipAddr, int port, int weight) {
+    public void deregisterInstance(String serviceName, String groupName, String ipAddr, int port, Map<String, String> metadata) {
 
+        Instance instance = Instance.builder()
+                .ipAddr(ipAddr)
+                .port(port)
+                .metadata(metadata)
+                .build();
+
+        deregisterInstance(serviceName, groupName, instance);
     }
 
-    @Override
-    public void deregisterInstance(String serviceName, String ipAddr, int port, int weight, String metaData) {
-
-    }
-
-    @Override
-    public void deregisterInstance(String serviceName, String groupName, String ipAddr, int port, int weight, String metaData) {
-
-    }
 
     @Override
     public void deregisterInstance(String serviceName, Instance instance) {
-
+        deregisterInstance(serviceName, DEFAULT_GROUP, instance);
     }
 
     @Override
     public void deregisterInstance(String serviceName, String groupName, Instance instance) {
-
+        clientProxy.deregisterInstance(serviceName, groupName, instance);
     }
 
     @Override
     public List<Instance> getAllInstances(String serviceName) {
-        return null;
+        return clientProxy.getAllInstances(serviceName, DEFAULT_GROUP,false);
     }
 
     @Override
     public List<Instance> getAllInstances(String serviceName, String groupName) {
-        return null;
-    }
-
-    @Override
-    public Instance getInstance(String serviceName, String groupName, String ipAddr, int port) {
-        return null;
+        return clientProxy.getAllInstances(serviceName, groupName,false);
     }
 
     @Override
     public List<Instance> selectInstances(String serviceName, boolean healthy) {
-        return null;
+
+        return selectInstances(serviceName,DEFAULT_GROUP,healthy);
     }
 
     @Override
     public List<Instance> selectInstances(String serviceName, String groupName, boolean healthy) {
-        return null;
+        List<Instance> instances = clientProxy.getAllInstances(serviceName, groupName, false);
+        // TODO: 2023/8/7 从查询出来的实例中挑选符合自己条件的实例
+        List<Instance> selectedInstances;
+        if(CollectionUtils.isEmpty(selectedInstances = instances)){
+            return new ArrayList<>();
+        }
+        // 如果instances不为空
+        Iterator<Instance> iterator = selectedInstances.iterator();
+        while (iterator.hasNext()){
+            Instance instance = iterator.next();
+            // 符合这些条件将会被挑选出来
+            if (healthy != instance.isHealthy() || instance.getWeight() <= 0) {
+                iterator.remove();
+            }
+        }
+        return selectedInstances;
     }
 
     @Override
     public Instance selectOneHealthyInstance(String serviceName) {
-        return null;
+        return selectOneHealthyInstance(serviceName,DEFAULT_GROUP);
     }
 
     @Override
     public Instance selectOneHealthyInstance(String serviceName, String groupName) {
+        List<Instance> instances = clientProxy.getAllInstances(serviceName, groupName, false);
+
         return null;
+    }
+
+    @Override
+    public ListView<String> getServiceNameList(int page, int size) {
+        return getServiceNameList(page, size , DEFAULT_GROUP);
+    }
+
+    @Override
+    public ListView<String> getServiceNameList(int page, int size, String groupName) {
+        return clientProxy.getServiceNameList(page,size,groupName);
     }
 }

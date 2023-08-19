@@ -1,15 +1,15 @@
 package com.grace.client.service.remote;
 
-import com.grace.common.dto.RegisterInstanceDTO;
 import com.grace.common.entity.Instance;
 import com.grace.common.entity.Service;
+import com.grace.common.exception.GraceException;
 import com.grace.common.utils.ListView;
 
 import java.util.List;
 
 public interface NamespaceClientProxy {
 
-    void registerInstance(String serviceName, String groupName, Instance instance);
+    void registerInstance(String serviceName, String groupName, Instance instance) throws GraceException;
 
     void batchRegisterInstance(String serviceName, String groupName, List<Instance> instances);
 
@@ -60,13 +60,24 @@ public interface NamespaceClientProxy {
     void updateService(Service service);
 
     /**
-     * Get service list.
+     * 分页获取服务名称列表
      *
-     * @param page    page number
-     * @param size  size per page
-     * @param groupName group name of service
-     * @return list of service
+     * @param page      页面
+     * @param size      大小
+     * @param groupName 分组名称
+     * @return {@link ListView}<{@link String}>
      */
-    ListView<String> getServiceList(int page, int size, String groupName);
+    ListView<String> getServiceNameList(int page, int size, String groupName);
+
+    /**
+     * 获取所有实例
+     *
+     * @param serviceName 服务名称
+     * @param groupName   分组名称
+     * @param healthyOnly 是否只挑选健康的实例
+     * @return {@link List}<{@link Instance}>
+     */
+    List<Instance> getAllInstances(String serviceName, String groupName , boolean healthyOnly);
+
 
 }

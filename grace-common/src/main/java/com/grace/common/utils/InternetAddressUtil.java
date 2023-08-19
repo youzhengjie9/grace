@@ -102,7 +102,8 @@ public class InternetAddressUtil {
     }
     
     /**
-     * Check if the address contains a port.
+     * 检查地址是否包含端口.
+     *
      * 2020/9/3 14:53
      * @param address address string
      * @return boolean

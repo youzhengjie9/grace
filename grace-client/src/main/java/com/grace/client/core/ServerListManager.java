@@ -18,7 +18,7 @@ public class ServerListManager implements ServerListFactory{
 
     private final long refreshServerListInternal = TimeUnit.SECONDS.toMillis(30);
 
-    private final String namespace;
+    private final Long namespaceId;
 
     /**
      * 当前选择的server所在的serverList的下标
@@ -34,8 +34,8 @@ public class ServerListManager implements ServerListFactory{
         this(properties,null);
     }
 
-    public ServerListManager(Properties properties , String namespace) {
-        this.namespace = namespace;
+    public ServerListManager(Properties properties , Long namespaceId) {
+        this.namespaceId = namespaceId;
         initServerAddr(properties);
         // 如果serverList不为空
         if (!serverList.isEmpty()) {

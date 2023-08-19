@@ -1,7 +1,5 @@
 package com.grace.server.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
-import com.grace.common.dto.RegisterInstanceDTO;
 import com.grace.common.entity.Instance;
 import com.grace.common.entity.Service;
 import com.grace.common.utils.SnowId;
@@ -52,6 +50,7 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public boolean registerInstance(Instance instance) {
 
+        String serviceName = instance.getServiceName();
         // 如果命名空间名称为空
         if(StringUtils.isBlank(namespace)){
             log.error("传入的namespace名称为空");

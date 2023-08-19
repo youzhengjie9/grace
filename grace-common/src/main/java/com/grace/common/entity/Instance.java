@@ -23,9 +23,9 @@ public class Instance implements Serializable {
     private Long id;
 
     /**
-     * 该实例所属的服务id
+     * 该实例所属的服务名
      */
-    private Long serviceId;
+    private String serviceName;
 
     /**
      * 该实例的ip地址
@@ -65,17 +65,7 @@ public class Instance implements Serializable {
     public Instance() {
     }
 
-    public Instance(Long id, Long serviceId, String ipAddr, int port, double weight, boolean healthy, boolean ephemeral, Map<String, String> metadata, LocalDateTime createTime) {
-        this.id = id;
-        this.serviceId = serviceId;
-        this.ipAddr = ipAddr;
-        this.port = port;
-        this.weight = weight;
-        this.healthy = healthy;
-        this.ephemeral = ephemeral;
-        this.metadata = metadata;
-        this.createTime = createTime;
-    }
+
 
     public Long getId() {
         return id;
@@ -86,12 +76,12 @@ public class Instance implements Serializable {
         return this;
     }
 
-    public Long getServiceId() {
-        return serviceId;
+    public String getServiceName() {
+        return serviceName;
     }
 
-    public Instance setServiceId(Long serviceId) {
-        this.serviceId = serviceId;
+    public Instance setServiceName(String serviceName) {
+        this.serviceName = serviceName;
         return this;
     }
 
@@ -173,7 +163,7 @@ public class Instance implements Serializable {
      * @author youzhengjie
      * @date 2023-07-07 22:26:31
      */
-    private static final class InstanceBuilder {
+    public static final class InstanceBuilder {
 
         /**
          * 主键,服务实例id
@@ -181,9 +171,9 @@ public class Instance implements Serializable {
         private Long id;
 
         /**
-         * 该实例所属的服务id
+         * 该实例所属的服务名
          */
-        private Long serviceId;
+        private String serviceName;
 
         /**
          * 该实例的ip地址
@@ -225,8 +215,8 @@ public class Instance implements Serializable {
             return this;
         }
 
-        public InstanceBuilder serviceId(Long serviceId) {
-            this.serviceId = serviceId;
+        public InstanceBuilder serviceName(String serviceName) {
+            this.serviceName = serviceName;
             return this;
         }
 
@@ -272,4 +262,18 @@ public class Instance implements Serializable {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Instance{" +
+                "id=" + id +
+                ", serviceName='" + serviceName + '\'' +
+                ", ipAddr='" + ipAddr + '\'' +
+                ", port=" + port +
+                ", weight=" + weight +
+                ", healthy=" + healthy +
+                ", ephemeral=" + ephemeral +
+                ", metadata=" + metadata +
+                ", createTime=" + createTime +
+                '}';
+    }
 }

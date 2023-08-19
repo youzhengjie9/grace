@@ -3,12 +3,14 @@ package com.grace.common.utils;
 import java.util.List;
 
 /**
- * ListView
+ * 分页数据展示
  */
 public class ListView<T> {
-    
+
+    // 分页后的数据
     private List<T> data;
-    
+
+    // 分页前数据的总记录数
     private int count;
     
     public List<T> getData() {
