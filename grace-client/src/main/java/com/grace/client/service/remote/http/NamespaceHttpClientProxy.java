@@ -2,9 +2,9 @@ package com.grace.client.service.remote.http;
 
 import com.grace.client.core.ServerListManager;
 import com.grace.client.service.remote.NamespaceClientProxy;
-import com.grace.common.constant.RequestParamConstant;
-import com.grace.common.constant.ParentMappingConstant;
-import com.grace.common.constant.URLPrefixConstant;
+import com.grace.common.constant.RequestParamConstants;
+import com.grace.common.constant.ParentMappingConstants;
+import com.grace.common.constant.URLPrefixConstants;
 import com.grace.common.entity.Instance;
 import com.grace.common.entity.Service;
 import com.grace.common.exception.GraceException;
@@ -77,16 +77,16 @@ public class NamespaceHttpClientProxy implements NamespaceClientProxy {
         }
         // 传递请求参数
         final Map<String, String> params = new HashMap<>(32);
-        params.put(RequestParamConstant.NAMESPACE_ID, String.valueOf(namespaceId));
-        params.put(RequestParamConstant.SERVICE_NAME, groupedServiceName);
-        params.put(RequestParamConstant.GROUP_NAME, groupName);
+        params.put(RequestParamConstants.NAMESPACE_ID, String.valueOf(namespaceId));
+        params.put(RequestParamConstants.SERVICE_NAME, groupedServiceName);
+        params.put(RequestParamConstants.GROUP_NAME, groupName);
         params.put(IP_PARAM, instance.getIpAddr());
         params.put(PORT_PARAM, String.valueOf(instance.getPort()));
         params.put(WEIGHT_PARAM, String.valueOf(instance.getWeight()));
         params.put(HEALTHY_PARAM, String.valueOf(instance.isHealthy()));
         params.put(EPHEMERAL_PARAM, String.valueOf(instance.isEphemeral()));
         params.put(META_PARAM, JacksonUtils.toJson(instance.getMetadata()));
-        requestApi(ParentMappingConstant.INSTANCE_CONTROLLER + "/registerInstance", params, HttpMethod.POST);
+        requestApi(ParentMappingConstants.INSTANCE_CONTROLLER + "/registerInstance", params, HttpMethod.POST);
     }
 
     @Override
@@ -162,7 +162,7 @@ public class NamespaceHttpClientProxy implements NamespaceClientProxy {
     public String requestApi(String api, Map<String, String> params, Map<String, String> body, List<String> servers,
                          String method) throws GraceException {
 
-        params.put(RequestParamConstant.NAMESPACE_ID, String.valueOf(getNamespaceId()));
+        params.put(RequestParamConstants.NAMESPACE_ID, String.valueOf(getNamespaceId()));
 
         if (CollectionUtils.isEmpty(servers)) {
             throw new GraceException(GraceException.INVALID_PARAM, "没有可用的服务器");
@@ -207,13 +207,13 @@ public class NamespaceHttpClientProxy implements NamespaceClientProxy {
                              String method) throws GraceException {
         long start = System.currentTimeMillis();
         long end = 0;
-        String namespace = params.get(RequestParamConstant.NAMESPACE_ID);
-        String group = params.get(RequestParamConstant.GROUP_NAME);
-        String serviceName = params.get(RequestParamConstant.SERVICE_NAME);
+        String namespace = params.get(RequestParamConstants.NAMESPACE_ID);
+        String group = params.get(RequestParamConstants.GROUP_NAME);
+        String serviceName = params.get(RequestParamConstants.SERVICE_NAME);
 
         String url;
         // 如果被调用的服务地址的前缀包含“http://”或“https://”
-        if (curServer.startsWith(URLPrefixConstant.HTTP_PREFIX) || curServer.startsWith(URLPrefixConstant.HTTPS_PREFIX)) {
+        if (curServer.startsWith(URLPrefixConstants.HTTP_PREFIX) || curServer.startsWith(URLPrefixConstants.HTTPS_PREFIX)) {
             // 拼接调用的api接口
             url = curServer + api;
         }
@@ -226,7 +226,7 @@ public class NamespaceHttpClientProxy implements NamespaceClientProxy {
             }
             // TODO: 2023/8/11 可以手动控制默认是http还是https
             // 拼接http前缀（默认是这个）和调用的api接口
-            url = URLPrefixConstant.HTTP_PREFIX + curServer + api;
+            url = URLPrefixConstants.HTTP_PREFIX + curServer + api;
         }
         try {
             HttpRestResult<String> restResult = nacosRestTemplate

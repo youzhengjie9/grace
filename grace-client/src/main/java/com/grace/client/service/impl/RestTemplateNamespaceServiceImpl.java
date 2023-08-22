@@ -4,7 +4,7 @@ import com.grace.client.properties.GraceRegistryProperties;
 import com.grace.client.service.NamespaceService;
 import com.grace.common.dto.CreateNamespaceDTO;
 import com.grace.common.entity.Instance;
-import com.grace.common.utils.ResponseResult;
+import com.grace.common.utils.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +52,8 @@ public class RestTemplateNamespaceServiceImpl implements NamespaceService {
 
         String serverAddr = graceRegistryProperties.getServerAddr();
 
-        ResponseResult<Boolean> result = restTemplate.postForObject("http://" + serverAddr + "/grace/server/namespace/createNamespace",
-                createNamespaceDTO, ResponseResult.class);
+        Result<Boolean> result = restTemplate.postForObject("http://" + serverAddr + "/grace/server/namespace/createNamespace",
+                createNamespaceDTO, Result.class);
 
         return result.getData();
     }

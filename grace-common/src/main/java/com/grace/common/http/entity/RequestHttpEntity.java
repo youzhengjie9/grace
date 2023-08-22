@@ -1,7 +1,7 @@
 package com.grace.common.http.entity;
 
 import com.grace.common.http.config.HttpClientConfig;
-import com.grace.common.http.param.RequestHeader;
+import com.grace.common.http.param.Header;
 import com.grace.common.http.param.RequestParam;
 
 import java.util.Map;
@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class RequestHttpEntity {
 
-    private final RequestHeader requestHeader = RequestHeader.newInstance();
+    private final Header header = Header.newInstance();
 
     private final HttpClientConfig httpClientConfig;
 
@@ -23,42 +23,42 @@ public class RequestHttpEntity {
     
     private final Object requestBody;
 
-    public RequestHttpEntity(RequestHeader requestHeader, RequestParam requestParam) {
-        this(null, requestHeader, requestParam);
+    public RequestHttpEntity(Header header, RequestParam requestParam) {
+        this(null, header, requestParam);
     }
 
-    public RequestHttpEntity(RequestHeader requestHeader, Object requestBody) {
-        this(null, requestHeader, null, requestBody);
+    public RequestHttpEntity(Header header, Object requestBody) {
+        this(null, header, null, requestBody);
     }
 
-    public RequestHttpEntity(RequestHeader requestHeader, RequestParam requestParam, Object requestBody) {
-        this(null, requestHeader, requestParam, requestBody);
+    public RequestHttpEntity(Header header, RequestParam requestParam, Object requestBody) {
+        this(null, header, requestParam, requestBody);
     }
 
-    public RequestHttpEntity(HttpClientConfig httpClientConfig, RequestHeader requestHeader, RequestParam requestParam) {
-        this(httpClientConfig, requestHeader, requestParam, null);
+    public RequestHttpEntity(HttpClientConfig httpClientConfig, Header header, RequestParam requestParam) {
+        this(httpClientConfig, header, requestParam, null);
     }
 
-    public RequestHttpEntity(HttpClientConfig httpClientConfig, RequestHeader requestHeader, Object requestBody) {
-        this(httpClientConfig, requestHeader, null, requestBody);
+    public RequestHttpEntity(HttpClientConfig httpClientConfig, Header header, Object requestBody) {
+        this(httpClientConfig, header, null, requestBody);
     }
 
-    public RequestHttpEntity(HttpClientConfig httpClientConfig, RequestHeader requestHeader, RequestParam requestParam, Object requestBody) {
-        handleRequestHeader(requestHeader);
+    public RequestHttpEntity(HttpClientConfig httpClientConfig, Header header, RequestParam requestParam, Object requestBody) {
+        handleRequestHeader(header);
         this.httpClientConfig = httpClientConfig;
         this.requestParam = requestParam;
         this.requestBody = requestBody;
     }
 
-    private void handleRequestHeader(RequestHeader requestHeader) {
-        if (requestHeader != null && !requestHeader.getHeader().isEmpty()) {
-            Map<String, String> headerMap = requestHeader.getHeader();
-            requestHeader.addAll(headerMap);
+    private void handleRequestHeader(Header header) {
+        if (header != null && !header.getHeader().isEmpty()) {
+            Map<String, String> headerMap = header.getHeader();
+            header.addAll(headerMap);
         }
     }
 
-    public RequestHeader getRequestHeader() {
-        return requestHeader;
+    public Header getRequestHeader() {
+        return header;
     }
 
     public RequestParam getRequestParam() {

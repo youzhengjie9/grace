@@ -1,8 +1,8 @@
 package com.grace.server.controller;
 
-import com.grace.common.constant.ParentMappingConstant;
+import com.grace.common.constant.ParentMappingConstants;
 import com.grace.common.entity.Instance;
-import com.grace.common.utils.ResponseResult;
+import com.grace.common.utils.Result;
 import com.grace.server.service.InstanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = ParentMappingConstant.INSTANCE_CONTROLLER)
+@RequestMapping(path = ParentMappingConstants.INSTANCE_CONTROLLER)
 public class InstanceController {
 
     private InstanceService instanceService;
@@ -50,23 +50,23 @@ public class InstanceController {
 
 
     @PostMapping(path = "/registerInstance")
-    public ResponseResult<Boolean> registerInstance(HttpServletRequest request){
+    public Result<Boolean> registerInstance(HttpServletRequest request){
 
-        return ResponseResult.ok(instanceService.registerInstance(instance));
+        return Result.ok(instanceService.registerInstance(instance));
     }
 
 
     @GetMapping(path = "/getAllInstances")
-    public ResponseResult<List<Instance>> getAllInstances(HttpServletRequest request){
+    public Result<List<Instance>> getAllInstances(HttpServletRequest request){
 
-        return ResponseResult.ok(instanceService.getAllInstances(namespace, serviceName));
+        return Result.ok(instanceService.getAllInstances(namespace, serviceName));
     }
 
 
     @GetMapping(path = "/getInstance")
-    public ResponseResult<Instance> getInstance(HttpServletRequest request){
+    public Result<Instance> getInstance(HttpServletRequest request){
 
-        return ResponseResult.ok(instanceService.getInstance(namespace, serviceName, ipAddr, port));
+        return Result.ok(instanceService.getInstance(namespace, serviceName, ipAddr, port));
     }
 
 

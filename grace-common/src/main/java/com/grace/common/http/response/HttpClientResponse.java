@@ -1,7 +1,8 @@
 package com.grace.common.http.response;
 
+import com.grace.common.http.param.Header;
+
 import java.io.IOException;
-import java.io.InputStream;
 
 
 /**
@@ -11,21 +12,21 @@ import java.io.InputStream;
  * @date 2023/08/17 23:26:08
  */
 public interface HttpClientResponse{
-//
-//    /**
-//     * Return the headers of this message.
-//     *
-//     * @return a corresponding HttpHeaders object (never {@code null})
-//     */
-//    Header getHeaders();
+
+    /**
+     * 获取响应头
+     *
+     * @return {@link Header}
+     */
+    Header getResponseHeader();
     
     /**
-     * 返回消息体作为输入流
+     * 获取响应结果的JSON字符串（返回结果的格式为 {"code":"200","msg":"成功","data":{"name":"张三","age":23}} ）
      *
-     * @return String response body
+     * @return 响应结果
      * @throws IOException IOException
      */
-    InputStream getBody() throws IOException;
+    String getResult() throws IOException;
     
     /**
      * 返回HTTP状态码

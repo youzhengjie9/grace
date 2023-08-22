@@ -1,6 +1,6 @@
 package com.grace.client.core;
 
-import com.grace.common.constant.PropertiesKeyConstant;
+import com.grace.common.constant.PropertiesKeyConstants;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -52,7 +52,7 @@ public class ServerListManager implements ServerListFactory{
     }
 
     private void initServerAddr(Properties properties) {
-        String serverListStr = properties.getProperty(PropertiesKeyConstant.SERVER_ADDR);
+        String serverListStr = properties.getProperty(PropertiesKeyConstants.SERVER_ADDR);
         if (StringUtils.isNotEmpty(serverListStr)) {
             this.serverList.addAll(Arrays.asList(serverListStr.split(",")));
         }

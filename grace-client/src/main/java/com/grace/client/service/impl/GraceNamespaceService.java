@@ -3,7 +3,7 @@ package com.grace.client.service.impl;
 import com.grace.client.service.NamespaceService;
 import com.grace.client.service.remote.NamespaceClientProxy;
 import com.grace.client.service.remote.NamespaceClientProxyDelegate;
-import com.grace.common.constant.PropertiesKeyConstant;
+import com.grace.common.constant.PropertiesKeyConstants;
 import com.grace.common.entity.Instance;
 import com.grace.common.utils.CollectionUtils;
 import com.grace.common.utils.ListView;
@@ -27,15 +27,15 @@ public class GraceNamespaceService implements NamespaceService {
 
     public GraceNamespaceService(String serverAddr) {
         Properties properties = new Properties();
-        properties.setProperty(PropertiesKeyConstant.SERVER_ADDR,serverAddr);
-        properties.setProperty(PropertiesKeyConstant.NAMESPACE,DEFAULT_NAMESPACE);
+        properties.setProperty(PropertiesKeyConstants.SERVER_ADDR,serverAddr);
+        properties.setProperty(PropertiesKeyConstants.NAMESPACE,DEFAULT_NAMESPACE);
         init(properties);
     }
 
     public GraceNamespaceService(String serverAddr,String namespace) {
         Properties properties = new Properties();
-        properties.setProperty(PropertiesKeyConstant.SERVER_ADDR,serverAddr);
-        properties.setProperty(PropertiesKeyConstant.NAMESPACE,namespace);
+        properties.setProperty(PropertiesKeyConstants.SERVER_ADDR,serverAddr);
+        properties.setProperty(PropertiesKeyConstants.NAMESPACE,namespace);
         init(properties);
     }
 
@@ -49,7 +49,7 @@ public class GraceNamespaceService implements NamespaceService {
      * @param properties 属性
      */
     private void init(Properties properties) {
-        this.namespace = properties.getProperty(PropertiesKeyConstant.NAMESPACE);
+        this.namespace = properties.getProperty(PropertiesKeyConstants.NAMESPACE);
 //        String autoCreateNamespace = properties.getProperty(PropertiesKeyConstant.AUTO_CREATE_NAMESPACE, PropertiesValueConstant.OFF);
 //        //如果开启了自动创建命名空间
 //        if(autoCreateNamespace.equals(PropertiesValueConstant.ON)) {

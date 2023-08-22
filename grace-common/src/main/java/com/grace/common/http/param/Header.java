@@ -12,14 +12,14 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * http请求头
+ * http请求头或响应头
  *
  * @author youzhengjie
  * @date 2023/08/19 01:06:14
  */
-public class RequestHeader {
+public class Header {
     
-    public static final RequestHeader EMPTY = RequestHeader.newInstance();
+    public static final Header EMPTY = Header.newInstance();
     
     private final Map<String, String> header;
     
@@ -29,16 +29,15 @@ public class RequestHeader {
     
     private static final String DEFAULT_ENCODING = "gzip";
     
-    private RequestHeader() {
+    private Header() {
         header = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         originalResponseHeader = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         addParam(RequestHeaderConstants.CONTENT_TYPE, MediaType.APPLICATION_JSON);
         addParam(RequestHeaderConstants.ACCEPT_CHARSET, DEFAULT_CHARSET);
-        //addParam(HttpHeaderConsts.ACCEPT_ENCODING, DEFAULT_ENCODING);
     }
     
-    public static RequestHeader newInstance() {
-        return new RequestHeader();
+    public static Header newInstance() {
+        return new Header();
     }
 
     /**
@@ -48,21 +47,21 @@ public class RequestHeader {
      * @param value the value
      * @return header
      */
-    public RequestHeader addParam(String key, String value) {
+    public Header addParam(String key, String value) {
         if (StringUtils.isNotEmpty(key)) {
             header.put(key, value);
         }
         return this;
     }
     
-    public RequestHeader setContentType(String contentType) {
+    public Header setContentType(String contentType) {
         if (contentType == null) {
             contentType = MediaType.APPLICATION_JSON;
         }
         return addParam(RequestHeaderConstants.CONTENT_TYPE, contentType);
     }
     
-    public RequestHeader build() {
+    public Header build() {
         return this;
     }
     
@@ -100,7 +99,7 @@ public class RequestHeader {
      * @param list KV list
      * @return header
      */
-    public RequestHeader addAll(List<String> list) {
+    public Header addAll(List<String> list) {
         if ((list.size() & 1) != 0) {
             throw new IllegalArgumentException("list size must be a multiple of 2");
         }

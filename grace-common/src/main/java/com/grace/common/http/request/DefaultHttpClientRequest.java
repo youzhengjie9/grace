@@ -2,14 +2,14 @@ package com.grace.common.http.request;
 
 import com.alibaba.fastjson2.JSON;
 import com.grace.common.constant.RequestHeaderConstants;
-import com.grace.common.enums.HttpMethod;
+import com.grace.common.enums.RequestMethod;
 import com.grace.common.http.config.HttpClientConfig;
 import com.grace.common.http.entity.RequestHttpEntity;
 import com.grace.common.http.param.MediaType;
-import com.grace.common.http.param.RequestHeader;
+import com.grace.common.http.param.Header;
+import com.grace.common.http.param.RequestParam;
 import com.grace.common.http.response.DefaultHttpClientResponse;
 import com.grace.common.http.response.HttpClientResponse;
-import com.grace.common.utils.JacksonUtils;
 import com.grace.common.utils.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -49,38 +49,43 @@ public class DefaultHttpClientRequest implements HttpClientRequest {
     }
 
     @Override
-    public HttpClientResponse sendRequest(URI uri, String httpMethod, RequestHttpEntity requestHttpEntity) throws Exception {
-
+    public HttpClientResponse sendRequest(URI uri, String requestMethod, Header requestHeader, Object requestBody, HttpClientConfig httpClientConfig) throws Exception {
         // 构建一个http请求
-        HttpRequestBase request = buildHttpRequest(uri, httpMethod, requestHttpEntity, defaultRequestConfig);
+        HttpRequestBase request = buildHttpRequest(
+                uri, requestMethod, requestHeader,
+                requestBody, httpClientConfig,
+                defaultRequestConfig
+        );
 
-        // 发送http请求
+        // 发送http请求，接收apache httpclient的响应结果
         CloseableHttpResponse response = httpClient.execute(request);
 
+        // 将apache httpclient的响应结果封装到DefaultHttpClientResponse对象中
         return new DefaultHttpClientResponse(response);
     }
 
-    static HttpRequestBase buildHttpRequest(URI uri, String method, RequestHttpEntity requestHttpEntity,
+
+    static HttpRequestBase buildHttpRequest(URI uri, String requestMethod, Header requestHeader,
+                                            Object requestBody, HttpClientConfig httpClientConfig,
                                             RequestConfig defaultConfig) throws Exception {
-        // 获取请求头
-        final RequestHeader requestHeader = requestHttpEntity.getRequestHeader();
+
         // 创建最基础的（除了uri（注意: 这个uri在上一步已经包含了请求参数了！）和请求方法外,无其他任何属性的）HttpRequestBase对象
-        HttpRequestBase baseHttpRequestBase = createBaseHttpRequestBase(uri, method);
+        HttpRequestBase baseHttpRequestBase = createBaseHttpRequestBase(uri, requestMethod);
         // 初始化请求头,将请求头放到baseHttpRequestBase中
-        initRequestHeader(baseHttpRequestBase,requestHeader);
+        initRequestHeader(baseHttpRequestBase, requestHeader);
         // 如果是POST表单（form）提交方式，并且请求体格式是Map
         if (MediaType.APPLICATION_FORM_URLENCODED.equals(requestHeader.getValue(RequestHeaderConstants.CONTENT_TYPE))
-                && requestHttpEntity.getRequestBody() instanceof Map) {
+                && requestBody instanceof Map) {
             // 设置请求体
-            setRequestBody(baseHttpRequestBase, (Map<String, String>) requestHttpEntity.getRequestBody(), requestHeader.getCharset());
+            setRequestBody(baseHttpRequestBase, (Map<String, String>) requestBody, requestHeader.getCharset());
         }
         // 不是POST表单（form）提交方式，或者请求体格式不是Map
         else {
             // 设置请求体
-            setRequestBody(baseHttpRequestBase, requestHttpEntity.getRequestBody(), requestHeader);
+            setRequestBody(baseHttpRequestBase, requestBody, requestHeader);
         }
         // 合并默认配置
-        mergeDefaultConfig(baseHttpRequestBase, requestHttpEntity.getHttpClientConfig(), defaultConfig);
+        mergeDefaultConfig(baseHttpRequestBase, httpClientConfig, defaultConfig);
         return baseHttpRequestBase;
     }
 
@@ -92,13 +97,13 @@ public class DefaultHttpClientRequest implements HttpClientRequest {
     static HttpRequestBase createBaseHttpRequestBase(URI uri,String method){
 
         // 取出HttpMethod枚举类所有枚举值
-        HttpMethod[] httpMethods = HttpMethod.values();
+        RequestMethod[] requestMethods = RequestMethod.values();
 
-        for (HttpMethod httpMethod : httpMethods) {
+        for (RequestMethod requestMethod : requestMethods) {
             // 挑选出该请求方法的枚举值
-            if (StringUtils.equalsIgnoreCase(method, httpMethod.getMethodName())) {
+            if (StringUtils.equalsIgnoreCase(method, requestMethod.getMethodName())) {
                 // 调用该枚举值重写的createRequest方法
-                return httpMethod.createRequest(uri.toString());
+                return requestMethod.createRequest(uri.toString());
             }
         }
         throw new IllegalArgumentException("Unsupported http method : " + method);
@@ -110,7 +115,7 @@ public class DefaultHttpClientRequest implements HttpClientRequest {
      * @param baseHttpRequestBase   baseHttpRequestBase
      * @param requestHeader 请求头
      */
-    static void initRequestHeader(HttpRequestBase baseHttpRequestBase, RequestHeader requestHeader) {
+    static void initRequestHeader(HttpRequestBase baseHttpRequestBase, Header requestHeader) {
         Iterator<Map.Entry<String, String>> iterator = requestHeader.iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, String> entry = iterator.next();
@@ -168,7 +173,7 @@ public class DefaultHttpClientRequest implements HttpClientRequest {
      * @param requestBody         请求体
      * @param requestHeader       请求头
      */
-    private static void setRequestBody(HttpRequestBase baseHttpRequestBase, Object requestBody, RequestHeader requestHeader) {
+    private static void setRequestBody(HttpRequestBase baseHttpRequestBase, Object requestBody, Header requestHeader) {
 
         if (requestBody == null) {
             return;
@@ -218,6 +223,5 @@ public class DefaultHttpClientRequest implements HttpClientRequest {
                 .setSocketTimeout(httpClientConfig.getReadTimeOutMillis()).build());
 
     }
-
 
 }

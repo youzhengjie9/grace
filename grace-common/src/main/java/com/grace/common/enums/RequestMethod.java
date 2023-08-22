@@ -1,75 +1,76 @@
 package com.grace.common.enums;
 
+import com.grace.common.constant.RequestMethodConstants;
 import org.apache.http.client.methods.*;
 
 import java.net.URI;
 
 /**
- * http方法枚举类（根据不同的请求方法来选择不同的创建请求实现方式）
+ * 请求方法枚举类（根据不同的请求方法来选择不同的创建请求实现方式）
  *
  * @author youzhengjie
  * @date 2023/08/18 00:35:24
  */
-public enum HttpMethod {
+public enum RequestMethod {
 
-    GET("GET"){
+    GET(RequestMethodConstants.GET) {
         @Override
         public HttpRequestBase createRequest(String uri) {
             return new HttpGet(uri);
         }
     },
-    GET_LARGE("GET-LARGE"){
+    GET_LARGE(RequestMethodConstants.GET_LARGE){
         @Override
         public HttpRequestBase createRequest(String uri) {
             return new HttpGetLarge(uri);
         }
     },
 
-    POST("POST"){
+    POST(RequestMethodConstants.POST){
         @Override
         public HttpRequestBase createRequest(String uri) {
             return new HttpPost(uri);
         }
     },
 
-    PUT("PUT"){
+    PUT(RequestMethodConstants.PUT){
         @Override
         public HttpRequestBase createRequest(String uri) {
             return new HttpPut(uri);
         }
     },
 
-    DELETE("DELETE"){
+    DELETE(RequestMethodConstants.DELETE){
         @Override
         public HttpRequestBase createRequest(String uri) {
             return new HttpDelete(uri);
         }
     },
-    DELETE_LARGE("DELETE_LARGE"){
+    DELETE_LARGE(RequestMethodConstants.DELETE_LARGE){
         @Override
         public HttpRequestBase createRequest(String uri) {
             return new HttpDeleteLarge(uri);
         }
     },
-    HEAD("HEAD"){
+    HEAD(RequestMethodConstants.HEAD){
         @Override
         public HttpRequestBase createRequest(String uri) {
             return new HttpHead(uri);
         }
     },
-    PATCH("PATCH"){
+    PATCH(RequestMethodConstants.PATCH){
         @Override
         public HttpRequestBase createRequest(String uri) {
             return new HttpPatch(uri);
         }
     },
-    OPTIONS("OPTIONS"){
+    OPTIONS(RequestMethodConstants.OPTIONS){
         @Override
         public HttpRequestBase createRequest(String uri) {
             return new HttpOptions(uri);
         }
     },
-    TRACE("TRACE"){
+    TRACE(RequestMethodConstants.TRACE){
         @Override
         public HttpRequestBase createRequest(String uri) {
             return new HttpTrace(uri);
@@ -81,7 +82,7 @@ public enum HttpMethod {
     private String methodName;
 
 
-    HttpMethod(String methodName) {
+    RequestMethod(String methodName) {
         this.methodName = methodName;
     }
 

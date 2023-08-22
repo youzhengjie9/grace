@@ -1,8 +1,8 @@
 package com.grace.server.controller;
 
-import com.grace.common.constant.ParentMappingConstant;
+import com.grace.common.constant.ParentMappingConstants;
 import com.grace.common.entity.Namespace;
-import com.grace.common.utils.ResponseResult;
+import com.grace.common.utils.Result;
 import com.grace.server.service.NamespaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
  * @date 2023/06/19 22:23:38
  */
 @RestController
-@RequestMapping(path = ParentMappingConstant.NAMESPACE_CONTROLLER)
+@RequestMapping(path = ParentMappingConstants.NAMESPACE_CONTROLLER)
 public class NamespaceController {
 
     private NamespaceService namespaceService;
@@ -25,12 +25,12 @@ public class NamespaceController {
     }
 
     @PostMapping(path = "/createNamespace")
-    public ResponseResult<Boolean> createNamespace(@RequestBody Namespace namespace){
-        return ResponseResult.ok(namespaceService.createNamespace(namespace));
+    public Result<Boolean> createNamespace(@RequestBody Namespace namespace){
+        return Result.ok(namespaceService.createNamespace(namespace));
     }
     @GetMapping(path = "/hasNamespace/{namespaceName}")
-    public ResponseResult<Boolean> hasNamespace(@PathVariable("namespaceName") String namespaceName){
-        return ResponseResult.ok(namespaceService.hasNamespace(namespaceName));
+    public Result<Boolean> hasNamespace(@PathVariable("namespaceName") String namespaceName){
+        return Result.ok(namespaceService.hasNamespace(namespaceName));
     }
 
 }

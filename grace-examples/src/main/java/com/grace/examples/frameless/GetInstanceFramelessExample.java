@@ -2,8 +2,8 @@ package com.grace.examples.frameless;
 
 import com.grace.client.service.NamespaceService;
 import com.grace.client.service.impl.DefaultNamespaceServiceImpl;
-import com.grace.common.constant.PropertiesKeyConstant;
-import com.grace.common.constant.PropertiesValueConstant;
+import com.grace.common.constant.PropertiesKeyConstants;
+import com.grace.common.constant.PropertiesValueConstants;
 import com.grace.common.entity.Instance;
 
 import java.util.List;
@@ -14,9 +14,9 @@ public class GetInstanceFramelessExample {
     public static void main(String[] args) {
 
         Properties properties = new Properties();
-        properties.setProperty(PropertiesKeyConstant.SERVER_ADDR,"localhost:8500");
-        properties.setProperty(PropertiesKeyConstant.NAMESPACE,"ns_1002");
-        properties.setProperty(PropertiesKeyConstant.AUTO_CREATE_NAMESPACE, PropertiesValueConstant.OFF);
+        properties.setProperty(PropertiesKeyConstants.SERVER_ADDR,"localhost:8500");
+        properties.setProperty(PropertiesKeyConstants.NAMESPACE,"ns_1002");
+        properties.setProperty(PropertiesKeyConstants.AUTO_CREATE_NAMESPACE, PropertiesValueConstants.OFF);
         NamespaceService namespaceService = new DefaultNamespaceServiceImpl(properties);
 
         // 1: 查询所有实例（成功案例）

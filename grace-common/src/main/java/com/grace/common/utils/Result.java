@@ -11,7 +11,7 @@ import com.grace.common.enums.ResponseType;
  * @date 2023-06-15 22:49:18
  */
 @JsonInclude(JsonInclude.Include.NON_NULL) //为null的字段不进行序列化
-public class ResponseResult<T> {
+public class Result<T> {
 
     /**
      * 响应状态码
@@ -28,21 +28,21 @@ public class ResponseResult<T> {
      */
     private T data;
 
-    public ResponseResult() {
+    public Result() {
 
     }
 
-    public ResponseResult(Integer code, String msg) {
+    public Result(Integer code, String msg) {
         this.code = code;
         this.msg = msg;
     }
 
-    public ResponseResult(Integer code, T data) {
+    public Result(Integer code, T data) {
         this.code = code;
         this.data = data;
     }
 
-    public ResponseResult(Integer code, String msg, T data) {
+    public Result(Integer code, String msg, T data) {
         this.code = code;
         this.msg=msg;
         this.data = data;
@@ -54,64 +54,64 @@ public class ResponseResult<T> {
      * @param code 代码
      * @param msg  味精
      * @param data 数据
-     * @return {@link ResponseResult}<{@link D}>
+     * @return {@link Result}<{@link D}>
      */
-    public static<D> ResponseResult<D> build(Integer code,String msg,D data){
+    public static<D> Result<D> build(Integer code, String msg, D data){
 
-        return new ResponseResult<D>()
+        return new Result<D>()
                 .setCode(code)
                 .setMsg(msg)
                 .setData(data);
     }
-    public static<D> ResponseResult<D> build(ResponseType responseType){
+    public static<D> Result<D> build(ResponseType responseType){
 
-        return new ResponseResult<D>()
+        return new Result<D>()
                 .setCode(responseType.getCode())
                 .setMsg(responseType.getMessage())
                 .setData(null);
     }
-    public static<D> ResponseResult<D> build(ResponseType responseType,D data){
+    public static<D> Result<D> build(ResponseType responseType, D data){
 
-        return new ResponseResult<D>()
+        return new Result<D>()
                 .setCode(responseType.getCode())
                 .setMsg(responseType.getMessage())
                 .setData(data);
     }
-    public static<D> ResponseResult<D> ok(){
+    public static<D> Result<D> ok(){
 
-        return new ResponseResult<D>()
+        return new Result<D>()
                 .setCode(ResponseType.SUCCESS.getCode())
                 .setMsg(ResponseType.SUCCESS.getMessage())
                 .setData(null);
     }
-    public static<D> ResponseResult<D> ok(D data){
+    public static<D> Result<D> ok(D data){
 
-        return new ResponseResult<D>()
+        return new Result<D>()
                 .setCode(ResponseType.SUCCESS.getCode())
                 .setMsg(ResponseType.SUCCESS.getMessage())
                 .setData(data);
     }
 
-    public static<D> ResponseResult<D> ok(String msg,D data){
+    public static<D> Result<D> ok(String msg, D data){
 
-        return new ResponseResult<D>()
+        return new Result<D>()
                 .setCode(ResponseType.SUCCESS.getCode())
                 .setMsg(msg)
                 .setData(data);
     }
 
 
-    public static<D> ResponseResult<D> fail(D data){
+    public static<D> Result<D> fail(D data){
 
-        return new ResponseResult<D>()
+        return new Result<D>()
                 .setCode(ResponseType.ERROR.getCode())
                 .setMsg(ResponseType.ERROR.getMessage())
                 .setData(data);
     }
 
-    public static<D> ResponseResult<D> fail(String msg,D data){
+    public static<D> Result<D> fail(String msg, D data){
 
-        return new ResponseResult<D>()
+        return new Result<D>()
                 .setCode(ResponseType.ERROR.getCode())
                 .setMsg(msg)
                 .setData(data);
@@ -121,7 +121,7 @@ public class ResponseResult<T> {
         return code;
     }
 
-    public ResponseResult<T> setCode(Integer code) {
+    public Result<T> setCode(Integer code) {
         this.code = code;
         return this;
     }
@@ -130,7 +130,7 @@ public class ResponseResult<T> {
         return msg;
     }
 
-    public ResponseResult<T> setMsg(String msg) {
+    public Result<T> setMsg(String msg) {
         this.msg = msg;
         return this;
     }
@@ -139,7 +139,7 @@ public class ResponseResult<T> {
         return data;
     }
 
-    public ResponseResult<T> setData(T data) {
+    public Result<T> setData(T data) {
         this.data = data;
         return this;
     }

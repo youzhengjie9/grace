@@ -6,7 +6,7 @@ package com.grace.common.constant;
  * @author youzhengjie
  * @date 2023/08/08 16:21:14
  */
-public class RequestParamConstant {
+public class RequestParamConstants {
     
     public static final String CODE = "code";
     

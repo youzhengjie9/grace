@@ -6,14 +6,14 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.grace.client.service.NamespaceService;
-import com.grace.common.constant.ParentMappingConstant;
-import com.grace.common.constant.PropertiesKeyConstant;
-import com.grace.common.constant.PropertiesValueConstant;
+import com.grace.common.constant.ParentMappingConstants;
+import com.grace.common.constant.PropertiesKeyConstants;
+import com.grace.common.constant.PropertiesValueConstants;
 import com.grace.common.dto.CreateNamespaceDTO;
 import com.grace.common.dto.CreateServiceDTO;
 import com.grace.common.dto.RegisterInstanceDTO;
 import com.grace.common.entity.Instance;
-import com.grace.common.utils.ResponseResult;
+import com.grace.common.utils.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -45,8 +45,8 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
 
     public DefaultNamespaceServiceImpl(String serverAddr,String namespace) {
         Properties properties = new Properties();
-        properties.setProperty(PropertiesKeyConstant.SERVER_ADDR,serverAddr);
-        properties.setProperty(PropertiesKeyConstant.NAMESPACE,namespace);
+        properties.setProperty(PropertiesKeyConstants.SERVER_ADDR,serverAddr);
+        properties.setProperty(PropertiesKeyConstants.NAMESPACE,namespace);
         init(properties);
     }
 
@@ -61,14 +61,14 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
      */
     private void init(Properties properties) {
         log.info(">>>>>>DefaultNamespaceServiceImpl开始初始化<<<<<<");
-        this.serverAddr = properties.getProperty(PropertiesKeyConstant.SERVER_ADDR);
-        this.namespace = properties.getProperty(PropertiesKeyConstant.NAMESPACE);
-        String autoCreateNamespace = properties.getProperty(PropertiesKeyConstant.AUTO_CREATE_NAMESPACE, PropertiesValueConstant.OFF);
+        this.serverAddr = properties.getProperty(PropertiesKeyConstants.SERVER_ADDR);
+        this.namespace = properties.getProperty(PropertiesKeyConstants.NAMESPACE);
+        String autoCreateNamespace = properties.getProperty(PropertiesKeyConstants.AUTO_CREATE_NAMESPACE, PropertiesValueConstants.OFF);
         //如果开启了自动创建命名空间
-        if(autoCreateNamespace.equals(PropertiesValueConstant.ON)) {
+        if(autoCreateNamespace.equals(PropertiesValueConstants.ON)) {
             //如果该namespace没有被创建则创建
             if (!hasNamespace(namespace)) {
-                this.namespaceDesc = properties.getProperty(PropertiesKeyConstant.NAMESPACE_DESC, "");
+                this.namespaceDesc = properties.getProperty(PropertiesKeyConstants.NAMESPACE_DESC, "");
                 boolean createNamespaceSuccess = createNamespace(namespace, namespaceDesc);
                 log.info("命名空间:" + namespace + "创建" + (createNamespaceSuccess ? "成功" : "失败"));
             }
@@ -89,7 +89,7 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
 
         // 使用hutool的HttpRequest类发送post请求
         HttpResponse httpResponse = HttpRequest.post(
-                "http://"+ serverAddr + ParentMappingConstant.NAMESPACE_CONTROLLER +"/createNamespace")
+                "http://"+ serverAddr + ParentMappingConstants.NAMESPACE_CONTROLLER +"/createNamespace")
                 .body(json)
                 .execute();
 
@@ -99,7 +99,7 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
         if(status == HttpStatus.OK.value()){
             // 返回响应内容
             String body = httpResponse.body();
-            ResponseResult<Boolean> result=JSON.parseObject(body, ResponseResult.class);
+            Result<Boolean> result=JSON.parseObject(body, Result.class);
             return result.getData();
         }else {
             log.error("createNamespace 请求失败");
@@ -134,7 +134,7 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
 
         // 使用hutool的HttpRequest类发送post请求
         HttpResponse httpResponse = HttpRequest.post(
-                "http://"+ serverAddr + ParentMappingConstant.SERVICE_CONTROLLER +"/createService")
+                "http://"+ serverAddr + ParentMappingConstants.SERVICE_CONTROLLER +"/createService")
                 .body(json)
                 .execute();
 
@@ -145,7 +145,7 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
             // 返回响应内容
             String body = httpResponse.body();
 
-            ResponseResult<Boolean> result=JSON.parseObject(body, ResponseResult.class);
+            Result<Boolean> result=JSON.parseObject(body, Result.class);
             return result.getData();
         }else {
             log.error("createService 请求失败");
@@ -177,7 +177,7 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
 
         // 使用hutool的HttpRequest类发送post请求
         HttpResponse httpResponse = HttpRequest.post(
-                "http://"+ serverAddr + ParentMappingConstant.INSTANCE_CONTROLLER +"/registerInstance")
+                "http://"+ serverAddr + ParentMappingConstants.INSTANCE_CONTROLLER +"/registerInstance")
                 .body(json)
                 .execute();
 
@@ -188,7 +188,7 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
             // 返回响应内容
             String body = httpResponse.body();
 
-            ResponseResult<Boolean> result=JSON.parseObject(body, ResponseResult.class);
+            Result<Boolean> result=JSON.parseObject(body, Result.class);
             return result.getData();
         }else {
             log.error("registerInstance 请求失败");
@@ -201,7 +201,7 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
 
         // 使用hutool的HttpRequest类发送post请求
         HttpResponse httpResponse = HttpRequest.get(
-                        "http://"+ serverAddr + ParentMappingConstant.INSTANCE_CONTROLLER
+                        "http://"+ serverAddr + ParentMappingConstants.INSTANCE_CONTROLLER
                                 +"/getAllInstances/"+ this.namespace + "/" + serviceName)
                 .execute();
 
@@ -211,8 +211,8 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
         if(status == HttpStatus.OK.value()){
             // 返回响应内容
             String resultJson = httpResponse.body();
-            ResponseResult<JSONArray> responseResult = JSON.parseObject(resultJson, ResponseResult.class);
-            JSONArray data = responseResult.getData();
+            Result<JSONArray> result = JSON.parseObject(resultJson, Result.class);
+            JSONArray data = result.getData();
             String dataJson = JSONArray.toJSONString(data);
             return JSON.parseArray(dataJson, Instance.class);
         }else {
@@ -226,7 +226,7 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
 
         // 使用hutool的HttpRequest类发送post请求
         HttpResponse httpResponse = HttpRequest.get(
-                        "http://"+ serverAddr + ParentMappingConstant.INSTANCE_CONTROLLER
+                        "http://"+ serverAddr + ParentMappingConstants.INSTANCE_CONTROLLER
                                 +"/getInstance/"+ this.namespace + "/" + serviceName + "/" +ipAddr +"/" + port)
                 .execute();
 
@@ -236,7 +236,7 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
         if(status == HttpStatus.OK.value()){
             // 返回响应内容
             String body = httpResponse.body();
-            ResponseResult<JSONObject> result=JSON.parseObject(body, ResponseResult.class);
+            Result<JSONObject> result=JSON.parseObject(body, Result.class);
             JSONObject data = result.getData();
             if(data !=null){
                 return JSONObject.parseObject(result.getData().toJSONString(),Instance.class);
@@ -259,7 +259,7 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
 
         // 使用hutool的HttpRequest类发送post请求
         HttpResponse httpResponse = HttpRequest.get(
-                "http://"+ serverAddr + ParentMappingConstant.NAMESPACE_CONTROLLER +"/hasNamespace/"+namespace)
+                "http://"+ serverAddr + ParentMappingConstants.NAMESPACE_CONTROLLER +"/hasNamespace/"+namespace)
                 .execute();
 
         // 返回http状态码
@@ -267,8 +267,8 @@ public class DefaultNamespaceServiceImpl implements NamespaceService {
         if(status == HttpStatus.OK.value()){
             // 返回响应内容
             String body = httpResponse.body();
-            ResponseResult<Boolean> responseResult = JSON.parseObject(body, ResponseResult.class);
-            return responseResult.getData();
+            Result<Boolean> result = JSON.parseObject(body, Result.class);
+            return result.getData();
         }else {
             log.error("hasNamespace 请求失败");
             return false;

@@ -6,7 +6,7 @@ package com.grace.common.constant;
  * @author youzhengjie
  * @date 2023/07/06 19:36:02
  */
-public final class PropertiesKeyConstant {
+public final class PropertiesKeyConstants {
     
     public static final String IS_USE_CLOUD_NAMESPACE_PARSING = "isUseCloudNamespaceParsing";
     
