@@ -403,18 +403,57 @@ public class GraceRestTemplate implements GraceRestOperations{
     }
 
     @Override
-    public <T> RestResult<T> exchange(String url, String requestMethod, Header requestHeader, RequestParam requestParam, Object requestBody, HttpClientConfig httpClientConfig, Type responseType) {
-        return null;
+    public <T> RestResult<T> exchange(String url, String requestMethod, Header requestHeader,
+                                      RequestParam requestParam, Object requestBody,
+                                      HttpClientConfig httpClientConfig, Type responseType) throws Exception {
+
+        return execute(
+                url,
+                requestMethod,
+                requestHeader,
+                requestParam,
+                requestBody,
+                httpClientConfig,
+                responseType);
     }
 
     @Override
-    public <T> RestResult<T> exchange(String url, String requestMethod, Header requestHeader, RequestParam requestParam, String requestBodyJson, Type responseType) {
-        return null;
+    public <T> RestResult<T> exchange(String url, String requestMethod, Header requestHeader,
+                                      RequestParam requestParam, String requestBodyJson,
+                                      Type responseType) throws Exception {
+
+        // 因为请求体（requestBodyJson）是JSON字符串类型,所以要将
+        // 请求头（requestHeader）中的Content-Type设置为application/json;charset=UTF-8
+        requestHeader.setContentType(MediaType.APPLICATION_JSON);
+
+        return execute(
+                url,
+                requestMethod,
+                requestHeader,
+                requestParam,
+                requestBodyJson,
+                null,
+                responseType);
     }
 
     @Override
-    public <T> RestResult<T> exchange(String url, String requestMethod, Header requestHeader, RequestParam requestParam, Map<String, String> requestBodyMap, Type responseType) {
-        return null;
+    public <T> RestResult<T> exchange(String url, String requestMethod, Header requestHeader,
+                                      RequestParam requestParam, Map<String, String> requestBodyMap,
+                                      Type responseType) throws Exception {
+
+        // 因为请求体（requestBodyMap）是Map类型,所以要将
+        // 请求头（requestHeader）中的Content-Type设置为application/x-www-form-urlencoded;charset=UTF-8
+        requestHeader.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        return execute(
+                url,
+                requestMethod,
+                requestHeader,
+                requestParam,
+                requestBodyMap,
+                null,
+                responseType);
+
     }
 
 

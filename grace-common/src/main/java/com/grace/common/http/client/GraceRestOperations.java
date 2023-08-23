@@ -71,14 +71,14 @@ public interface GraceRestOperations {
 
     <T> RestResult<T> exchange(String url, String requestMethod, Header requestHeader,
                                RequestParam requestParam, Object requestBody,
-                               HttpClientConfig httpClientConfig, Type responseType);
+                               HttpClientConfig httpClientConfig, Type responseType) throws Exception;
 
     <T> RestResult<T> exchange(String url, String requestMethod, Header requestHeader,
                                RequestParam requestParam, String requestBodyJson,
-                               Type responseType);
+                               Type responseType) throws Exception;
 
     <T> RestResult<T> exchange(String url, String requestMethod, Header requestHeader, RequestParam requestParam,
-                               Map<String, String> requestBodyMap, Type responseType);
+                               Map<String, String> requestBodyMap, Type responseType) throws Exception;
 
 
 }
