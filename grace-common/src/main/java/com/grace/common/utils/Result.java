@@ -2,7 +2,7 @@ package com.grace.common.utils;
 
 import com.alibaba.fastjson2.JSON;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.grace.common.enums.ResponseType;
+import com.grace.common.enums.ResultType;
 
 /**
  * 封装统一响应结果
@@ -63,39 +63,39 @@ public class Result<T> {
                 .setMsg(msg)
                 .setData(data);
     }
-    public static<D> Result<D> build(ResponseType responseType){
+    public static<D> Result<D> build(ResultType resultType){
 
         return new Result<D>()
-                .setCode(responseType.getCode())
-                .setMsg(responseType.getMessage())
+                .setCode(resultType.getCode())
+                .setMsg(resultType.getMessage())
                 .setData(null);
     }
-    public static<D> Result<D> build(ResponseType responseType, D data){
+    public static<D> Result<D> build(ResultType resultType, D data){
 
         return new Result<D>()
-                .setCode(responseType.getCode())
-                .setMsg(responseType.getMessage())
+                .setCode(resultType.getCode())
+                .setMsg(resultType.getMessage())
                 .setData(data);
     }
     public static<D> Result<D> ok(){
 
         return new Result<D>()
-                .setCode(ResponseType.SUCCESS.getCode())
-                .setMsg(ResponseType.SUCCESS.getMessage())
+                .setCode(ResultType.SUCCESS.getCode())
+                .setMsg(ResultType.SUCCESS.getMessage())
                 .setData(null);
     }
     public static<D> Result<D> ok(D data){
 
         return new Result<D>()
-                .setCode(ResponseType.SUCCESS.getCode())
-                .setMsg(ResponseType.SUCCESS.getMessage())
+                .setCode(ResultType.SUCCESS.getCode())
+                .setMsg(ResultType.SUCCESS.getMessage())
                 .setData(data);
     }
 
     public static<D> Result<D> ok(String msg, D data){
 
         return new Result<D>()
-                .setCode(ResponseType.SUCCESS.getCode())
+                .setCode(ResultType.SUCCESS.getCode())
                 .setMsg(msg)
                 .setData(data);
     }
@@ -104,15 +104,15 @@ public class Result<T> {
     public static<D> Result<D> fail(D data){
 
         return new Result<D>()
-                .setCode(ResponseType.ERROR.getCode())
-                .setMsg(ResponseType.ERROR.getMessage())
+                .setCode(ResultType.ERROR.getCode())
+                .setMsg(ResultType.ERROR.getMessage())
                 .setData(data);
     }
 
     public static<D> Result<D> fail(String msg, D data){
 
         return new Result<D>()
-                .setCode(ResponseType.ERROR.getCode())
+                .setCode(ResultType.ERROR.getCode())
                 .setMsg(msg)
                 .setData(data);
     }

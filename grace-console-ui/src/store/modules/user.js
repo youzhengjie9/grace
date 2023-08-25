@@ -1,8 +1,8 @@
 import Vue from 'vue'
-import {getCurrentUserInfo} from '../../api/user'
+import {getCurrentUserInfo} from '@/api/user'
 import{
     refreshToken
-} from '../../api/refresh-token'
+} from '@/api/refresh-token'
 
 const state = {
     userName:'', //用户帐号

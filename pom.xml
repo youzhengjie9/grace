@@ -13,6 +13,8 @@
         <module>grace-client</module>
         <module>grace-server</module>
         <module>grace-common</module>
+        <module>grace-auth</module>
+        <module>grace-security</module>
     </modules>
 
     <properties>

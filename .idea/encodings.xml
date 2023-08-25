@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/grace-auth/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/grace-auth/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/grace-client/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/grace-client/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/grace-common/src/main/java" charset="UTF-8" />
@@ -13,6 +15,8 @@
     <file url="file://$PROJECT_DIR$/grace-examples/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/grace-log/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/grace-log/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/grace-security/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/grace-security/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/grace-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/grace-server/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />

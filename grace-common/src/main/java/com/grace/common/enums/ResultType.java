@@ -1,12 +1,12 @@
 package com.grace.common.enums;
 
 /**
- * 响应类型枚举类
+ * 响应结果类型枚举类
  *
  * @author youzhengjie
  * @date 2023-06-15 22:49:43
  */
-public enum ResponseType {
+public enum ResultType {
 
     /**
      * 通用状态
@@ -46,7 +46,7 @@ public enum ResponseType {
     private int code;
     private String message;
 
-    ResponseType(int code, String message) {
+    ResultType(int code, String message) {
         this.code = code;
         this.message = message;
     }
