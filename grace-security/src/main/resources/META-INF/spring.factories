@@ -1,10 +1,4 @@
 
-# common security autoconfigure
-org.springframework.boot.autoconfigure.EnableAutoConfiguration = \
-  com.grace.security.service.PasswordUserDetailsServiceImpl,\
-  com.grace.security.service.SmsUserDetailsServiceImpl,\
-  com.grace.security.service.RedisOAuth2AuthorizationService,\
-  com.grace.security.service.RedisOAuth2AuthorizationConsentService,\
-  com.grace.security.resource.server.PermitAllAspect,\
-  com.grace.security.service.CustomRegisteredClientRepository
 
+org.springframework.boot.autoconfigure.EnableAutoConfiguration = \
+  com.grace.security.autoconfigure.GraceSecurityAutoConfigure

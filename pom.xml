@@ -11,9 +11,9 @@
     <modules>
         <module>grace-examples</module>
         <module>grace-client</module>
-        <module>grace-server</module>
+        <module>grace-console</module>
         <module>grace-common</module>
-        <module>grace-auth</module>
+        <module>grace-console</module>
         <module>grace-security</module>
     </modules>
 

@@ -118,7 +118,6 @@
             <artifactId>httpmime</artifactId>
             <version>${httpclient.version}</version>
         </dependency>
-
     </dependencies>
 
 
