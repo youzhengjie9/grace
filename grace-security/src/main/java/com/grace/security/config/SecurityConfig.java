@@ -38,7 +38,7 @@ public class SecurityConfig {
     /**
      * 下面这些请求《不用登录》（也就是不用携带Token）都可以访问。
      */
-    private final String[] PERMIT_PATHS={
+    private final String[] PERMIT_ALL={
             "/user/login",
             "/refreshToken",
             "/register/**",
@@ -106,7 +106,7 @@ public class SecurityConfig {
                 // 配置认证请求
                 .authorizeRequests()
                 // 设置部分请求《不用登录》（也就是不用携带Token）都可以访问
-                .antMatchers(PERMIT_PATHS).permitAll()
+                .antMatchers(PERMIT_ALL).permitAll()
                 // 除了上面的请求之外，其他所有请求《只有登录了》（要携带token）才能访问，否则会被SpringSecurity底层拦截器拦截
                 .anyRequest().authenticated()
                 .and()

@@ -71,7 +71,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         // 获取登录成功后的UserDetails对象（例如: GraceUser对象）
         GraceUser graceUser = (GraceUser) authentication.getPrincipal();
-        String userId = String.valueOf(graceUser.getUser().getId());
+        long userId = graceUser.getUserId();
         // 生成accessToken和refreshToken
         Map<String, String> tokenMap = tokenManagerDelegate.createAccessTokenAndRefreshToken(userId);
         String accessToken = tokenMap.get(JwtConstants.ACCESS_TOKEN);

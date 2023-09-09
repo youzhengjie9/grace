@@ -20,24 +20,29 @@ public class GraceUser implements UserDetails, Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 用户id
+     */
+    private final long userId;
+
+    /**
      * 用户名
      */
-    private String userName;
+    private final String userName;
 
     /**
      * 权限列表。
      */
-    private List<String> permissons;
+    private final List<String> permissons;
 
     /**
      * 账号状态（0正常 1停用）
      */
-    private Integer status;
+    private final Integer status;
 
     /**
      * 删除标志（0代表未删除，1代表已删除）
      */
-    private Integer delFlag;
+    private final Integer delFlag;
 
     /**
      * 框架所需要的权限集合
@@ -45,7 +50,8 @@ public class GraceUser implements UserDetails, Serializable {
     @JSONField(serialize = false) //禁止序列化该属性
     private Set<SimpleGrantedAuthority> grantedAuthoritySet;
 
-    public GraceUser(String userName, List<String> permissons, Integer status, Integer delFlag) {
+    public GraceUser(long userId,String userName, List<String> permissons, Integer status, Integer delFlag) {
+        this.userId = userId;
         this.userName = userName;
         //loadUserByUsername方法中从数据库查询出来的权限列表
         this.permissons=permissons;
@@ -71,6 +77,10 @@ public class GraceUser implements UserDetails, Serializable {
     public String getPassword() {
         // 密码在这里没有作用,返回空即可
         return "";
+    }
+
+    public long getUserId() {
+        return userId;
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.grace.security.token;
 
 import com.grace.security.token.impl.CachedJwtTokenManager;
 import com.grace.security.token.impl.JwtTokenManager;
-import com.grace.security.users.GraceUser;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -61,22 +60,26 @@ public class TokenManagerDelegate implements TokenManager {
 
 
     @Override
-    public String createAccessToken(String userId) {
+    public String createAccessToken(long userId) {
         return getTokenManager().createAccessToken(userId);
     }
 
+    /**
+     * @param accessToken
+     * @return {@link Claims}
+     */
     @Override
     public Claims parseAccessToken(String accessToken) {
         return getTokenManager().parseAccessToken(accessToken);
     }
 
     @Override
-    public String getUserIdByAccessToken(String accessToken) {
+    public long getUserIdByAccessToken(String accessToken) {
         return getTokenManager().getUserIdByAccessToken(accessToken);
     }
 
     @Override
-    public String createRefreshToken(String userId) {
+    public String createRefreshToken(long userId) {
         return getTokenManager().createRefreshToken(userId);
     }
 
@@ -86,18 +89,28 @@ public class TokenManagerDelegate implements TokenManager {
     }
 
     @Override
-    public String getUserIdByRefreshToken(String refreshToken) {
+    public long getUserIdByRefreshToken(String refreshToken) {
         return getTokenManager().getUserIdByRefreshToken(refreshToken);
     }
 
     @Override
-    public Map<String, String> createAccessTokenAndRefreshToken(String userId) {
+    public Map<String, String> createAccessTokenAndRefreshToken(long userId) {
         return getTokenManager().createAccessTokenAndRefreshToken(userId);
     }
 
     @Override
     public String toRefreshToken(String refreshToken) {
         return getTokenManager().toRefreshToken(refreshToken);
+    }
+
+    @Override
+    public Authentication createAuthentication(String token, String tokenType) {
+        return getTokenManager().createAuthentication(token,tokenType);
+    }
+
+    @Override
+    public Authentication getAuthentication(String token, String tokenType) {
+        return getTokenManager().getAuthentication(token,tokenType);
     }
 
     @Override

@@ -26,7 +26,7 @@ public interface TokenManager {
      * @param userId 用户id
      * @return accessToken
      */
-    String createAccessToken(String userId);
+    String createAccessToken(long userId);
 
     /**
      * 解析accessToken
@@ -39,10 +39,10 @@ public interface TokenManager {
     /**
      * 根据accessToken获取用户id（通过用户id存储在Claims的subject中,如果不是则获取不到）
      *
-     * @param accessToken
+     * @param accessToken accessToken
      * @return 获取用户id，失败返回null
      */
-    String getUserIdByAccessToken(String accessToken);
+    long getUserIdByAccessToken(String accessToken);
 
     /**
      * 根据用户id生成refreshToken
@@ -50,7 +50,7 @@ public interface TokenManager {
      * @param userId 用户id
      * @return refreshToken
      */
-    String createRefreshToken(String userId);
+    String createRefreshToken(long userId);
 
     /**
      * 解析refreshToken
@@ -66,7 +66,7 @@ public interface TokenManager {
      * @param refreshToken refreshToken
      * @return 获取用户id，失败返回null
      */
-    String getUserIdByRefreshToken(String refreshToken);
+    long getUserIdByRefreshToken(String refreshToken);
 
     /**
      * 通过map集合.get(JwtConstants.ACCESS_TOKEN)可以拿到accessToken
@@ -74,7 +74,7 @@ public interface TokenManager {
      *
      * @return 同时返回accessToken和refreshToken的map集合
      */
-    Map<String,String> createAccessTokenAndRefreshToken(String userId);
+    Map<String,String> createAccessTokenAndRefreshToken(long userId);
 
     /**
      * 去刷新token。本质上就是重新生成新的accessToken并替代掉前端localstorage的旧的accessToken
@@ -84,6 +84,17 @@ public interface TokenManager {
     String toRefreshToken(String refreshToken);
 
     /**
+     * 创建Authentication对象。
+     *
+     * @param token token
+     * @param tokenType tokenType
+     * @return {@link Authentication}
+     */
+    Authentication createAuthentication(String token, String tokenType);
+
+    /**
+     * 从缓存中获取Authentication对象
+     * <p>
      * 根据token获取SpringSecurity用户认证信息对象（Authentication）,每一个登录成功的用户都会有一个这个对象
      *
      * @param token

@@ -73,7 +73,7 @@ public class JwtTokenManager implements TokenManager {
     }
 
     @Override
-    public String createAccessToken(String userId) {
+    public String createAccessToken(long userId) {
         // 当前时间毫秒值
         long currentTimeMillis = System.currentTimeMillis();
         // accessToken过期时间毫秒值
@@ -82,7 +82,7 @@ public class JwtTokenManager implements TokenManager {
                 // 唯一的ID
                 .setId(getUUID())
                 // userId就存放到这里
-                .setSubject(userId)
+                .setSubject(String.valueOf(userId))
                 // 签发者
                 .setIssuer(issuer)
                 // 颁发token时间
@@ -104,13 +104,13 @@ public class JwtTokenManager implements TokenManager {
     }
 
     @Override
-    public String getUserIdByAccessToken(String accessToken) {
-        return parseAccessToken(accessToken)
-                .getSubject();
+    public long getUserIdByAccessToken(String accessToken) {
+        return Long.parseLong(parseAccessToken(accessToken)
+                .getSubject());
     }
 
     @Override
-    public String createRefreshToken(String userId) {
+    public String createRefreshToken(long userId) {
         // 当前时间毫秒值
         long currentTimeMillis = System.currentTimeMillis();
         // refreshToken过期时间毫秒值
@@ -119,7 +119,7 @@ public class JwtTokenManager implements TokenManager {
                 // 唯一的ID
                 .setId(getUUID())
                 // userId就存放到这里
-                .setSubject(userId)
+                .setSubject(String.valueOf(userId))
                 // 签发者
                 .setIssuer(issuer)
                 // 颁发token时间
@@ -141,13 +141,13 @@ public class JwtTokenManager implements TokenManager {
     }
 
     @Override
-    public String getUserIdByRefreshToken(String refreshToken) {
-        return parseRefreshToken(refreshToken)
-                .getSubject();
+    public long getUserIdByRefreshToken(String refreshToken) {
+        return Long.parseLong(parseRefreshToken(refreshToken)
+                .getSubject());
     }
 
     @Override
-    public Map<String, String> createAccessTokenAndRefreshToken(String userId) {
+    public Map<String, String> createAccessTokenAndRefreshToken(long userId) {
         Map<String,String> tokenMap = new ConcurrentHashMap<>();
         // 创建accessToken
         String accessToken = createAccessToken(userId);
@@ -166,7 +166,7 @@ public class JwtTokenManager implements TokenManager {
             return null;
         }
         // 解析refreshToken获取其userId
-        String userId = getUserIdByRefreshToken(refreshToken);
+        long userId = getUserIdByRefreshToken(refreshToken);
 
         // 重新生成accessToken
         return createAccessToken(userId);
@@ -174,7 +174,7 @@ public class JwtTokenManager implements TokenManager {
 
     @Override
     public Authentication getAuthentication(String token, String tokenType) {
-        return createAuthentication(token,tokenType);
+        throw new RuntimeException("JwtTokenManager类不能获取Authentication对象,请使用CachedJwtTokenManager类进行获取");
     }
 
     /**
@@ -184,11 +184,11 @@ public class JwtTokenManager implements TokenManager {
      * @param tokenType tokenType
      * @return {@link Authentication}
      */
-//    @Override
+    @Override
     public Authentication createAuthentication(String token, String tokenType) {
         if(tokenType.equalsIgnoreCase("accessToken")){
             // 根据accessToken获取userId
-            String userId = getUserIdByAccessToken(token);
+            long userId = getUserIdByAccessToken(token);
             // 根据userId查询用户信息
             User user = userService.lambdaQuery()
                     .select(
@@ -196,19 +196,19 @@ public class JwtTokenManager implements TokenManager {
                             User::getStatus,
                             User::getDelFlag
                     )
-                    .eq(User::getId, Long.valueOf(userId))
+                    .eq(User::getId, userId)
                     .one();
             // 根据userId查询权限列表
-            List<String> permissions = menuService.getAllPermissionsByUserId(Long.parseLong(userId));
+            List<String> permissions = menuService.getAllPermissionsByUserId(userId);
             // 封装GraceUser对象
-            GraceUser graceUser = new GraceUser(user.getUserName(),permissions,user.getStatus(),user.getDelFlag());
+            GraceUser graceUser = new GraceUser(userId,user.getUserName(),permissions,user.getStatus(),user.getDelFlag());
             // 获取用户的权限列表
             Collection<? extends GrantedAuthority> authorities = graceUser.getAuthorities();
             // 创建Authentication对象
             return new UsernamePasswordAuthenticationToken(graceUser,"",authorities);
         }else if (tokenType.equalsIgnoreCase("refreshToken")) {
             // 根据refreshToken获取userId
-            String userId = getUserIdByRefreshToken(token);
+            long userId = getUserIdByRefreshToken(token);
             // 根据userId查询用户信息
             User user = userService.lambdaQuery()
                     .select(
@@ -216,12 +216,12 @@ public class JwtTokenManager implements TokenManager {
                             User::getStatus,
                             User::getDelFlag
                     )
-                    .eq(User::getId, Long.valueOf(userId))
+                    .eq(User::getId, userId)
                     .one();
             // 根据userId查询权限列表
-            List<String> permissions = menuService.getAllPermissionsByUserId(Long.parseLong(userId));
+            List<String> permissions = menuService.getAllPermissionsByUserId(userId);
             // 封装GraceUser对象
-            GraceUser graceUser = new GraceUser(user.getUserName(),permissions,user.getStatus(),user.getDelFlag());
+            GraceUser graceUser = new GraceUser(userId,user.getUserName(),permissions,user.getStatus(),user.getDelFlag());
             // 获取用户的权限列表
             Collection<? extends GrantedAuthority> authorities = graceUser.getAuthorities();
             // 创建Authentication对象

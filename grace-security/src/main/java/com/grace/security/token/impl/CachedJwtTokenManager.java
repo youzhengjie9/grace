@@ -55,17 +55,20 @@ public class CachedJwtTokenManager implements TokenManager {
 //    }
 
     @Override
-    public String createAccessToken(String userId) {
+    public String createAccessToken(long userId) {
         String accessToken = jwtTokenManager.createAccessToken(userId);
         // 当前时间毫秒值
         long currentTimeMillis = System.currentTimeMillis();
         // accessToken过期时间毫秒值
         long accessTokenExpiredTimeMillis = currentTimeMillis + jwtTokenManager.getAccessTokenExpired();
+        // 通过accessToken创建Authentication对象
+        Authentication authentication =
+                jwtTokenManager.createAuthentication(accessToken, JwtConstants.ACCESS_TOKEN);
         // 封装accessToken的属性
         TokenAttributes accessTokenAttributes = new TokenAttributes();
         accessTokenAttributes.setUserId(userId);
         accessTokenAttributes.setExpiredTimeMillis(accessTokenExpiredTimeMillis);
-        accessTokenAttributes.setAuthentication();
+        accessTokenAttributes.setAuthentication(authentication);
         // 将accessToken和属性缓存起来
         accessTokenMap.put(accessToken,accessTokenAttributes);
         return accessToken;
@@ -77,13 +80,28 @@ public class CachedJwtTokenManager implements TokenManager {
     }
 
     @Override
-    public String getUserIdByAccessToken(String accessToken) {
+    public long getUserIdByAccessToken(String accessToken) {
         return jwtTokenManager.getUserIdByAccessToken(accessToken);
     }
 
     @Override
-    public String createRefreshToken(String userId) {
-        return null;
+    public String createRefreshToken(long userId) {
+        String refreshToken = jwtTokenManager.createRefreshToken(userId);
+        // 当前时间毫秒值
+        long currentTimeMillis = System.currentTimeMillis();
+        // refreshToken过期时间毫秒值
+        long refreshTokenExpiredTimeMillis = currentTimeMillis + jwtTokenManager.getRefreshTokenExpired();
+        // 通过refreshToken创建Authentication对象
+        Authentication authentication =
+                jwtTokenManager.createAuthentication(refreshToken, JwtConstants.REFRESH_TOKEN);
+        // 封装refreshToken的属性
+        TokenAttributes refreshTokenAttributes = new TokenAttributes();
+        refreshTokenAttributes.setUserId(userId);
+        refreshTokenAttributes.setExpiredTimeMillis(refreshTokenExpiredTimeMillis);
+        refreshTokenAttributes.setAuthentication(authentication);
+        // 将refreshToken和属性缓存起来
+        refreshTokenMap.put(refreshToken,refreshTokenAttributes);
+        return refreshToken;
     }
 
     @Override
@@ -92,34 +110,47 @@ public class CachedJwtTokenManager implements TokenManager {
     }
 
     @Override
-    public String getUserIdByRefreshToken(String refreshToken) {
+    public long getUserIdByRefreshToken(String refreshToken) {
         return jwtTokenManager.getUserIdByRefreshToken(refreshToken);
     }
 
     @Override
-    public Map<String, String> createAccessTokenAndRefreshToken(String userId) {
+    public Map<String, String> createAccessTokenAndRefreshToken(long userId) {
 
         // 同时创建accessToken和refreshToken
         Map<String, String> tokenMap =
                 jwtTokenManager.createAccessTokenAndRefreshToken(userId);
         // 当前时间毫秒值
         long currentTimeMillis = System.currentTimeMillis();
+
         // 获取accessToken
         String accessToken = tokenMap.get(JwtConstants.ACCESS_TOKEN);
         // accessToken过期时间毫秒值
         long accessTokenExpiredTimeMillis = currentTimeMillis + jwtTokenManager.getAccessTokenExpired();
+        // 通过accessToken创建Authentication
+        Authentication accessTokenAuthentication =
+                createAuthentication(accessToken, JwtConstants.ACCESS_TOKEN);
+
         // 获取refreshToken
         String refreshToken = tokenMap.get(JwtConstants.REFRESH_TOKEN);
         // refreshToken过期时间毫秒值
         long refreshTokenExpiredTimeMillis = currentTimeMillis + jwtTokenManager.getRefreshTokenExpired();
+        // 通过refreshToken创建Authentication
+        Authentication refreshTokenAuthentication =
+                createAuthentication(refreshToken, JwtConstants.REFRESH_TOKEN);
+
         // 封装accessToken属性
         TokenAttributes accessTokenAttributes = new TokenAttributes();
         accessTokenAttributes.setUserId(userId);
         accessTokenAttributes.setExpiredTimeMillis(accessTokenExpiredTimeMillis);
+        accessTokenAttributes.setAuthentication(accessTokenAuthentication);
+
         // 封装refreshToken属性
         TokenAttributes refreshTokenAttributes = new TokenAttributes();
         refreshTokenAttributes.setUserId(userId);
         refreshTokenAttributes.setExpiredTimeMillis(refreshTokenExpiredTimeMillis);
+        refreshTokenAttributes.setAuthentication(refreshTokenAuthentication);
+
         // 将accessToken和属性缓存起来
         accessTokenMap.put(accessToken,accessTokenAttributes);
         // 将refreshToken和属性缓存起来
@@ -145,7 +176,7 @@ public class CachedJwtTokenManager implements TokenManager {
             String accessToken = jwtTokenManager.toRefreshToken(refreshToken);
             // 如果刷新token成功,则accessToken不为null,要对这种情况进行处理
             if (accessToken != null) {
-                String userId = refreshTokenAttributes.getUserId();
+                long userId = refreshTokenAttributes.getUserId();
                 // accessToken过期时间毫秒值
                 long accessTokenExpiredTimeMillis = currentTimeMillis + jwtTokenManager.getAccessTokenExpired();
                 TokenAttributes accessTokenAttributes = new TokenAttributes();
@@ -160,6 +191,18 @@ public class CachedJwtTokenManager implements TokenManager {
     }
 
     @Override
+    public Authentication createAuthentication(String token, String tokenType) {
+        return jwtTokenManager.createAuthentication(token,tokenType);
+    }
+
+    /**
+     * 从缓存中获取Authentication对象
+     *
+     * @param token token
+     * @param tokenType tokenType
+     * @return {@link Authentication}
+     */
+    @Override
     public Authentication getAuthentication(String token, String tokenType) {
         if(tokenType.equalsIgnoreCase("accessToken")){
             // 如果这个accessToken在accessTokenMap缓存中
@@ -169,9 +212,6 @@ public class CachedJwtTokenManager implements TokenManager {
                 // 返回accessToken属性（TokenAttributes）中的Authentication对象
                 return accessTokenAttributes.getAuthentication();
             }
-            // 如果这个accessToken不在accessTokenMap缓存中的话就直接创建Authentication对象
-            return jwtTokenManager.createAuthentication(token, JwtConstants.ACCESS_TOKEN);
-
         }else if (tokenType.equalsIgnoreCase("refreshToken")) {
             // 如果这个refreshToken在refreshTokenMap缓存中
             if(accessTokenMap.containsKey(token)){
@@ -180,8 +220,6 @@ public class CachedJwtTokenManager implements TokenManager {
                 // 返回refreshToken属性（TokenAttributes）中的Authentication对象
                 return refreshTokenAttributes.getAuthentication();
             }
-            // 如果这个refreshToken不在refreshTokenMap缓存中的话就直接创建Authentication对象
-            return jwtTokenManager.createAuthentication(token, JwtConstants.REFRESH_TOKEN);
         }
         return null;
     }
@@ -207,7 +245,7 @@ public class CachedJwtTokenManager implements TokenManager {
         /**
          * token所属的用户id
          */
-        private String userId;
+        private long userId;
 
         /**
          * token的过期时间毫秒值（当前时间毫秒值 > 过期时间毫秒值,则说明token过期）
@@ -229,18 +267,18 @@ public class CachedJwtTokenManager implements TokenManager {
         public TokenAttributes() {
         }
 
-        public TokenAttributes(String userId, long expiredTimeMillis, Authentication authentication) {
+        public TokenAttributes(long userId, long expiredTimeMillis, Authentication authentication) {
             this.userId = userId;
             this.expiredTimeMillis = expiredTimeMillis;
             this.authentication = authentication;
         }
 
-        public String getUserId() {
-            return userId;
+        public void setUserId(long userId) {
+            this.userId = userId;
         }
 
-        public void setUserId(String userId) {
-            this.userId = userId;
+        public long getUserId() {
+            return userId;
         }
 
         public long getExpiredTimeMillis() {
@@ -262,7 +300,7 @@ public class CachedJwtTokenManager implements TokenManager {
         @Override
         public String toString() {
             return "TokenAttributes{" +
-                    "userId='" + userId + '\'' +
+                    "userId=" + userId +
                     ", expiredTimeMillis=" + expiredTimeMillis +
                     ", authentication=" + authentication +
                     '}';
