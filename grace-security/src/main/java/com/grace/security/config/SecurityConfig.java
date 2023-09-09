@@ -1,5 +1,8 @@
 package com.grace.security.config;
 
+import com.grace.security.filter.JwtAuthenticationFilter;
+import com.grace.security.handler.CustomAccessDeniedHandler;
+import com.grace.security.handler.CustomAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +36,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     /**
-     * 下面这些请求《不用登录》（也就是不用携带Token）都可以访问
+     * 下面这些请求《不用登录》（也就是不用携带Token）都可以访问。
      */
     private final String[] PERMIT_PATHS={
             "/user/login",
@@ -54,9 +57,12 @@ public class SecurityConfig {
 
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private AccessDeniedHandler accessDeniedHandler;
+    // 自定义认证失败处理器(登录认证失败后调用)
+    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    private AuthenticationEntryPointImpl authenticationEntryPoint;
+    // 自定义权限不足处理器(权限不足时调用)
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
+
 
     @Autowired
     public void setAuthenticationConfiguration(AuthenticationConfiguration authenticationConfiguration) {
@@ -66,15 +72,16 @@ public class SecurityConfig {
     public void setJwtAuthenticationFilter(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
+
     @Autowired
-    public void setAccessDeniedHandler(AccessDeniedHandler accessDeniedHandler) {
-        this.accessDeniedHandler = accessDeniedHandler;
-    }
-    @Autowired
-    public void setAuthenticationEntryPoint(AuthenticationEntryPointImpl authenticationEntryPoint) {
-        this.authenticationEntryPoint = authenticationEntryPoint;
+    public void setCustomAuthenticationEntryPoint(CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     }
 
+    @Autowired
+    public void setCustomAccessDeniedHandler(CustomAccessDeniedHandler customAccessDeniedHandler) {
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -107,10 +114,10 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 // 配置异常处理器（只有抛出异常才会到这里的处理器）
                 .exceptionHandling()
-                // 配置失败处理器（权限不足调用）
-                .accessDeniedHandler(accessDeniedHandler)
                 // 配置失败处理器（登录认证失败后调用）
-                .authenticationEntryPoint(authenticationEntryPoint)
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                // 配置失败处理器（权限不足调用）
+                .accessDeniedHandler(customAccessDeniedHandler)
                 .and()
                 // 结束标志。构建SecurityFilterChain并返回
                 .build();

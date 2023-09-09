@@ -1,6 +1,7 @@
 package com.grace.security.token;
 
 import io.jsonwebtoken.Claims;
+import org.springframework.security.core.Authentication;
 
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import java.util.Map;
  * @date 2023/08/27 15:29:57
  */
 public interface TokenManager {
+
 
     /**
      * 根据用户id生成accessToken
@@ -67,8 +69,8 @@ public interface TokenManager {
     String getUserIdByRefreshToken(String refreshToken);
 
     /**
-     * 通过map集合.get(JwtConstants.ACCESS_TOKEN_NAME)可以拿到accessToken
-     * 通过map集合.get(JwtConstants.REFRESH_TOKEN_NAME)可以拿到refreshToken
+     * 通过map集合.get(JwtConstants.ACCESS_TOKEN)可以拿到accessToken
+     * 通过map集合.get(JwtConstants.REFRESH_TOKEN)可以拿到refreshToken
      *
      * @return 同时返回accessToken和refreshToken的map集合
      */
@@ -80,6 +82,15 @@ public interface TokenManager {
      * @return 返回新的accessToken，失败返回null。
      */
     String toRefreshToken(String refreshToken);
+
+    /**
+     * 根据token获取SpringSecurity用户认证信息对象（Authentication）,每一个登录成功的用户都会有一个这个对象
+     *
+     * @param token
+     * @param tokenType
+     * @return {@link Authentication}
+     */
+    Authentication getAuthentication(String token,String tokenType);
 
     /**
      * 判断accessToken是否过期

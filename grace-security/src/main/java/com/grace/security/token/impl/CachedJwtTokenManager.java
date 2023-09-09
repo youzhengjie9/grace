@@ -4,6 +4,7 @@ import com.grace.security.JwtConstants;
 import com.grace.security.token.TokenManager;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -42,13 +43,8 @@ public class CachedJwtTokenManager implements TokenManager {
 //     */
 //    private volatile Map<String, String> userIdRefreshTokenMap = new ConcurrentHashMap<>(128);
 
-
-    private JwtTokenManager jwtTokenManager;
-
     @Autowired
-    public void setJwtTokenManager(JwtTokenManager jwtTokenManager) {
-        this.jwtTokenManager = jwtTokenManager;
-    }
+    private JwtTokenManager jwtTokenManager;
 
     //    /**
 //     * 定时清理过期token
@@ -69,6 +65,7 @@ public class CachedJwtTokenManager implements TokenManager {
         TokenAttributes accessTokenAttributes = new TokenAttributes();
         accessTokenAttributes.setUserId(userId);
         accessTokenAttributes.setExpiredTimeMillis(accessTokenExpiredTimeMillis);
+        accessTokenAttributes.setAuthentication();
         // 将accessToken和属性缓存起来
         accessTokenMap.put(accessToken,accessTokenAttributes);
         return accessToken;
@@ -108,11 +105,11 @@ public class CachedJwtTokenManager implements TokenManager {
         // 当前时间毫秒值
         long currentTimeMillis = System.currentTimeMillis();
         // 获取accessToken
-        String accessToken = tokenMap.get(JwtConstants.ACCESS_TOKEN_NAME);
+        String accessToken = tokenMap.get(JwtConstants.ACCESS_TOKEN);
         // accessToken过期时间毫秒值
         long accessTokenExpiredTimeMillis = currentTimeMillis + jwtTokenManager.getAccessTokenExpired();
         // 获取refreshToken
-        String refreshToken = tokenMap.get(JwtConstants.REFRESH_TOKEN_NAME);
+        String refreshToken = tokenMap.get(JwtConstants.REFRESH_TOKEN);
         // refreshToken过期时间毫秒值
         long refreshTokenExpiredTimeMillis = currentTimeMillis + jwtTokenManager.getRefreshTokenExpired();
         // 封装accessToken属性
@@ -163,6 +160,33 @@ public class CachedJwtTokenManager implements TokenManager {
     }
 
     @Override
+    public Authentication getAuthentication(String token, String tokenType) {
+        if(tokenType.equalsIgnoreCase("accessToken")){
+            // 如果这个accessToken在accessTokenMap缓存中
+            if(accessTokenMap.containsKey(token)){
+                // 从accessTokenMap中获取这个accessToken的属性（TokenAttributes）
+                TokenAttributes accessTokenAttributes = accessTokenMap.get(token);
+                // 返回accessToken属性（TokenAttributes）中的Authentication对象
+                return accessTokenAttributes.getAuthentication();
+            }
+            // 如果这个accessToken不在accessTokenMap缓存中的话就直接创建Authentication对象
+            return jwtTokenManager.createAuthentication(token, JwtConstants.ACCESS_TOKEN);
+
+        }else if (tokenType.equalsIgnoreCase("refreshToken")) {
+            // 如果这个refreshToken在refreshTokenMap缓存中
+            if(accessTokenMap.containsKey(token)){
+                // 从refreshTokenMap中获取这个refreshToken的属性（TokenAttributes）
+                TokenAttributes refreshTokenAttributes = refreshTokenMap.get(token);
+                // 返回refreshToken属性（TokenAttributes）中的Authentication对象
+                return refreshTokenAttributes.getAuthentication();
+            }
+            // 如果这个refreshToken不在refreshTokenMap缓存中的话就直接创建Authentication对象
+            return jwtTokenManager.createAuthentication(token, JwtConstants.REFRESH_TOKEN);
+        }
+        return null;
+    }
+
+    @Override
     public boolean isAccessTokenExpired(String accessToken) {
         return jwtTokenManager.isAccessTokenExpired(accessToken);
     }
@@ -190,12 +214,25 @@ public class CachedJwtTokenManager implements TokenManager {
          */
         private long expiredTimeMillis;
 
+        /**
+         * 当前token对应的SpringSecurity用户认证信息对象（该Authentication对象包含了用户的帐号、权限列表信息）,
+         * 每一个登录成功的用户都会有一个这个对象
+         * <p>
+         * 解析,为什么一个token可以对应一个Authentication对象: 因为每一次创建token成功,就意味着有一个用户登录成功了,
+         * 同时会产生一个Authentication对象（例如UsernamePasswordAuthenticationToken对象），我们便把它和token关联起来,
+         * <p>
+         * 作用: 方便通过token去找到对应的Authentication对象,因为重新创建Authentication对象比较复杂,
+         * 又需要去数据库重新查询用户权限。
+         */
+        private Authentication authentication;
+
         public TokenAttributes() {
         }
 
-        public TokenAttributes(String userId, long expiredTimeMillis) {
+        public TokenAttributes(String userId, long expiredTimeMillis, Authentication authentication) {
             this.userId = userId;
             this.expiredTimeMillis = expiredTimeMillis;
+            this.authentication = authentication;
         }
 
         public String getUserId() {
@@ -214,11 +251,20 @@ public class CachedJwtTokenManager implements TokenManager {
             this.expiredTimeMillis = expiredTimeMillis;
         }
 
+        public Authentication getAuthentication() {
+            return authentication;
+        }
+
+        public void setAuthentication(Authentication authentication) {
+            this.authentication = authentication;
+        }
+
         @Override
         public String toString() {
             return "TokenAttributes{" +
                     "userId='" + userId + '\'' +
                     ", expiredTimeMillis=" + expiredTimeMillis +
+                    ", authentication=" + authentication +
                     '}';
         }
     }

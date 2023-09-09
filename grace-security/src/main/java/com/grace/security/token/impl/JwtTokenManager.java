@@ -1,18 +1,24 @@
 package com.grace.security.token.impl;
 
 import com.grace.security.JwtConstants;
+import com.grace.security.entity.User;
+import com.grace.security.service.MenuService;
+import com.grace.security.service.UserService;
 import com.grace.security.token.TokenManager;
+import com.grace.security.users.GraceUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -52,6 +58,12 @@ public class JwtTokenManager implements TokenManager {
 
     @Value("${jwt.issuer:youzhengjie}")
     private String issuer;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private MenuService menuService;
 
     /**
      * @return 随机的id
@@ -142,8 +154,8 @@ public class JwtTokenManager implements TokenManager {
         // 创建refreshToken
         String refreshToken = createRefreshToken(userId);
         // 放到一个map中
-        tokenMap.put(JwtConstants.ACCESS_TOKEN_NAME,accessToken);
-        tokenMap.put(JwtConstants.REFRESH_TOKEN_NAME,refreshToken);
+        tokenMap.put(JwtConstants.ACCESS_TOKEN,accessToken);
+        tokenMap.put(JwtConstants.REFRESH_TOKEN,refreshToken);
         return tokenMap;
     }
 
@@ -158,6 +170,64 @@ public class JwtTokenManager implements TokenManager {
 
         // 重新生成accessToken
         return createAccessToken(userId);
+    }
+
+    @Override
+    public Authentication getAuthentication(String token, String tokenType) {
+        return createAuthentication(token,tokenType);
+    }
+
+    /**
+     * 创建Authentication对象。
+     *
+     * @param token token
+     * @param tokenType tokenType
+     * @return {@link Authentication}
+     */
+//    @Override
+    public Authentication createAuthentication(String token, String tokenType) {
+        if(tokenType.equalsIgnoreCase("accessToken")){
+            // 根据accessToken获取userId
+            String userId = getUserIdByAccessToken(token);
+            // 根据userId查询用户信息
+            User user = userService.lambdaQuery()
+                    .select(
+                            User::getUserName,
+                            User::getStatus,
+                            User::getDelFlag
+                    )
+                    .eq(User::getId, Long.valueOf(userId))
+                    .one();
+            // 根据userId查询权限列表
+            List<String> permissions = menuService.getAllPermissionsByUserId(Long.parseLong(userId));
+            // 封装GraceUser对象
+            GraceUser graceUser = new GraceUser(user.getUserName(),permissions,user.getStatus(),user.getDelFlag());
+            // 获取用户的权限列表
+            Collection<? extends GrantedAuthority> authorities = graceUser.getAuthorities();
+            // 创建Authentication对象
+            return new UsernamePasswordAuthenticationToken(graceUser,"",authorities);
+        }else if (tokenType.equalsIgnoreCase("refreshToken")) {
+            // 根据refreshToken获取userId
+            String userId = getUserIdByRefreshToken(token);
+            // 根据userId查询用户信息
+            User user = userService.lambdaQuery()
+                    .select(
+                            User::getUserName,
+                            User::getStatus,
+                            User::getDelFlag
+                    )
+                    .eq(User::getId, Long.valueOf(userId))
+                    .one();
+            // 根据userId查询权限列表
+            List<String> permissions = menuService.getAllPermissionsByUserId(Long.parseLong(userId));
+            // 封装GraceUser对象
+            GraceUser graceUser = new GraceUser(user.getUserName(),permissions,user.getStatus(),user.getDelFlag());
+            // 获取用户的权限列表
+            Collection<? extends GrantedAuthority> authorities = graceUser.getAuthorities();
+            // 创建Authentication对象
+            return new UsernamePasswordAuthenticationToken(graceUser,"",authorities);
+        }
+        return null;
     }
 
     @Override

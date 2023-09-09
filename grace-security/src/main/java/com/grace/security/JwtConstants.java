@@ -11,11 +11,11 @@ public class JwtConstants {
     /**
      * accessToken的名称（和前端存储在localstorage的token名称一致）
      */
-    public static final String ACCESS_TOKEN_NAME = "accessToken";
+    public static final String ACCESS_TOKEN = "accessToken";
 
     /**
      * refreshToken的名称（和前端存储在localstorage的token名称一致）
      */
-    public static final String REFRESH_TOKEN_NAME = "refreshToken";
+    public static final String REFRESH_TOKEN = "refreshToken";
 
 }
