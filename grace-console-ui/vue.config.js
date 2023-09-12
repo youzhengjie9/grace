@@ -6,9 +6,8 @@ module.exports = defineConfig({
 /* 覆盖webpack的配置 */
 module.exports = {
   devServer: { // 自定义服务配置
-    port: 8000 //自定义端口号
+    port: 8080 //自定义端口号
   },
   lintOnSave: false //关闭es lint检测，不然会出现很多bug
 
 }
-

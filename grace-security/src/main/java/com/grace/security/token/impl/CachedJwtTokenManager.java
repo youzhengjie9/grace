@@ -179,9 +179,14 @@ public class CachedJwtTokenManager implements TokenManager {
                 long userId = refreshTokenAttributes.getUserId();
                 // accessToken过期时间毫秒值
                 long accessTokenExpiredTimeMillis = currentTimeMillis + jwtTokenManager.getAccessTokenExpired();
+                // 给accessToken创建Authentication对象（用户登录对象）
+                Authentication authentication = createAuthentication(accessToken, JwtConstants.ACCESS_TOKEN);
+                // 封装accessToken的属性
                 TokenAttributes accessTokenAttributes = new TokenAttributes();
                 accessTokenAttributes.setUserId(userId);
                 accessTokenAttributes.setExpiredTimeMillis(accessTokenExpiredTimeMillis);
+                accessTokenAttributes.setAuthentication(authentication);
+                // 将accessToken和其属性放入accessTokenMap中
                 accessTokenMap.put(accessToken, accessTokenAttributes);
                 return accessToken;
             }

@@ -4,6 +4,8 @@ import com.alibaba.fastjson2.JSON;
 import com.grace.common.enums.ResultType;
 import com.grace.common.utils.Result;
 import com.grace.common.utils.WebUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -25,6 +27,7 @@ import java.io.IOException;
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
+    private static final Logger log = LoggerFactory.getLogger(CustomAuthenticationEntryPoint.class);
 
     /**
      * authException的几种类型：
@@ -42,17 +45,18 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
 
-        Result<Object> result = new Result<>();
+        log.error("request="+request);
+        log.error("authException="+authException);
+
+        Result<Object> result = null;
         //第一种情况：如果用户名或密码不正确，则会进来这里
         if(authException instanceof BadCredentialsException ||
                 authException instanceof InternalAuthenticationServiceException){
-            result.setCode(ResultType.USERNAME_PASSWORD_ERROR.getCode());
-            result.setMsg(ResultType.USERNAME_PASSWORD_ERROR.getMessage());
+            result = Result.build(ResultType.USERNAME_PASSWORD_ERROR);
         }
         //第二种情况：如果用户未进行登录、又访问了SecurityConfig配置类中的antMatchers("拦截路径列表").authenticated()中定义的拦截路径
         else if(authException instanceof InsufficientAuthenticationException){
-            result.setCode(ResultType.NOT_LOGIN.getCode());
-            result.setMsg(ResultType.NOT_LOGIN.getMessage());
+            result = Result.build(ResultType.NOT_LOGIN);
         }
         //返回给前端
         WebUtil.writeJsonString(response, JSON.toJSONString(result));
