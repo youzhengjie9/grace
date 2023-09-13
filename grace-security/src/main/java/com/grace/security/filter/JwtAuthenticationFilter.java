@@ -94,8 +94,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         // 不管accessToken是否为空过滤器都放行
         filterChain.doFilter(request,response);
-
-
     }
 
     /**

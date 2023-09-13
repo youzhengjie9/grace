@@ -1,6 +1,7 @@
 <template>
   <div class="sidebar-box">
-      <el-menu :default-openeds="['1', '3']">
+      <!-- <el-menu :default-openeds="['1', '3']"> -->
+      <el-menu>
         <el-submenu index="1">
           <template slot="title"
             ><i class="el-icon-message"></i>导航一</template
@@ -51,7 +52,6 @@
           </el-submenu>
         </el-submenu>
       </el-menu>
-    </el-aside>
   </div>
 </template>
 

@@ -8,7 +8,7 @@
 
       <el-container>
         <!-- 侧边栏 -->
-        <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+        <el-aside width="200px" style="height:560px;">
             <!-- 项目版本号 -->
             <p class="version">v1.0.0</p>
             <sidebar />
@@ -17,7 +17,7 @@
         <el-container>
           <!-- 嵌套路由的展示区域 -->
           <el-main>
-            
+            <router-view/>
           </el-main>
           <!-- 页尾 -->
           <el-footer>
@@ -45,6 +45,7 @@ export default {
 </script>
 
 <style scoped>
+
 .el-header {
   background-color: #252a2f;
   color: #fff;
