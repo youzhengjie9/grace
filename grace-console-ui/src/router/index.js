@@ -43,6 +43,11 @@ const router = new VueRouter({
             ]  
         },
         {
+            // 服务详情路由
+            path:'/service/detail',
+            component: () => import('../views/service/detail/index.vue')
+        },
+        {
             // 登录路由
             path:'/login',
             component: () => import('../views/login/index.vue')

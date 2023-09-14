@@ -211,10 +211,7 @@
           ></el-input>
         </el-form-item>
         <el-form-item label="元数据" prop="metadata">
-          <!-- <el-input
-            v-model="createServiceForm.metadata"
-            autocomplete="off"
-          ></el-input> -->
+          <!-- 代码编辑器 -->
           <editor
             v-model="createServiceForm.metadata"
             lang="json"
@@ -222,9 +219,7 @@
             width="70%"
             height="200"
             @init="editorInit"
-            @input='codeChange'
             :options="editorOptions"
-            
           ></editor>
         </el-form-item>
       </el-form>
@@ -238,12 +233,12 @@
 
 <script>
 // 引入vue2-ace-editor代码编辑器
-import Editor from 'vue2-ace-editor';
+import Editor from "vue2-ace-editor";
 
 export default {
   name: "ServiceList",
-  components:{
-    Editor
+  components: {
+    Editor,
   },
   data() {
     return {
@@ -329,15 +324,18 @@ export default {
         serviceName: [
           { required: true, message: "请输入服务名称", trigger: "blur" },
         ],
-        // 保护阈值
+        // 保护阈值（纯整数（123）和小数（567.6512））
         protectionThreshold: [
-          { required: true, type: "number", message: "请输入保护阈值"}
+          {
+            required: true,
+            pattern: /^(\-|\+)?\d+(\.\d+)?$/,
+            message: "请输入保护阈值",
+            trigger: "blur",
+          },
         ],
       },
       // vue2-ace-editor代码编辑器配置
       editorOptions: {
-        //编辑器语言
-        lang:'javascript',
         // 启用基本自动完成
         enableBasicAutocompletion: true,
         //启用实时自动完成
@@ -355,29 +353,24 @@ export default {
         //去除编辑器里的竖线
         showPrintMargin: false,
         // 超出内容的滚动范围
-        scrollPastEnd: 0.1, 
+        scrollPastEnd: 0.1,
       },
-      codeChange(val){
-        console.log(val)
-      }
     };
   },
   methods: {
     // vue2-ace-editor代码编辑器初始化(下面的额外配置（例如主题、语言等）可以在node_modules\brace文件夹找 ,然后导入即可)
     editorInit() {
       // 语言工具
-      require('brace/ext/language_tools'); 
-      
+      require("brace/ext/language_tools");
+
       // 主题（可选chrome（白）、dawn（白）、tomorrow_night（黑）、dracula（黑）、monokai（黑）等）
-      require('brace/theme/tomorrow_night');
+      require("brace/theme/tomorrow_night");
 
       // 编译器语言（可选html、java、javascript、golang、json、mysql、python、properties、sql、xml、yaml 等）
-      require('brace/mode/json');
-      
+      require("brace/mode/json");
 
       // 编译器代码段（html、java、javascript、golang、json、mysql、python、properties、sql、xml、yaml 等）
-      require('brace/snippets/json');
-    
+      require("brace/snippets/json");
     },
     // 点击切换命名空间
     namespaceToggle(selectedNamespaceId) {

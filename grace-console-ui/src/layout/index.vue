@@ -1,6 +1,6 @@
 <template>
   <div class="layout-box">
-    <el-container style="height: 500px; border: 1px solid #eee">
+    <el-container style="height: 500px;">
       <!-- 页头 -->
       <el-header style="text-align: right; font-size: 12px">
         <page-header />
@@ -59,10 +59,6 @@ export default {
   font-weight: 700;
   text-align: center;
 }
-
-/* .el-main {
-    padding-top: 0;
-} */
 
 .el-footer{
 
