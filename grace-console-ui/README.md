@@ -68,6 +68,11 @@ npm install echarts --save
 npm install moment
 ```
 
+### 安装vue2-ace-editor代码编辑器
+
+```
+npm install --save-dev vue2-ace-editor
+```
 
 
 
