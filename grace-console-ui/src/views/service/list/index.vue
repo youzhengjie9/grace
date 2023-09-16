@@ -97,8 +97,9 @@
               </span>
               <el-switch
                 v-model="queryCondition.hideEmptyService"
-                active-color="#1274e7"
+                active-color="#209bfa"
                 inactive-color="#f5f5f5"
+                width="50"
               >
               </el-switch>
             </el-form-item>
