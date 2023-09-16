@@ -145,12 +145,38 @@
       </el-table-column>
       <el-table-column prop="weight" label="权重" width="100">
       </el-table-column>
+  
       <el-table-column
-        prop="healthy"
-        :formatter="formatHealthy"
         label="健康状态"
         width="100"
       >
+        <template slot-scope="scope">
+          
+          <el-tag type="success"
+          v-if="scope.row.healthy == true">
+          健康
+          </el-tag>
+
+          <el-tag type="danger"
+          v-if="scope.row.healthy == false">
+          不健康
+          </el-tag>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="是否在线" width="100">
+        <template slot-scope="scope">
+          
+          <el-tag type="success"
+          v-if="scope.row.online == true">
+          在线
+          </el-tag>
+
+          <el-tag type="danger"
+          v-if="scope.row.online == false">
+          不在线
+          </el-tag>
+        </template>
       </el-table-column>
 
       <el-table-column label="元数据" width="490">
@@ -168,11 +194,23 @@
             @click="clickOpenModifyInstanceDialog(scope.row)"
             >编辑</el-button
           >
+
+          <!-- 下线 -->
           <el-button
+            v-if="scope.row.online == true"
             size="mini"
             type="danger"
-            @click="deleteInstance(scope.row)"
+            @click="offline(scope.row)"
             >下线</el-button
+          >
+
+          <!-- 上线 -->
+          <el-button
+            v-if="scope.row.online == false"
+            size="mini"
+            type="success"
+            @click="online(scope.row)"
+            >上线</el-button
           >
         </template>
       </el-table-column>
@@ -184,36 +222,45 @@
       :visible.sync="openModifyInstanceDialog"
       @close="handleCloseModifyInstanceDialog"
     >
-      <el-form :model="modifyInstanceForm" label-width="80px">
+      <el-form :model="modifyInstanceForm" label-width="90px">
         <el-form-item>
           <!-- 标题 -->
           <span slot="label">
             <span style="font-weight: bold">IP</span>
           </span>
-          <el-input
-            v-model="modifyInstanceForm.ipAddr"
-            autocomplete="off"
-          ></el-input>
+          <el-col :span="20">
+            <el-input
+              v-model="modifyInstanceForm.ipAddr"
+              autocomplete="off"
+              :disabled="true"
+            ></el-input>
+          </el-col>
         </el-form-item>
         <el-form-item>
           <!-- 标题 -->
           <span slot="label">
             <span style="font-weight: bold">端口</span>
           </span>
-          <el-input
-            v-model="modifyInstanceForm.port"
-            autocomplete="off"
-          ></el-input>
+          <el-col :span="20">
+            <el-input
+              v-model="modifyInstanceForm.port"
+              autocomplete="off"
+              :disabled="true"
+            ></el-input>
+          </el-col>
+          
         </el-form-item>
         <el-form-item>
           <!-- 标题 -->
           <span slot="label">
             <span style="font-weight: bold">权重</span>
           </span>
-          <el-input
-            v-model="modifyInstanceForm.weight"
-            autocomplete="off"
-          ></el-input>
+          <el-col :span="20">
+            <el-input
+              v-model="modifyInstanceForm.weight"
+              autocomplete="off"
+            ></el-input>
+          </el-col>
         </el-form-item>
         <el-form-item>
           <!-- 标题 -->
@@ -237,7 +284,7 @@
             v-model="modifyInstanceForm.metadata"
             lang="json"
             theme="tomorrow_night"
-            width="70%"
+            width="85%"
             height="320"
             @init="editorInit"
             :options="editorOptions"
@@ -357,7 +404,7 @@ export default {
           weight: 1.0,
           healthy: true,
           // 是否在线
-          online: true,
+          online: false,
           metadata: {
             "preserved.register.source": "SPRING_CLOUD",
             gray: false,
@@ -461,6 +508,10 @@ export default {
     clickOpenModifyInstanceDialog(row) {
       // 打开修改/编辑实例的dialog
       this.openModifyInstanceDialog = true;
+      // 先将对象转成Map对象
+      const metadataMap = new Map(Object.entries(row.metadata));
+      // 将Map对象转成格式化的Json字符串
+      let metadataJson = JSON.stringify(Object.fromEntries(metadataMap), null, "\t");
       // 将需要修改的实例对象保存到modifyInstanceForm（修改实例表单内容）,后面我们修改完实例提交这个表单内容即可
       this.modifyInstanceForm = {
         id: row.id,
@@ -469,34 +520,36 @@ export default {
         ephemeral: row.ephemeral,
         weight: row.weight,
         healthy: row.healthy,
-        // 是否在线
         online: row.online,
-        metadata: "",
+        metadata: metadataJson,
       };
-      console.log(this.modifyInstanceForm);
     },
     // 当关闭修改实例dialog的回调
     handleCloseModifyInstanceDialog() {
-      // this.modifyInstanceForm = {
-      //     id: -1,
-      //     ipAddr: "",
-      //     port: -1,
-      //     ephemeral: true,
-      //     weight: -1,
-      //     healthy: false,
-      //     // 是否在线
-      //     online: false,
-      //     metadata: {},
-      // }
+      this.modifyInstanceForm = {
+          id: -1,
+          ipAddr: "",
+          port: -1,
+          ephemeral: true,
+          weight: -1,
+          healthy: false,
+          // 是否在线
+          online: false,
+          metadata: '',
+      }
       this.openModifyInstanceDialog = false;
     },
     // 提交修改实例表单
     modifyInstance() {},
-    // 删除实例
-    deleteInstance(row) {
-      console.log(row);
+    // 下线
+    offline(row){
+      row.online = false;
     },
-  },
+    // 上线
+    online(row){
+      row.online = true;
+    }
+  }, 
 };
 </script>
 
