@@ -99,7 +99,6 @@
                 v-model="queryCondition.hideEmptyService"
                 active-color="#209bfa"
                 inactive-color="#f5f5f5"
-                width="50"
               >
               </el-switch>
             </el-form-item>
@@ -119,7 +118,7 @@
           <el-button
             type="primary"
             size="small"
-            @click="openCreateServiceDialog = true"
+            @click="clickOpenCreateServiceDialog"
             >创建服务</el-button
           >
         </el-col>
@@ -149,12 +148,12 @@
       </el-table-column>
       <el-table-column label="操作" min-width="180">
         <template slot-scope="scope">
-          <a class="operation" href="#" @click="serviceDetail(scope.row)"
-            >服务详情</a
+          <span class="operation" @click="serviceDetail(scope.row.id)"
+            >服务详情</span
           >
           <span style="margin-right: 5px">|</span>
-          <a class="operation" href="#" @click="deleteService(scope.row)"
-            >删除服务</a
+          <span class="operation" href="#" @click="deleteService(scope.row.id)"
+            >删除服务</span
           >
         </template>
       </el-table-column>
@@ -381,13 +380,22 @@ export default {
     query() {
       console.log(this.queryCondition);
     },
+    // 点击打开创建服务dialog
+    clickOpenCreateServiceDialog(){
+      this.openCreateServiceDialog = true;
+    },
     // 服务详情
-    serviceDetail(row) {
-      console.log(row);
+    serviceDetail(id) {
+      this.$router.push({
+        path:'/service/detail',
+        query: {
+          id : id
+        }
+      })
     },
     // 删除服务
-    deleteService(row) {
-      console.log(row);
+    deleteService(id) {
+      console.log(id);
     },
     // pageSize（每页展示的数量）改变时触发
     handlePageSizeChange(pageSize) {

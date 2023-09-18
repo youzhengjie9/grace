@@ -9,71 +9,141 @@
       </el-col>
       <el-col :span="5" :offset="13">
         <span style="font-size: 28px; height: 40px; font-weight: 500">
-          <el-button size="medium" style="margin-right: 10px"
+          <el-button
+            size="medium"
+            style="margin-right: 10px"
+            @click="clickOpenModifyServiceDialog"
             >编辑服务</el-button
           >
-          <el-button type="primary" size="medium">返回</el-button>
+          <el-button type="primary" size="medium" @click="back">返回</el-button>
         </span>
       </el-col>
     </el-row>
 
-    <!-- 表单  -->
-
-    <el-form
-      :model="modifyServiceForm"
-      :rules="modifyServiceRules"
-      label-width="150px"
-    >
-      <el-form-item label="服务名称" prop="serviceName">
+    <!-- 服务详情展示(不能进行编辑)  -->
+    <el-form :model="serviceForm" label-width="150px">
+      <el-form-item label="服务名称">
         <el-input
-          v-model="modifyServiceForm.serviceName"
+          v-model="serviceForm.serviceName"
           autocomplete="off"
           style="width: 70%"
+          :disabled="true"
         ></el-input>
       </el-form-item>
-      <el-form-item label="分组名称" prop="groupName">
+      <el-form-item label="分组名称">
         <el-input
-          v-model="modifyServiceForm.groupName"
+          v-model="serviceForm.groupName"
           autocomplete="off"
           placeholder="DEFAULT_GROUP"
           style="width: 70%"
+          :disabled="true"
         ></el-input>
       </el-form-item>
-      <el-form-item label="保护阈值" prop="protectionThreshold">
+      <el-form-item label="保护阈值">
         <el-input
-          v-model="modifyServiceForm.protectionThreshold"
+          v-model="serviceForm.protectionThreshold"
           autocomplete="off"
           style="width: 70%"
+          :disabled="true"
         ></el-input>
       </el-form-item>
-      <el-form-item label="元数据" prop="metadata">
+      <el-form-item label="元数据">
         <!-- 代码编辑器 -->
         <editor
-          v-model="modifyServiceForm.metadata"
+          v-model="serviceForm.metadata"
           lang="json"
           theme="tomorrow_night"
           width="70%"
           height="320"
           @init="editorInit"
-          :options="editorOptions"
+          :options="readOnlyEditorOptions"
         ></editor>
       </el-form-item>
     </el-form>
 
+    <!-- 编辑服务dialog -->
+    <el-dialog
+      title="编辑服务"
+      :visible.sync="openModifyServiceDialog"
+      @close="handleCloseModifyServiceDialog"
+    >
+      <el-form
+        :model="modifyServiceForm"
+        :rules="modifyServiceRules"
+        label-width="90px"
+      >
+        <el-form-item prop="serviceName">
+          <!-- 标题 -->
+          <span slot="label">
+            <span style="font-weight: bold">服务名称</span>
+          </span>
+          <el-col :span="20">
+            <el-input
+              v-model="modifyServiceForm.serviceName"
+              autocomplete="off"
+            ></el-input>
+          </el-col>
+        </el-form-item>
+        <el-form-item prop="groupName">
+          <!-- 标题 -->
+          <span slot="label">
+            <span style="font-weight: bold">分组名称</span>
+          </span>
+          <el-col :span="20">
+            <el-input
+              v-model="modifyServiceForm.groupName"
+              autocomplete="off"
+              placeholder="DEFAULT_GROUP"
+            ></el-input>
+          </el-col>
+        </el-form-item>
+        <el-form-item prop="protectionThreshold">
+          <!-- 标题 -->
+          <span slot="label">
+            <span style="font-weight: bold">保护阈值</span>
+          </span>
+          <el-col :span="20">
+            <el-input
+              v-model="modifyServiceForm.protectionThreshold"
+              autocomplete="off"
+            ></el-input>
+          </el-col>
+        </el-form-item>
+        <el-form-item prop="metadata">
+          <!-- 标题 -->
+          <span slot="label">
+            <span style="font-weight: bold">元数据</span>
+          </span>
+          <!-- 代码编辑器 -->
+          <editor
+            v-model="modifyServiceForm.metadata"
+            lang="json"
+            theme="tomorrow_night"
+            width="85%"
+            height="320"
+            @init="editorInit"
+            :options="writableEditorOptions"
+          ></editor>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="modifyService">确定</el-button>
+        <el-button @click="handleCloseModifyServiceDialog">取消</el-button>
+      </div>
+    </el-dialog>
+    s
     <!-- 集群 -->
     <el-row :gutter="24">
-      <el-col :span="6">
-        <div class="next-card-title">
-          集群<span class="next-card-subtitle">DEFAULT</span>
-        </div>
+      <el-col :span="24">
+        <div class="next-card-title">服务实例</div>
       </el-col>
-      <el-col :span="3" :offset="14">
+      <!-- <el-col :span="3" :offset="14">
         <span style="font-size: 28px; height: 40px; font-weight: 500">
           <el-button size="medium" style="margin-right: 10px"
             >集群配置</el-button
           >
         </span>
-      </el-col>
+      </el-col> -->
     </el-row>
 
     <!-- 元数据过滤 -->
@@ -145,41 +215,30 @@
       </el-table-column>
       <el-table-column prop="weight" label="权重" width="100">
       </el-table-column>
-  
-      <el-table-column
-        label="健康状态"
-        width="100"
-      >
+
+      <el-table-column label="健康状态" width="100">
         <template slot-scope="scope">
-          
-          <el-tag type="success"
-          v-if="scope.row.healthy == true">
-          健康
+          <el-tag type="success" v-if="scope.row.healthy == true">
+            健康
           </el-tag>
 
-          <el-tag type="danger"
-          v-if="scope.row.healthy == false">
-          不健康
+          <el-tag type="danger" v-if="scope.row.healthy == false">
+            不健康
           </el-tag>
         </template>
       </el-table-column>
 
       <el-table-column label="是否在线" width="100">
         <template slot-scope="scope">
-          
-          <el-tag type="success"
-          v-if="scope.row.online == true">
-          在线
-          </el-tag>
+          <el-tag type="success" v-if="scope.row.online == true"> 在线 </el-tag>
 
-          <el-tag type="danger"
-          v-if="scope.row.online == false">
-          不在线
+          <el-tag type="danger" v-if="scope.row.online == false">
+            不在线
           </el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column label="元数据" width="490">
+      <el-table-column label="元数据" width="470">
         <template slot-scope="scope">
           <!-- metadata渲染成html -->
           <div v-html="formatMetadata(scope.row)"></div>
@@ -248,7 +307,6 @@
               :disabled="true"
             ></el-input>
           </el-col>
-          
         </el-form-item>
         <el-form-item>
           <!-- 标题 -->
@@ -287,7 +345,7 @@
             width="85%"
             height="320"
             @init="editorInit"
-            :options="editorOptions"
+            :options="writableEditorOptions"
           ></editor>
         </el-form-item>
       </el-form>
@@ -310,8 +368,42 @@ export default {
   },
   data() {
     return {
+      // 服务详情展示表单
+      serviceForm: {
+        // 服务id
+        id: -1,
+        // 服务名称
+        serviceName: "",
+        // 分组名称
+        groupName: "",
+        // 保护阈值
+        protectionThreshold: "",
+        // 元数据
+        metadata: "",
+      },
+      // 只读的（不能进行编辑的）代码编辑器配置
+      readOnlyEditorOptions: {
+        // 是否只读
+        readOnly: true,
+        // 启用代码段
+        enableSnippets: true,
+        // 高亮配置
+        highlightActiveLine: true,
+        //标签大小
+        tabSize: 2,
+        //设置字号
+        fontSize: 18,
+        //去除编辑器里的竖线
+        showPrintMargin: false,
+        // 超出内容的滚动范围
+        scrollPastEnd: 0.1,
+      },
+      // 是否打开修改/编辑服务dialog
+      openModifyServiceDialog: false,
       // 修改服务表单
       modifyServiceForm: {
+        // 服务id
+        id: -1,
         // 服务名称
         serviceName: "",
         // 分组名称
@@ -337,9 +429,9 @@ export default {
           },
         ],
       },
-      // vue2-ace-editor代码编辑器配置
-      editorOptions: {
-        // 启用基本自动完成
+      // 可写的（可以进行编辑的）代码编辑器配置
+      writableEditorOptions: {
+        // 启用基本自动完
         enableBasicAutocompletion: true,
         //启用实时自动完成
         enableLiveAutocompletion: true,
@@ -391,10 +483,8 @@ export default {
           healthy: true,
           // 是否在线
           online: true,
-          metadata: {
-            "preserved.register.source": "SPRING_CLOUD",
-            gray: false,
-          },
+          metadata:
+            '{"preserved.register.source": "SPRING_CLOUD","gray": false}',
         },
         {
           id: 10002,
@@ -405,10 +495,8 @@ export default {
           healthy: true,
           // 是否在线
           online: false,
-          metadata: {
-            "preserved.register.source": "SPRING_CLOUD",
-            gray: false,
-          },
+          metadata:
+            '{"preserved.register.source": "SPRING_CLOUD","gray": false}',
         },
       ],
       // 是否打开修改/编辑实例dialog
@@ -423,9 +511,41 @@ export default {
         healthy: false,
         // 是否在线
         online: false,
-        metadata: {},
+        metadata: "",
       },
     };
+  },
+  mounted() {
+    let serviceId = this.$route.query.id;
+    // 根据服务id调用后端接口从数据库查询该服务的数据
+    let serviceData = {
+      // 服务id
+      id: serviceId,
+      // 服务名称
+      serviceName: "abc",
+      // 分组名称
+      groupName: "DEFAULT_GROUP",
+      // 保护阈值
+      protectionThreshold: "1",
+      // 元数据
+      metadata: '{"preserved.register.source": "SPRING_CLOUD","gray": false}'
+    };
+    // 格式化metadata的json字符串
+    let metadataJSON = this.formatJsonStr(serviceData.metadata);
+    // 将serviceData对象赋值给serviceForm对象(metadata要进行格式化再赋值)
+    this.serviceForm = {
+      // 服务id
+      id: serviceData.id,
+      // 服务名称
+      serviceName: serviceData.serviceName,
+      // 分组名称
+      groupName: serviceData.groupName,
+      // 保护阈值
+      protectionThreshold: serviceData.protectionThreshold,
+      // 元数据
+      metadata: metadataJSON
+    };
+
   },
   methods: {
     // vue2-ace-editor代码编辑器初始化(下面的额外配置（例如主题、语言等）可以在node_modules\brace文件夹找 ,然后导入即可)
@@ -441,6 +561,107 @@ export default {
 
       // 编译器代码段（html、java、javascript、golang、json、mysql、python、properties、sql、xml、yaml 等）
       require("brace/snippets/json");
+    },
+    // 点击打开修改/编辑服务的dialog
+    clickOpenModifyServiceDialog() {
+      // 打开修改/编辑服务的dialog
+      this.openModifyServiceDialog = true;
+      // 将服务详情表单（serviceForm）内容复制到一个新的修改/编辑服务的表单（modifyServiceForm）对象中
+      this.modifyServiceForm = {
+        // 服务id
+        id: this.serviceForm.id,
+        // 服务名称
+        serviceName: this.serviceForm.serviceName,
+        // 分组名称
+        groupName: this.serviceForm.groupName,
+        // 保护阈值
+        protectionThreshold: this.serviceForm.protectionThreshold,
+        // 元数据
+        metadata: this.serviceForm.metadata,
+      };
+    },
+    // 当关闭修改服务dialog的回调
+    handleCloseModifyServiceDialog() {
+      this.openModifyServiceDialog = false;
+    },
+    // 提交修改服务表单
+    modifyService() {
+
+    },
+    // JSON字符串转成Map对象
+    jsonStrToMap(jsonStr) {
+      const jsonObj = JSON.parse(jsonStr);
+      const map = new Map();
+      for (const k of Object.keys(jsonObj)) {
+        map.set(k, jsonObj[k]);
+      }
+      return map;
+    },
+    // 将JSON字符串格式化成用户容易看懂的格式
+    formatJsonStr(jsonStr) {
+      var result = "";
+      var level = 0;
+      var i = 0;
+      var j = 0;
+      var inQuotationMarks = false;
+      var currentChar = null;
+
+      for (i = 0; i < jsonStr.length; i++) {
+        currentChar = jsonStr.charAt(i);
+
+        switch (currentChar) {
+          case "{":
+          case "[":
+            if (!inQuotationMarks) {
+              result += currentChar + "\n" + this.indent(level + 1);
+              level++;
+            } else {
+              result += currentChar;
+            }
+            break;
+          case "}":
+          case "]":
+            if (!inQuotationMarks) {
+              level--;
+              result += "\n" + this.indent(level) + currentChar;
+            } else {
+              result += currentChar;
+            }
+            break;
+          case ",":
+            if (!inQuotationMarks) {
+              result += ",\n" + this.indent(level);
+            } else {
+              result += currentChar;
+            }
+            break;
+          case ":":
+            if (!inQuotationMarks) {
+              result += ": ";
+            } else {
+              result += currentChar;
+            }
+            break;
+          case '"':
+            if (i > 0 && jsonStr.charAt(i - 1) !== "\\") {
+              inQuotationMarks = !inQuotationMarks;
+            }
+            result += currentChar;
+            break;
+          default:
+            result += currentChar;
+            break;
+        }
+      }
+      return result;
+    },
+    indent(level) {
+      var result = "";
+      var i = 0;
+      for (i = 0; i < level; i++) {
+        result += "  ";
+      }
+      return result;
     },
     // 将boolean类型的ephemeral格式化成String类型
     formatEphemeral(row, column) {
@@ -458,10 +679,10 @@ export default {
         return "false";
       }
     },
-    // 将metadata对象转成 Map然后再转成 Html字符串
+    // 将metadata的JSON字符串转成 Map然后再转成 Html字符串
     formatMetadata(row) {
-      // 先将对象转成Map对象
-      const metadataMap = new Map(Object.entries(row.metadata));
+      // 将JSON字符串转成Map对象
+      let metadataMap = this.jsonStrToMap(row.metadata);
       // 将Map对象转成String字符串
       var metadataStr = "";
       metadataMap.forEach((value, key) => {
@@ -508,10 +729,8 @@ export default {
     clickOpenModifyInstanceDialog(row) {
       // 打开修改/编辑实例的dialog
       this.openModifyInstanceDialog = true;
-      // 先将对象转成Map对象
-      const metadataMap = new Map(Object.entries(row.metadata));
-      // 将Map对象转成格式化的Json字符串
-      let metadataJson = JSON.stringify(Object.fromEntries(metadataMap), null, "\t");
+      // 格式化metadata的JSON字符串
+      let metadataJSON = this.formatJsonStr(row.metadata);
       // 将需要修改的实例对象保存到modifyInstanceForm（修改实例表单内容）,后面我们修改完实例提交这个表单内容即可
       this.modifyInstanceForm = {
         id: row.id,
@@ -521,35 +740,39 @@ export default {
         weight: row.weight,
         healthy: row.healthy,
         online: row.online,
-        metadata: metadataJson,
+        metadata: metadataJSON,
       };
     },
     // 当关闭修改实例dialog的回调
     handleCloseModifyInstanceDialog() {
       this.modifyInstanceForm = {
-          id: -1,
-          ipAddr: "",
-          port: -1,
-          ephemeral: true,
-          weight: -1,
-          healthy: false,
-          // 是否在线
-          online: false,
-          metadata: '',
-      }
+        id: -1,
+        ipAddr: "",
+        port: -1,
+        ephemeral: true,
+        weight: -1,
+        healthy: false,
+        // 是否在线
+        online: false,
+        metadata: "",
+      };
       this.openModifyInstanceDialog = false;
     },
     // 提交修改实例表单
     modifyInstance() {},
     // 下线
-    offline(row){
+    offline(row) {
       row.online = false;
     },
     // 上线
-    online(row){
+    online(row) {
       row.online = true;
+    },
+    // 返回上一个页面
+    back(){
+      this.$router.go(-1);
     }
-  }, 
+  },
 };
 </script>
 
@@ -564,6 +787,7 @@ export default {
   color: #333;
   font-size: 16px;
   font-weight: 400;
+  margin-bottom: 20px;
 }
 
 .next-card-title:before {

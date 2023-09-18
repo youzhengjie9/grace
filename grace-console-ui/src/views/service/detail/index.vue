@@ -45,7 +45,9 @@ export default {
     ServiceDetailContent
   },
   methods: {
-    back() {},
+    back() {
+      this.$router.go(-1);
+    },
   },
 };
 </script>
