@@ -39,6 +39,10 @@ const router = new VueRouter({
                 {
                     path:'/service/list',
                     component: () => import('../views/service/list/index.vue')
+                },
+                {
+                    path:'/config/list',
+                    component: () => import('../views/config/list/index.vue')
                 }
             ]  
         },

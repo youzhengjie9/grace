@@ -1,13 +1,13 @@
 <template>
   <div class="sidebar-box">
     <el-menu
-      :default-openeds="['101']"
+      :default-openeds="defaultOpeneds"
       :default-active="currentSidebarMenuHighlightIndex"
       class="el-menu-vertical-demo"
       router
     >
       <!-- 递归生成动态多级菜单 -->
-      <menu-item :menuData="menuData"></menu-item>
+      <menu-item :sidebarMenu="sidebarMenu"></menu-item>
     </el-menu>
   </div>
 </template>
@@ -27,44 +27,25 @@ export default {
   },
   data() {
     return {
-      isCollapse: false,
-      //侧边栏数据
-      menuData: [
-        {
-          id: 101,
-          menuName: "服务管理",
-          icon: "el-icon-s-home",
-          children: [
-            {
-              id:1001,
-              path: "/service/list",
-              component: "../views/service/list/index.vue",
-              menuName: "服务列表",
-              icon: "el-icon-s-home",
-              children:[]
-            },
-          ],
-        },
-        {
-          id: 201,
-          menuName: "配置管理",
-          icon: "el-icon-s-home",
-          children: [
-            {
-              id: 2001,
-              path: "/service/list",
-              component: "../views/service/list/index.vue",
-              menuName: "配置列表",
-              icon: "el-icon-s-home",
-              children:[]
-            },
-          ],
-        },
-      ],
+      // 默认打开的 sub-menu 的 index 的数组
+      defaultOpeneds: ['101'],
+      // 侧边栏菜单
+      sidebarMenu: [],
       //当前高亮的菜单标签,为null表示默认的tag（仪表盘）高亮
       currentMenuTag: null,
     };
   },
+  methods:{
+    // 初始化侧边栏菜单
+    initSidebarMenu(){
+       //从vuex中获取侧边栏菜单并赋值给this.sidebarMenu对象展示到页面
+       this.sidebarMenu=this.$store.state.sidebar.sidebarMenu
+    }
+  },
+  created(){
+    // 初始化侧边栏菜单
+    this.initSidebarMenu();
+  }
 };
 </script>
 

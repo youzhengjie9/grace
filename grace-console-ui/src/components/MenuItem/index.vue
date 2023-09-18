@@ -5,7 +5,7 @@
       参考文档：https://www.cnblogs.com/qiunanyan/p/14240272.html
      -->
   <fragment>
-    <template v-for="(item, index) in menuData">
+    <template v-for="(item, index) in sidebarMenu">
       <!-- 情况一：当前遍历到的item是《目录》（children数组不为空）。
         因为点击目录是不能进行路由跳转的,只能展开目录，所以要把当前的el-submenu标签上设置 :index="item.id + ''" 
         ,这样目录就只会展开,而不会跳转路由了。
@@ -33,7 +33,7 @@
         :key="index"
         v-else
         :index="item.path + ''"
-        @click="clickMenu(item)"
+        @click="clickSidebarMenu(item)"
       >
         <i :class="item.icon"></i>
         <span slot="title">{{ item.menuName }}</span>
@@ -51,17 +51,19 @@ export default {
   },
   props: {
     // 侧边栏菜单数据
-    menuData: {
+    sidebarMenu: {
       type: Array,
-      default: [],
+      default: () => [],
     },
   },
   methods: {
-    clickMenu(item) {
+    // 点击侧边栏菜单菜单
+    clickSidebarMenu(item) {
       //当点击会跳转路由的菜单时，会把这个菜单存储到MenuTag的vuex中，实现面包屑和菜单标签的数据添加
-      this.$store.dispatch("addMenuTag", item);
-      //更新当前侧边栏菜单高亮的index
-      this.$store.dispatch("setCurrentNavMenuActiveIndex", item.path);
+      // this.$store.dispatch("addMenuTag", item);
+
+      // 更新侧边栏的高亮菜单为我们当前所点击的侧边栏菜单
+      this.$store.dispatch("setCurrentSidebarMenuHighlightIndex", item.path);
     },
   },
   // 注意： 在template标签上使用v-for，:key="index"不能写在template标签上，因为其标签不会被渲染，会引起循环错误

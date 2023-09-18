@@ -219,7 +219,7 @@
             width="70%"
             height="200"
             @init="editorInit"
-            :options="editorOptions"
+            :options="writableEditorOptions"
           ></editor>
         </el-form-item>
       </el-form>
@@ -319,6 +319,7 @@ export default {
         // 元数据
         metadata: "",
       },
+      // 创建服务规则
       createServiceRules: {
         // 服务名称
         serviceName: [
@@ -334,9 +335,9 @@ export default {
           },
         ],
       },
-      // vue2-ace-editor代码编辑器配置
-      editorOptions: {
-        // 启用基本自动完成
+      // 可写的（可以进行编辑的）代码编辑器配置
+      writableEditorOptions: {
+        // 启用基本自动完
         enableBasicAutocompletion: true,
         //启用实时自动完成
         enableLiveAutocompletion: true,
