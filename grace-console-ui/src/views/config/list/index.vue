@@ -63,7 +63,7 @@
         <el-button
           type="primary"
           size="medium"
-          @click="clickOpenCreateServiceDialog"
+          @click="createConfig"
           >创建配置</el-button
         >
       </el-col>
@@ -79,7 +79,7 @@
           >Data ID</span
         >
         <el-input
-          v-model="queryCondition.serviceName"
+          v-model="queryCondition.dataId"
           placeholder="已开启默认模糊查询"
           style="width: 168px; height: 30px"
         ></el-input>
@@ -109,7 +109,7 @@
           >模糊匹配</span
         >
         <el-switch
-          v-model="queryCondition.hideEmptyService"
+          v-model="queryCondition.openFuzzyQuery"
           active-color="#209bfa"
           inactive-color="#f5f5f5"
           :width="58"
@@ -124,11 +124,15 @@
 
       <!-- 高级查询按钮 -->
       <el-col :span="3" style="margin-top: 10px">
-        <el-button
-          size="medium"
-          @click="clickOpenCreateServiceDialog"
+        <el-button size="medium" 
+        @click="oppositeShowAdvancedQueryCondition"
           >高级查询
-          <i class="el-icon-arrow-down"></i>
+          <!-- 向下的箭头(如果高级查询条件“没有展示”的话则触发这个) -->
+          <i v-if="showAdvancedQueryCondition == false" class="el-icon-arrow-down"></i>
+
+          <!-- 向上的箭头(如果高级查询条件“正在展示”的话则触发这个) -->
+          <i v-if="showAdvancedQueryCondition == true" class="el-icon-arrow-up"></i>
+          
         </el-button>
       </el-col>
 
@@ -137,20 +141,19 @@
         <el-button
           type="primary"
           size="medium"
-          @click="clickOpenCreateServiceDialog"
+          @click="clickOpenImportConfigDialog"
           >导入配置</el-button
         >
       </el-col>
 
-      <!-- 最右侧的创建配置的“+”号 -->
+      <!-- 最右侧的用于创建配置的“+”号 -->
       <el-col :span="1" style="margin-top: 10px">
-        <i class="el-icon-plus create-config-plus"></i>
+        <i class="el-icon-plus create-config-plus" @click="createConfig"></i>
       </el-col>
     </el-row>
 
     <!-- 高级查询条件（默认是隐藏的） -->
-    <el-row :gutter="24">
-    
+    <el-row :gutter="24" v-if="showAdvancedQueryCondition == true">
       <!-- 输入归属应用 -->
       <el-col :span="6" style="margin-top: 15px">
         <span
@@ -163,8 +166,8 @@
           >归属应用</span
         >
         <el-input
-          v-model="queryCondition.serviceName"
-          placeholder="请输入应用名"
+          v-model="queryCondition.advancedQueryCondition.formApplication"
+          placeholder="请输入归属应用"
           style="width: 198px; height: 30px"
         ></el-input>
       </el-col>
@@ -181,12 +184,12 @@
           >标签</span
         >
         <el-input
-          v-model="queryCondition.serviceName"
+          v-model="queryCondition.advancedQueryCondition.tag"
           placeholder="请输入标签"
           style="width: 200px; height: 30px"
         ></el-input>
       </el-col>
-    
+
       <!-- 输入配置项 -->
       <el-col :span="6" style="margin-top: 15px">
         <span
@@ -199,26 +202,142 @@
           >配置项搜索</span
         >
         <el-input
-          v-model="queryCondition.serviceName"
+          v-model="queryCondition.advancedQueryCondition.configItem"
           placeholder="搜索具体配置项"
           style="width: 198px; height: 30px"
         ></el-input>
       </el-col>
-
     </el-row>
 
     <!-- 查询结果文字说明 -->
     <el-row :gutter="24">
       <el-col :span="24" style="margin-top: 30px; margin-right: 8px">
         <span>
-          查询到 
-          <strong style="font-weight: bold;">20</strong>
+          查询到
+          <strong style="font-weight: bold">{{ totalCount }}</strong>
           条满足要求的配置。
         </span>
       </el-col>
     </el-row>
 
+    <!-- 表格内容  -->
+    <el-table
+      :data="tableData"
+      border
+      style="width: 100%"
+      @selection-change="multipleSelection"
+    >
+      <!-- 多选框 -->
+      <el-table-column type="selection" width="55"></el-table-column>
+      <!-- dataId -->
+      <el-table-column prop="dataId" label="Data Id" width="290" sortable>
+      </el-table-column>
+      <!-- 分组名称 -->
+      <el-table-column prop="groupName" label="分组名称" width="250" sortable>
+      </el-table-column>
+      <!-- 归属应用 -->
+      <el-table-column
+        prop="formApplication"
+        label="归属应用"
+        width="204"
+        sortable
+      >
+      </el-table-column>
 
+      <!-- 操作 -->
+      <el-table-column label="操作" min-width="180">
+        <template slot-scope="scope">
+          <!-- 配置详情 -->
+          <span class="operation" @click="configDetail(scope.row.id)"
+            >详情</span
+          >
+          <span style="margin-right: 5px">|</span>
+
+          <!-- 示例代码 -->
+          <span class="operation" @click="exampleCode(scope.row.id)"
+            >示例代码</span
+          >
+          <span style="margin-right: 5px">|</span>
+
+          <!-- 修改/编辑配置 -->
+          <span class="operation" @click="modifyConfig(scope.row.id)"
+            >编辑</span
+          >
+          <span style="margin-right: 5px">|</span>
+
+          <!-- 删除配置 -->
+          <span class="operation" @click="deleteConfig(scope.row.id)"
+            >删除</span
+          >
+          <span style="margin-right: 5px">|</span>
+
+          <!-- “更多” 下拉菜单 -->
+          <el-dropdown
+            trigger="click"
+            @command="clickMoreDropdownItem"
+            placement="bottom-start"
+          >
+            <!-- “更多” 选项 -->
+            <span class="operation">更多</span>
+            <!-- 点击“更多”选项,展开的下拉菜单  -->
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="1">历史版本</el-dropdown-item>
+              <el-dropdown-item command="2">监听查询</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <!-- 表格底部 -->
+    <el-row :gutter="24" style="margin-top: 25px">
+      <!-- 批量删除按钮 -->
+      <el-col :span="2" style="margin-right: 5px">
+        <el-button type="danger" size="medium" @click="clickOpenBatchDeleteDialog">批量删除</el-button>
+      </el-col>
+      <!-- 克隆按钮 -->
+      <el-col :span="1" style="margin-right: 30px">
+        <el-button type="primary" size="medium" @click="clickOpenCloneDialog">克隆</el-button>
+      </el-col>
+      <!-- “导出”下拉菜单 -->
+      <el-col :span="2">
+        <el-dropdown
+          trigger="click"
+          @command="clickExportDropdownItem"
+          placement="bottom-start"
+        >
+          <!-- 导出按钮 -->
+          <el-button type="primary" size="medium">
+            导出<i class="el-icon-arrow-down el-icon--right"></i>
+          </el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="1">导出查询结果</el-dropdown-item>
+            <el-dropdown-item command="2">新版导出查询结果</el-dropdown-item>
+            <el-dropdown-item command="3">导出选中的配置</el-dropdown-item>
+            <el-dropdown-item command="4">新版导出选中的配置</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </el-col>
+
+      <!-- 分页 -->
+      <el-col :span="12" :offset="6">
+        <div class="grid-content bg-purple">
+          <el-pagination
+            background
+            layout="sizes, prev, pager, next"
+            prev-text="上一页"
+            next-text="下一页"
+            :page-sizes="[10, 20, 30, 50, 100]"
+            :total="totalCount"
+            :page-size="pagesize"
+            :current-page="currentPage"
+            @size-change="handlePageSizeChange"
+            @current-change="handleCurrentPageChange"
+          >
+          </el-pagination>
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -249,38 +368,6 @@ export default {
       ],
       // 当前选择的命名空间的id
       currentSelectedNamespaceId: 1,
-      // 查询条件
-      queryCondition: {
-        // 配置文件全名（例如application-dev.yaml）
-        dataId: "",
-        // 分组名称
-        groupName: "",
-        // 是否开启模糊查询
-        openFuzzyQuery: true,
-      },
-      // 表格数据
-      tableData: [
-        {
-          id: 10001,
-          // 配置文件全名（例如application-dev.yaml）
-          dataId: "application-dev.yaml",
-          // 分组名称
-          groupName: "DEFAULT_GROUP",
-        },
-        {
-          id: 10002,
-          // 配置文件全名（例如userservice-dev.yaml）
-          dataId: "userservice-test.properties",
-          // 分组名称
-          groupName: "DEFAULT_GROUP",
-        },
-      ],
-      // 总记录数
-      totalCount: 200,
-      // 每页展示的数量
-      pagesize: 10,
-      // 当前页
-      currentPage: 1,
       // 是否打开创建配置的对话框（dialog）
       openCreateConfigDialog: false,
       // 创建配置表单
@@ -315,6 +402,61 @@ export default {
           { required: true, message: "请输入配置内容", trigger: "blur" },
         ],
       },
+      // 查询条件
+      queryCondition: {
+        // 配置文件全名（例如application-dev.yaml）
+        dataId: "",
+        // 分组名称
+        groupName: "",
+        // 是否开启模糊查询
+        openFuzzyQuery: true,
+        // 高级查询条件
+        advancedQueryCondition: {
+          // 归属应用
+          formApplication: '',
+          // 标签
+          tag:'',
+          // 配置项
+          configItem:''
+        }
+      },
+      // 是否显示高级查询条件（默认是隐藏）
+      showAdvancedQueryCondition: false,
+      // 是否打开导入配置dialog 
+      openImportConfigDialog: false,
+      // 多选框中勾选的所有数据
+      multipleSelectionData: [],
+      // 总记录数
+      totalCount: 200,
+      // 每页展示的数量
+      pagesize: 10,
+      // 当前页
+      currentPage: 1,
+      // 表格数据
+      tableData: [
+        {
+          id: 10001,
+          // 配置文件全名（例如application-dev.yaml）
+          dataId: "application-dev.yaml",
+          // 分组名称
+          groupName: "DEFAULT_GROUP",
+          // 归属应用
+          formApplication: "",
+        },
+        {
+          id: 10002,
+          // 配置文件全名（例如userservice-dev.yaml）
+          dataId: "userservice-test.properties",
+          // 分组名称
+          groupName: "DEFAULT_GROUP",
+          // 归属应用
+          formApplication: "",
+        },
+      ],
+      // 是否打开批量删除dialog
+      openBatchDeleteDialog: false,
+      // 是否打开克隆dialog
+      OpenCloneDialog: false,
       // 只读的（不能进行编辑的）代码编辑器配置
       readOnlyEditorOptions: {
         // 是否只读
@@ -374,12 +516,40 @@ export default {
     namespaceToggle(selectedNamespaceId) {
       this.currentSelectedNamespaceId = selectedNamespaceId;
     },
+    // 跳转到创建配置路由
+    createConfig(){
+
+    },
     // 点击查询
     query() {
       console.log(this.queryCondition);
     },
+    // 控制高级查询条件的显示和隐藏，如果高级查询条件（showAdvancedQueryCondition）为true,则将其变成false,反之变为true。
+    oppositeShowAdvancedQueryCondition(){
+      this.showAdvancedQueryCondition = !this.showAdvancedQueryCondition;
+    },
+    // 点击打开导入配置dialog
+    clickOpenImportConfigDialog(){
+      this.openImportConfigDialog= true;
+    },
+    // 当多选框被勾选（或被取消勾选）,curMultipleSelectionData是最新的多选框被勾选的所有数据
+    multipleSelection(curMultipleSelectionData) {
+      // 更新多选框被勾选的所有数据
+      this.multipleSelectionData = curMultipleSelectionData;
+    },
     // 跳转配置详情
     configDetail(id) {
+      this.$router.push({
+        path: "/config/detail",
+        query: {
+          id: id,
+        },
+      });
+    },
+    // 打开示例代码
+    exampleCode(id) {},
+    // 跳转修改/编辑配置
+    modifyConfig(id) {
       this.$router.push({
         path: "/config/detail",
         query: {
@@ -391,14 +561,43 @@ export default {
     deleteConfig(id) {
       console.log(id);
     },
-    // 跳转修改/编辑配置
-    modifyDetail(id) {
-      this.$router.push({
-        path: "/config/detail",
-        query: {
-          id: id,
-        },
-      });
+    // 点击“更多”选项所展开的下拉菜单项
+    clickMoreDropdownItem(command) {
+      // 点击历史版本
+      if (command == 1) {
+        console.log("历史版本");
+      }
+      // 点击监听查询
+      else if (command == 2) {
+        console.log("监听查询");
+      }
+    },
+    // 点击打开批量删除dialog
+    clickOpenBatchDeleteDialog(){
+      this.openBatchDeleteDialog = true;
+    },
+    // 点击打开克隆dialog
+    clickOpenCloneDialog(){
+      this.OpenCloneDialog = true;
+    },
+    // 点击“导出”选项所展开的下拉菜单项
+    clickExportDropdownItem(command) {
+      // 点击查询结果
+      if (command == 1) {
+        console.log("导出查询结果");
+      }
+      // 点击新版导出查询结果
+      else if (command == 2) {
+        console.log("新版导出查询结果");
+      }
+      // 点击导出选中的配置
+      else if (command == 3) {
+        console.log("导出选中的配置");
+      }
+      // 点击新版导出选中的配置
+      else if (command == 4) {
+        console.log("新版导出选中的配置");
+      }
     },
     // 将创建/修改的配置进行发布
     publishConfig() {},
