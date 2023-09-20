@@ -1,5 +1,5 @@
 <template>
-  <div class="service-detail-box">
+  <div class="config-create-box">
     <el-container style="height: 500px">
       <!-- 页头 -->
       <el-header style="text-align: right; font-size: 12px">
@@ -24,10 +24,9 @@
         <el-container>
           <!-- 右侧内容 -->
           <el-main>
-            <service-detail-content/>
+            <config-create-content/>
           </el-main>
         </el-container>
-        
       </el-container>
     </el-container>
   </div>
@@ -35,14 +34,14 @@
 
 <script>
 import PageHeader from "@/layout/components/PageHeader/index.vue";
-import ServiceDetailContent from '.././../../components/service/detail/content/index.vue'
+import ConfigCreateContent from '@/components/config/create/content/index.vue'
 
 
 export default {
-  name: "ServiceDetail",
+  name: "ConfigCreate",
   components: {
     PageHeader,
-    ServiceDetailContent
+    ConfigCreateContent
   },
   methods: {
     back() {

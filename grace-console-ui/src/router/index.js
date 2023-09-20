@@ -52,6 +52,11 @@ const router = new VueRouter({
             component: () => import('../views/service/detail/index.vue')
         },
         {
+            // 创建配置路由
+            path:'/config/create',
+            component: () => import('../views/config/create/index.vue')
+        },
+        {
             // 登录路由
             path:'/login',
             component: () => import('../views/login/index.vue')

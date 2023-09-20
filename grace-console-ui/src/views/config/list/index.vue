@@ -60,10 +60,7 @@
     <el-row :gutter="24">
       <!-- 创建配置按钮 -->
       <el-col :span="2" style="margin-top: 10px; margin-right: 8px">
-        <el-button
-          type="primary"
-          size="medium"
-          @click="createConfig"
+        <el-button type="primary" size="medium" @click="createConfig"
           >创建配置</el-button
         >
       </el-col>
@@ -124,15 +121,19 @@
 
       <!-- 高级查询按钮 -->
       <el-col :span="3" style="margin-top: 10px">
-        <el-button size="medium" 
-        @click="oppositeShowAdvancedQueryCondition"
+        <el-button size="medium" @click="oppositeShowAdvancedQueryCondition"
           >高级查询
           <!-- 向下的箭头(如果高级查询条件“没有展示”的话则触发这个) -->
-          <i v-if="showAdvancedQueryCondition == false" class="el-icon-arrow-down"></i>
+          <i
+            v-if="showAdvancedQueryCondition == false"
+            class="el-icon-arrow-down"
+          ></i>
 
           <!-- 向上的箭头(如果高级查询条件“正在展示”的话则触发这个) -->
-          <i v-if="showAdvancedQueryCondition == true" class="el-icon-arrow-up"></i>
-          
+          <i
+            v-if="showAdvancedQueryCondition == true"
+            class="el-icon-arrow-up"
+          ></i>
         </el-button>
       </el-col>
 
@@ -151,6 +152,62 @@
         <i class="el-icon-plus create-config-plus" @click="createConfig"></i>
       </el-col>
     </el-row>
+
+    <!-- 导入配置dialog -->
+    <el-dialog :visible.sync="openImportConfigDialog" top="15vh" width="30%">
+      <!-- 标题插槽 -->
+      <div slot="title">
+        <i
+          class="el-icon-circle-check"
+          style="color: #f1c826; font-size: 23px; margin-right: 5px"
+        ></i>
+        <span style="font-size: 20px">导入配置</span>
+      </div>
+      <!-- 内容 -->
+      <el-row :gutter="24" style="margin-left: 30px">
+        <!-- 目标空间 -->
+        <el-col :span="24" style="margin-bottom: 10px">
+          目标空间: <span style="color: rgb(73, 210, 231)">public</span>
+        </el-col>
+        <!-- 选择一个如果当前导入的配置已存在后对该配置处理的策略（方式） -->
+        <el-col :span="24" style="margin-bottom: 10px">
+          如果当前导入的配置已存在则
+          <el-select
+            v-model="importConfigIfExistPolicy"
+            size="small"
+            style="width: 150px"
+          >
+            <el-option label="终止导入" value="abort"></el-option>
+            <el-option label="跳过" value="skip"></el-option>
+            <el-option label="覆盖" value="cover"></el-option>
+          </el-select>
+        </el-col>
+        <el-col :span="24" style="margin-bottom: 20px">
+          <i
+            class="el-icon-warning-outline"
+            style="color: #f1c826; font-size: 23px; margin-right: 5px"
+          ></i>
+          文件上传后将直接导入配置，请务必谨慎操作！
+        </el-col>
+
+        <!-- 上传配置文件 -->
+        <el-col :span="24" style="margin-bottom: 10px">
+          <el-upload
+            action="https://jsonplaceholder.typicode.com/posts/"
+            name="configFile"
+            :headers="requestHeaders"
+            :multiple="true"
+            :before-upload="beforeUploadConfigFile"
+            :on-success="configFileUploadSuccess"
+            :on-error="configFileUploadError"
+            list-type="text"
+            :auto-upload="true"
+          >
+            <el-button size="small" type="primary">点击上传</el-button>
+          </el-upload>
+        </el-col>
+      </el-row>
+    </el-dialog>
 
     <!-- 高级查询条件（默认是隐藏的） -->
     <el-row :gutter="24" v-if="showAdvancedQueryCondition == true">
@@ -293,11 +350,18 @@
     <el-row :gutter="24" style="margin-top: 25px">
       <!-- 批量删除按钮 -->
       <el-col :span="2" style="margin-right: 5px">
-        <el-button type="danger" size="medium" @click="clickOpenBatchDeleteDialog">批量删除</el-button>
+        <el-button
+          type="danger"
+          size="medium"
+          @click="clickOpenBatchDeleteDialog"
+          >批量删除</el-button
+        >
       </el-col>
       <!-- 克隆按钮 -->
       <el-col :span="1" style="margin-right: 30px">
-        <el-button type="primary" size="medium" @click="clickOpenCloneDialog">克隆</el-button>
+        <el-button type="primary" size="medium" @click="clickOpenCloneDialog"
+          >克隆</el-button
+        >
       </el-col>
       <!-- “导出”下拉菜单 -->
       <el-col :span="2">
@@ -338,6 +402,56 @@
         </div>
       </el-col>
     </el-row>
+
+    <!-- 批量删除配置dialog -->
+    <el-dialog :visible.sync="openBatchDeleteDialog" top="15vh" width="30%">
+      <!-- 标题插槽 -->
+      <div slot="title">
+        <i
+          class="el-icon-circle-check"
+          style="color: #f1c826; font-size: 23px; margin-right: 5px"
+        ></i>
+        <span style="font-size: 20px">批量删除配置</span>
+      </div>
+      <!-- 内容 -->
+      <el-row :gutter="24" style="margin-left: 10px">
+        <!-- 目标空间 -->
+        <el-col :span="24" style="margin-bottom: 10px">
+          确定要删除以下配置吗？
+        </el-col>
+
+        <!-- 展示即将被删除的配置信息 -->
+        <el-col :span="24" style="margin-bottom: 10px">
+          <!-- 表格内容  -->
+          <el-table :data="tableData" border style="width: 100%">
+            <!-- dataId -->
+            <el-table-column prop="dataId" label="Data Id" width="225">
+            </el-table-column>
+            <!-- 分组名称 -->
+            <el-table-column
+              prop="groupName"
+              label="分组名称"
+              width="168"
+            >
+            </el-table-column>
+          </el-table>
+        </el-col>
+      </el-row>
+
+      <!-- 底部插槽 -->
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="batchDeleteConfig">确定</el-button>
+        <el-button @click="clickCloseBatchDeleteDialog">取消</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 克隆配置dialog -->
+
+    
+
+
+
+
   </div>
 </template>
 
@@ -413,17 +527,21 @@ export default {
         // 高级查询条件
         advancedQueryCondition: {
           // 归属应用
-          formApplication: '',
+          formApplication: "",
           // 标签
-          tag:'',
+          tag: "",
           // 配置项
-          configItem:''
-        }
+          configItem: "",
+        },
       },
       // 是否显示高级查询条件（默认是隐藏）
       showAdvancedQueryCondition: false,
-      // 是否打开导入配置dialog 
+      // 是否打开导入配置dialog
       openImportConfigDialog: false,
+      // 当前导入的配置如果已存在后对该配置处理的策略（方式）
+      importConfigIfExistPolicy: "abort",
+      // 请求头
+      requestHeaders: { accessToken: "123456789" },
       // 多选框中勾选的所有数据
       multipleSelectionData: [],
       // 总记录数
@@ -517,20 +635,73 @@ export default {
       this.currentSelectedNamespaceId = selectedNamespaceId;
     },
     // 跳转到创建配置路由
-    createConfig(){
-
+    createConfig() {
+      this.$router.push({
+        path: "/config/create",
+      });
     },
     // 点击查询
     query() {
       console.log(this.queryCondition);
     },
     // 控制高级查询条件的显示和隐藏，如果高级查询条件（showAdvancedQueryCondition）为true,则将其变成false,反之变为true。
-    oppositeShowAdvancedQueryCondition(){
+    oppositeShowAdvancedQueryCondition() {
       this.showAdvancedQueryCondition = !this.showAdvancedQueryCondition;
     },
     // 点击打开导入配置dialog
-    clickOpenImportConfigDialog(){
-      this.openImportConfigDialog= true;
+    clickOpenImportConfigDialog() {
+      this.openImportConfigDialog = true;
+    },
+    // 上传配置文件之前的回调（作用是校验上传的文件）
+    beforeUploadConfigFile(configFile) {
+      // 上传的配置文件大小的校验
+      if (configFile.size > 1024 * 1024 * 1) {
+        this.$message({
+          type: "error",
+          message:
+            "你上传的 “" + configFile.name + "” 文件过大,请上传小于1M的文件。",
+        });
+        return false;
+      }
+      // 上传的配置文件的后缀名（文件格式）校验
+      let index = configFile.name.lastIndexOf(".");
+      let fileType = configFile.name.substr(index + 1, configFile.name.length);
+      if (
+        ["txt", "json", "properties", "yaml", "yml", "xml", "html"].indexOf(
+          fileType.toLowerCase()
+        ) === -1
+      ) {
+        this.$message({
+          type: "error",
+          message:
+            "请上传的配置文件的后缀名为txt、json、properties、yaml、yml、xml、html的附件",
+        });
+        return false;
+      }
+    },
+    // 配置文件上传成功回调
+    configFileUploadSuccess(response, file, fileList) {
+      console.log("===========");
+      console.log(response);
+      console.log(file);
+      console.log(fileList);
+      console.log("===========");
+      this.$message({
+        type: "success",
+        message: "上传成功",
+      });
+    },
+    // 配置文件上传失败回调
+    configFileUploadError(response, file, fileList) {
+      console.log("===========");
+      console.log(response);
+      console.log(file);
+      console.log(fileList);
+      console.log("===========");
+      this.$message({
+        type: "error",
+        message: "上传失败",
+      });
     },
     // 当多选框被勾选（或被取消勾选）,curMultipleSelectionData是最新的多选框被勾选的所有数据
     multipleSelection(curMultipleSelectionData) {
@@ -573,11 +744,19 @@ export default {
       }
     },
     // 点击打开批量删除dialog
-    clickOpenBatchDeleteDialog(){
+    clickOpenBatchDeleteDialog() {
       this.openBatchDeleteDialog = true;
     },
+    // 点击关闭批量删除dialog
+    clickCloseBatchDeleteDialog() {
+      this.openBatchDeleteDialog = false;
+    },
+    //批量删除配置
+    batchDeleteConfig(){
+      console.log('批量删除')
+    },
     // 点击打开克隆dialog
-    clickOpenCloneDialog(){
+    clickOpenCloneDialog() {
       this.OpenCloneDialog = true;
     },
     // 点击“导出”选项所展开的下拉菜单项
@@ -598,6 +777,14 @@ export default {
       else if (command == 4) {
         console.log("新版导出选中的配置");
       }
+    },
+    // pageSize（每页展示的数量）改变时触发
+    handlePageSizeChange(pageSize) {
+      console.log("pageSize=" + pageSize);
+    },
+    // currentPage（当前页）改变时触发
+    handleCurrentPageChange(currentPage) {
+      console.log("currentPage=" + currentPage);
     },
     // 将创建/修改的配置进行发布
     publishConfig() {},
