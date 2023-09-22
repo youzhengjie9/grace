@@ -428,11 +428,7 @@
             <el-table-column prop="dataId" label="Data Id" width="225">
             </el-table-column>
             <!-- 分组名称 -->
-            <el-table-column
-              prop="groupName"
-              label="分组名称"
-              width="168"
-            >
+            <el-table-column prop="groupName" label="分组名称" width="168">
             </el-table-column>
           </el-table>
         </el-col>
@@ -446,12 +442,130 @@
     </el-dialog>
 
     <!-- 克隆配置dialog -->
+    <el-dialog :visible.sync="openCloneDialog" top="15vh" width="36%">
+      <!-- 标题插槽 -->
+      <div slot="title">
+        <i
+          class="el-icon-circle-check"
+          style="color: #f1c826; font-size: 23px; margin-right: 5px"
+        ></i>
+        <span style="font-size: 20px">克隆配置</span>
+      </div>
+      <!-- 表单 -->
+      <el-form
+        :model="cloneConfigDialogForm"
+        :rules="cloneConfigDialogFormRules"
+        ref="cloneConfigDialogForm"
+      >
+        <!-- 内容 -->
+        <el-row :gutter="24" style="margin-left: 30px">
+          <!-- 源空间(需要克隆的配置来自于哪个命名空间) -->
+          <el-col :span="24" style="margin-bottom: 10px">
+            源命名空间: <span style="color: rgb(73, 210, 231)">public</span>
+          </el-col>
 
-    
+          <!-- 展示克隆数量 -->
+          <el-col :span="24" style="margin-bottom: 10px">
+            已选中需要进行克隆的配置数量为:
+            <span style="color: rgb(73, 210, 231)">6</span>
+          </el-col>
 
+          <!-- 克隆配置的目标命名空间(也就是指定将配置克隆到哪个命名空间上) -->
+          <el-col :span="24" style="margin-bottom: 0px; height: 50px">
+            <el-form-item prop="cloneTargetNamespace">
+              目标命名空间
+              <el-select
+                v-model="cloneConfigDialogForm.cloneTargetNamespace"
+                size="small"
+                style="width: 355px"
+                placeholder="请选择命名空间"
+              >
+                <!-- 遍历所有命名空间 -->
+                <el-option
+                  v-for="ns in namespaceData"
+                  :key="ns.id"
+                  :label="ns.namespaceName"
+                  :value="ns.id"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
 
+          <!-- 选择一个如果当前克隆的配置已存在目标命名空间后对该配置处理的策略（方式） -->
+          <el-col :span="24" style="margin-bottom: 0px; height: 50px">
+            如果目标命名空间存在相同配置则
+            <el-select
+              v-model="cloneConfigDialogForm.cloneConfigIfExistPolicy"
+              size="small"
+              style="width: 160px"
+            >
+              <el-option label="终止导入" value="abort"></el-option>
+              <el-option label="跳过" value="skip"></el-option>
+              <el-option label="覆盖" value="cover"></el-option>
+            </el-select>
+          </el-col>
 
+          <!-- 开始克隆按钮 -->
+          <el-col :span="24" style="margin-bottom: 0px; height: 50px">
+            <el-button
+              type="primary"
+              size="medium"
+              @click="clone('cloneConfigDialogForm')"
+              >开始克隆</el-button
+            >
+          </el-col>
+          <span
+            style="color: rgb(0, 170, 0); font-weight: bold; margin-left: 10px"
+          >
+            修改 Data Id 和 分组名称 (可选操作)
+          </span>
 
+          <!-- 可编辑的克隆配置表格 -->
+          <el-table
+            :data="cloneConfigTableData"
+            border
+            size="mini"
+            style="width: 92%; margin-top: 20px; margin-left: 10px"
+            :header-cell-style="{ background: '#eef1f6', color: '#606266' }"
+          >
+            <!-- Data Id -->
+            <el-table-column
+              prop="dataId"
+              label="Data Id"
+              align="center"
+              width="225"
+            >
+              <template slot-scope="scope">
+                <!-- 编辑Data Id -->
+                <el-input
+                  type="text"
+                  size="small"
+                  v-model.trim="scope.row.dataId"
+                />
+              </template>
+            </el-table-column>
+
+            <!-- 分组名称 -->
+            <el-table-column
+              prop="groupName"
+              label="分组名称"
+              align="center"
+              width="223"
+            >
+              <template slot-scope="scope">
+                <!-- 编辑框 -->
+                <el-input
+                  type="text"
+                  size="small"
+                  v-model.trim="scope.row.groupName"
+                />
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-row>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -574,7 +688,22 @@ export default {
       // 是否打开批量删除dialog
       openBatchDeleteDialog: false,
       // 是否打开克隆dialog
-      OpenCloneDialog: false,
+      openCloneDialog: false,
+      // 克隆配置dialog的表单
+      cloneConfigDialogForm: {
+        // 克隆配置的目标命名空间(也就是指定将配置克隆到哪个命名空间上)
+        cloneTargetNamespace: "",
+        // 选择一个如果当前克隆的配置已存在目标命名空间后对该配置处理的策略（方式）
+        cloneConfigIfExistPolicy: "abort",
+      },
+      // 克隆配置dialog的表单校验规则
+      cloneConfigDialogFormRules: {
+        cloneTargetNamespace: [
+          { required: true, message: "请选择命名空间", trigger: "change" },
+        ],
+      },
+      // 想要进行克隆的配置表格数据(也就是多选出来的数据（multipleSelectionData）的深拷贝对象,深拷贝的作用是避免在修改克隆表格数据的时候影响到tableData对象的数据)
+      cloneConfigTableData: [],
       // 只读的（不能进行编辑的）代码编辑器配置
       readOnlyEditorOptions: {
         // 是否只读
@@ -752,12 +881,25 @@ export default {
       this.openBatchDeleteDialog = false;
     },
     //批量删除配置
-    batchDeleteConfig(){
-      console.log('批量删除')
+    batchDeleteConfig() {
+      console.log("批量删除");
     },
     // 点击打开克隆dialog
     clickOpenCloneDialog() {
-      this.OpenCloneDialog = true;
+      this.openCloneDialog = true;
+      // 将multipleSelectionData对象深拷贝到cloneConfigTableData对象,深拷贝的作用是避免在修改克隆表格数据的时候影响到tableData对象的数据
+      this.cloneConfigTableData=this.deepCopy(this.multipleSelectionData);
+    },
+    // 开始克隆
+    clone(cloneConfigDialogForm) {
+      this.$refs[cloneConfigDialogForm].validate((valid) => {
+        if (valid) {
+          alert("克隆成功");
+        } else {
+          console.log("克隆失败");
+          return false;
+        }
+      });
     },
     // 点击“导出”选项所展开的下拉菜单项
     clickExportDropdownItem(command) {
@@ -788,6 +930,22 @@ export default {
     },
     // 将创建/修改的配置进行发布
     publishConfig() {},
+    // 深拷贝(将obj对象进行深拷贝,返回值就是深拷贝出来的对象)
+    deepCopy(obj) {
+      // 判断是否是对象
+      if (typeof obj !== "object") return;
+      // 判断obj类型，根据类型新建一个对象或者数组
+      var newObj = obj instanceof Array ? [] : {};
+      // 遍历对象，进行赋值
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          let val = obj[key];
+          // 判断属性值的类型，如果是对象，递归调用deepCopy
+          newObj[key] = typeof val === "object" ? this.deepCopy(val) : val;
+        }
+      }
+      return newObj;
+    },
   },
 };
 </script>
