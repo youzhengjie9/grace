@@ -1,20 +1,20 @@
 <template>
-  <div class="config-create-content">
+  <div class="config-modify-content">
     <!-- 标题 -->
     <el-row :gutter="24">
       <el-col :span="24">
         <span style="font-size: 28px; height: 40px; font-weight: 500"
-          >新建配置</span
+          >编辑配置</span
         >
       </el-col>
     </el-row>
 
-    <!-- 创建配置表单  -->
+    <!-- 修改配置表单  -->
     <el-form
-      :model="createConfigForm"
-      :rules="createConfigRules"
+      :model="modifyConfigForm"
+      :rules="modifyConfigFormRules"
       label-width="113px"
-      ref="createConfigForm"
+      ref="modifyConfigForm"
       style="margin-top: 35px; margin-bottom: 60px"
     >
       <!-- 命名空间 -->
@@ -25,7 +25,7 @@
         </span>
         <el-col :span="22">
           <el-input
-            v-model="createConfigForm.namespaceName"
+            v-model="readOnlyConfigForm.namespaceName"
             autocomplete="off"
             :disabled="true"
           ></el-input>
@@ -39,8 +39,9 @@
         </span>
         <el-col :span="22">
           <el-input
-            v-model="createConfigForm.dataId"
+            v-model="readOnlyConfigForm.dataId"
             autocomplete="off"
+            :disabled="true"
           ></el-input>
         </el-col>
       </el-form-item>
@@ -52,9 +53,9 @@
         </span>
         <el-col :span="22">
           <el-input
-            v-model="createConfigForm.groupName"
+            v-model="readOnlyConfigForm.groupName"
             autocomplete="off"
-            clearable
+            :disabled="true"
           ></el-input>
         </el-col>
       </el-form-item>
@@ -68,7 +69,7 @@
           <el-input
             type="textarea"
             :rows="3"
-            v-model="createConfigForm.description"
+            v-model="modifyConfigForm.description"
             autocomplete="off"
             resize="none"
           ></el-input>
@@ -83,9 +84,9 @@
         <el-col :span="22">
           <!-- 配置格式单选框组 -->
           <el-radio-group
-           v-model="createConfigForm.format"
-           @input="changeConfigFormatCallback"
-           >
+            v-model="modifyConfigForm.format"
+            @input="changeConfigFormatCallback"
+          >
             <el-radio label="text">text</el-radio>
             <el-radio label="json">json</el-radio>
             <el-radio label="properties">properties</el-radio>
@@ -103,8 +104,8 @@
         </span>
         <!-- 代码编辑器 -->
         <editor
-          v-model="createConfigForm.content"
-          :lang="createConfigForm.format"
+          v-model="modifyConfigForm.content"
+          :lang="modifyConfigForm.format"
           theme="tomorrow_night"
           width="92%"
           height="320"
@@ -120,7 +121,7 @@
               size="medium"
               type="primary"
               style="margin-right: 10px"
-              @click="publishConfig('createConfigForm')"
+              @click="publishConfig('modifyConfigForm')"
               >发布配置</el-button
             >
             <el-button size="medium" @click="back">返回</el-button>
@@ -136,20 +137,23 @@
 import Editor from "vue2-ace-editor";
 
 export default {
-  name: "ConfigCreateContent",
+  name: "ConfigModifyContent",
   components: {
     Editor,
   },
   data() {
     return {
-      // 创建配置表单
-      createConfigForm: {
+      // 只读的配置表单（这些属性都是不能修改的,只能用于展示给用户）
+      readOnlyConfigForm:{
         // 命名空间
         namespaceName: "public",
         // dataId
         dataId: "",
         // 分组名称
         groupName: "",
+      },
+      // 修改配置表单
+      modifyConfigForm: {
         // 描述
         description: "",
         // 配置格式
@@ -157,18 +161,8 @@ export default {
         // 配置内容
         content: "",
       },
-      // 创建配置表单规则
-      createConfigRules: {
-        // 命名空间名称
-        namespaceName: [
-          { required: true, message: "请输入命名空间", trigger: "blur" },
-        ],
-        // dataId
-        dataId: [{ required: true, message: "请输入Data Id", trigger: "blur" }],
-        // 分组名称
-        groupName: [
-          { required: true, message: "请输入分组名称", trigger: "blur" },
-        ],
+      // 修改配置表单的规则
+      modifyConfigFormRules: {
         // 描述
         description: [
           { required: true, message: "请输入描述", trigger: "blur" },
@@ -227,6 +221,29 @@ export default {
       require("brace/snippets/html");
 
     },
+    // 初始化modifyConfigForm数据
+    initModifyConfigForm(){
+        // 拿到配置的id
+        let configId = this.$route.query.configId;
+        // 根据配置的id从数据库中查询配置信息。只读的配置表单（这些属性都是不能修改的,只能用于展示给用户）
+        this.readOnlyConfigForm = {
+            // 命名空间
+            namespaceName: "public",
+            // dataId
+            dataId: 'configid='+configId,
+            // 分组名称
+            groupName: "123",
+        };
+        // 根据配置的id从数据库中查询配置信息。可以进行修改的表单。
+        this.modifyConfigForm = {
+            // 描述
+            description: "1236",
+            // 配置格式
+            format: "json",
+            // 配置内容
+            content: '666',
+        }
+    },
     // 返回上一个页面
     back() {
       this.$router.go(-1);
@@ -235,12 +252,12 @@ export default {
     changeConfigFormatCallback(selectConfigFormat){
 
       // 更新创建配置表单的配置格式
-      this.createConfigForm.format = selectConfigFormat;
+      this.modifyConfigForm.format = selectConfigFormat;
       
     },
     // 发布配置
-    publishConfig(createConfigForm) {
-      this.$refs[createConfigForm].validate((valid) => {
+    publishConfig(modifyConfigForm) {
+      this.$refs[modifyConfigForm].validate((valid) => {
         if (valid) {
           alert("submit!");
         } else {
@@ -250,39 +267,15 @@ export default {
       });
     },
   },
+  mounted(){
+    // 初始化modifyConfigForm数据
+    this.initModifyConfigForm();
+  }
 };
 </script>
 
 <style scoped>
-/* .next-card-title {
-  display: inline-block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 80%;
-  height: 100%;
-  color: #333;
-  font-size: 16px;
-  font-weight: 400;
-  margin-bottom: 20px;
-}
 
-.next-card-title:before {
-  content: "";
-  display: inline-block;
-  height: 16px;
-  width: 3px;
-  background: #209bfa;
-  position: absolute;
-  left: 0;
-  top: calc(26% - 8px);
-}
-
-.next-card-subtitle {
-  font-size: 12px;
-  color: #666;
-  padding-left: 8px;
-} */
 </style>
 
 <!-- 全局样式 -->

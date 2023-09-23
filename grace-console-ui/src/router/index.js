@@ -57,6 +57,31 @@ const router = new VueRouter({
             component: () => import('../views/config/create/index.vue')
         },
         {
+            // 配置详情路由
+            path:'/config/detail',
+            component: () => import('../views/config/detail/index.vue')
+        },
+        {
+            // 修改配置路由
+            path:'/config/modify',
+            component: () => import('../views/config/modify/index.vue')
+        },
+        {
+            // 配置的历史版本路由
+            path:'/config/history/version',
+            component: () => import('../views/config/history/version/index.vue')
+        },
+        {
+            // 配置的历史版本详情路由
+            path:'/config/history/version/detail',
+            component: () => import('../views/config/history/version/detail/index.vue')
+        },
+        {
+            // 配置回滚路由
+            path:'/config/history/version/rollback',
+            component: () => import('../views/config/history/version/rollback/index.vue')
+        },
+        {
             // 登录路由
             path:'/login',
             component: () => import('../views/login/index.vue')

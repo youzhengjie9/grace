@@ -311,7 +311,7 @@
           <span style="margin-right: 5px">|</span>
 
           <!-- 示例代码 -->
-          <span class="operation" @click="exampleCode(scope.row.id)"
+          <span class="operation" @click="sampleCode(scope.row.id)"
             >示例代码</span
           >
           <span style="margin-right: 5px">|</span>
@@ -323,7 +323,7 @@
           <span style="margin-right: 5px">|</span>
 
           <!-- 删除配置 -->
-          <span class="operation" @click="deleteConfig(scope.row.id)"
+          <span class="operation" @click="clickOpenDeleteDialog(scope.row)"
             >删除</span
           >
           <span style="margin-right: 5px">|</span>
@@ -403,6 +403,100 @@
       </el-col>
     </el-row>
 
+    <!-- 示例代码dialog  -->
+    <el-dialog :visible.sync="openSampleCodeDialog" top="15vh" width="70%">
+      <!-- 标题插槽 -->
+      <div slot="title">
+        <span style="font-size: 20px">示例代码</span>
+      </div>
+
+      <!-- 内容 -->
+      <el-row :gutter="24" style="margin-left: 10px">
+        <el-col :span="24" style="margin-bottom: 10px">
+          <!-- 切换实例代码的标签页 -->
+          <el-tabs
+            v-model="currentSelectSampleCodeTab"
+            @tab-click="toggleSampleCode"
+          >
+            <el-tab-pane label="Java" name="Java">
+              <!-- Java的示例代码展示 -->
+              <editor
+                v-model="javaSampleCodeContent"
+                lang="java"
+                theme="chrome"
+                width="100%"
+                height="320"
+                @init="editorInit"
+                :options="writableEditorOptions"
+              ></editor>
+            </el-tab-pane>
+            <el-tab-pane label="SpringBoot" name="SpringBoot">
+              <!-- SpringBoot的示例代码展示 -->
+              <editor
+                v-model="springBootSampleCodeContent"
+                lang="java"
+                theme="chrome"
+                width="100%"
+                height="320"
+                @init="editorInit"
+                :options="writableEditorOptions"
+              ></editor>
+            </el-tab-pane>
+            <el-tab-pane label="SpringCloud" name="SpringCloud">
+              <!-- SpringCloud的示例代码展示 -->
+              <editor
+                v-model="springCloudSampleCodeContent"
+                lang="java"
+                theme="chrome"
+                width="100%"
+                height="320"
+                @init="editorInit"
+                :options="writableEditorOptions"
+              ></editor>
+            </el-tab-pane>
+          </el-tabs>
+        </el-col>
+      </el-row>
+    </el-dialog>
+
+    <!-- 删除配置的dialog  -->
+    <el-dialog :visible.sync="openDeleteDialog" top="15vh" width="30%">
+      <!-- 标题插槽 -->
+      <div slot="title">
+        <i
+          class="el-icon-circle-check"
+          style="color: #f1c826; font-size: 23px; margin-right: 5px"
+        ></i>
+        <span style="font-size: 20px">删除配置</span>
+      </div>
+      <!-- 内容 -->
+      <el-row :gutter="24" style="margin-left: 30px">
+        <el-col :span="24" style="margin-bottom: 10px">
+          <span style="font-size: 16px">确定要删除以下配置吗？</span>
+        </el-col>
+        <!-- Data Id -->
+        <el-col :span="24" style="margin-bottom: 10px">
+          <span style="font-size: 16px">Data Id: </span>
+          <span style="color: rgb(199, 37, 78); font-size: 16px">
+            {{ deleteConfigDialogData.dataId }}
+          </span>
+        </el-col>
+
+        <!-- 分组名称 -->
+        <el-col :span="24" style="margin-bottom: 10px">
+          <span style="font-size: 16px">分组名称:</span>
+          <span style="color: rgb(199, 37, 78); font-size: 16px">
+            {{ deleteConfigDialogData.groupName }}
+          </span>
+        </el-col>
+      </el-row>
+      <!-- 底部插槽 -->
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="deleteConfig">确定</el-button>
+        <el-button @click="openDeleteDialog = false">取消</el-button>
+      </div>
+    </el-dialog>
+
     <!-- 批量删除配置dialog -->
     <el-dialog :visible.sync="openBatchDeleteDialog" top="15vh" width="30%">
       <!-- 标题插槽 -->
@@ -414,31 +508,56 @@
         <span style="font-size: 20px">批量删除配置</span>
       </div>
       <!-- 内容 -->
-      <el-row :gutter="24" style="margin-left: 10px">
-        <!-- 目标空间 -->
-        <el-col :span="24" style="margin-bottom: 10px">
-          确定要删除以下配置吗？
-        </el-col>
+      <!-- 如果多选的数据不为空（则可以批量删除） -->
+      <div class="content" v-if="this.multipleSelectionData.length > 0">
+        <el-row :gutter="24" style="margin-left: 10px">
+          <!-- 提示 -->
+          <el-col :span="24" style="margin-bottom: 10px">
+            确定要删除以下配置吗？
+          </el-col>
 
-        <!-- 展示即将被删除的配置信息 -->
-        <el-col :span="24" style="margin-bottom: 10px">
-          <!-- 表格内容  -->
-          <el-table :data="tableData" border style="width: 100%">
-            <!-- dataId -->
-            <el-table-column prop="dataId" label="Data Id" width="225">
-            </el-table-column>
-            <!-- 分组名称 -->
-            <el-table-column prop="groupName" label="分组名称" width="168">
-            </el-table-column>
-          </el-table>
-        </el-col>
-      </el-row>
+          <!-- 展示即将被删除的配置信息 -->
+          <el-col :span="24" style="margin-bottom: 10px">
+            <!-- 表格内容  -->
+            <el-table :data="multipleSelectionData" border style="width: 100%">
+              <!-- dataId -->
+              <el-table-column prop="dataId" label="Data Id" width="225">
+              </el-table-column>
+              <!-- 分组名称 -->
+              <el-table-column prop="groupName" label="分组名称" width="168">
+              </el-table-column>
+            </el-table>
+          </el-col>
+        </el-row>
+      </div>
 
-      <!-- 底部插槽 -->
-      <div slot="footer" class="dialog-footer">
+      <!-- 如果多选的数据为空（则提示不可以批量删除） -->
+      <div class="content" v-if="this.multipleSelectionData.length <= 0">
+        <el-row :gutter="24" style="margin-left: 10px">
+          <!-- 提示 -->
+          <el-col :span="24" style="margin-bottom: 10px">
+            您还没有选择需要批量删除的配置！
+          </el-col>
+        </el-row>
+      </div>
+
+      <!-- 底部插槽(如果多选的数据不为空) -->
+      <div slot="footer"
+      v-if="this.multipleSelectionData.length > 0"
+      class="dialog-footer">
         <el-button type="primary" @click="batchDeleteConfig">确定</el-button>
         <el-button @click="clickCloseBatchDeleteDialog">取消</el-button>
       </div>
+
+      <!-- 底部插槽(如果多选的数据为空) -->
+      <div slot="footer" 
+      v-if="this.multipleSelectionData.length <= 0"
+      class="dialog-footer">
+        <el-button type="primary" @click="clickCloseBatchDeleteDialog"
+          >确定</el-button
+        >
+      </div>
+
     </el-dialog>
 
     <!-- 克隆配置dialog -->
@@ -572,6 +691,7 @@
 <script>
 // 引入vue2-ace-editor代码编辑器
 import Editor from "vue2-ace-editor";
+
 export default {
   name: "ConfigList",
   components: {
@@ -658,33 +778,28 @@ export default {
       requestHeaders: { accessToken: "123456789" },
       // 多选框中勾选的所有数据
       multipleSelectionData: [],
+      // 配置列表数据
+      tableData: [],
       // 总记录数
-      totalCount: 200,
+      totalCount: 0,
       // 每页展示的数量
-      pagesize: 10,
+      pagesize: 7,
       // 当前页
       currentPage: 1,
-      // 表格数据
-      tableData: [
-        {
-          id: 10001,
-          // 配置文件全名（例如application-dev.yaml）
-          dataId: "application-dev.yaml",
-          // 分组名称
-          groupName: "DEFAULT_GROUP",
-          // 归属应用
-          formApplication: "",
-        },
-        {
-          id: 10002,
-          // 配置文件全名（例如userservice-dev.yaml）
-          dataId: "userservice-test.properties",
-          // 分组名称
-          groupName: "DEFAULT_GROUP",
-          // 归属应用
-          formApplication: "",
-        },
-      ],
+      // 是否打开示例代码dialog
+      openSampleCodeDialog: false,
+      // 当前选择的示例代码的标签
+      currentSelectSampleCodeTab: "Java",
+      // java示例代码内容
+      javaSampleCodeContent: "",
+      // SpringBoot示例代码内容
+      springBootSampleCodeContent: "",
+      // SpringCloud示例代码内容
+      springCloudSampleCodeContent: "",
+      // 是否打开删除dialog
+      openDeleteDialog: false,
+      // 当前点击删除配置的dialog所需要的数据（这个不是批量删除,而是删除）
+      deleteConfigDialogData: "",
       // 是否打开批量删除dialog
       openBatchDeleteDialog: false,
       // 是否打开克隆dialog
@@ -744,20 +859,69 @@ export default {
       },
     };
   },
+  created() {
+    // 加载数据
+    this.loadData();
+  },
   methods: {
     // vue2-ace-editor代码编辑器初始化(下面的额外配置（例如主题、语言等）可以在node_modules\brace文件夹找 ,然后导入即可)
     editorInit() {
       // 语言工具
       require("brace/ext/language_tools");
 
+      // 主题样式可看: https://www.cnblogs.com/summer-qd/p/15305746.html
       // 主题（可选chrome（白）、dawn（白）、tomorrow_night（黑）、dracula（黑）、monokai（黑）等）
       require("brace/theme/tomorrow_night");
+      require("brace/theme/chrome");
 
       // 编译器语言（可选html、java、javascript、golang、json、mysql、python、properties、sql、xml、yaml 等）
       require("brace/mode/json");
+      require("brace/mode/java");
 
       // 编译器代码段（html、java、javascript、golang、json、mysql、python、properties、sql、xml、yaml 等）
       require("brace/snippets/json");
+      require("brace/mode/java");
+    },
+    // 加载数据
+    loadData() {
+      // console.log('loadData')
+      // 每页展示的数量
+      let pageSize = this.pagesize;
+      // 当前页
+      let currentPage = this.currentPage;
+      // 根据上面的属性从后端分页的获取tableData数据
+      let result = {
+        code: 200,
+        data: {
+          // 分页查询出来的数据
+          tableData: [
+            {
+              id: 10001,
+              // 配置文件全名（例如application-dev.yaml）
+              dataId: "application1-dev.yaml",
+              // 分组名称
+              groupName: "DEFAULT_GROUP",
+              // 归属应用
+              formApplication: "",
+            },
+            {
+              id: 10002,
+              // 配置文件全名（例如userservice-dev.yaml）
+              dataId: "userservice2-test.properties",
+              // 分组名称
+              groupName: "DEFAULT_GROUP",
+              // 归属应用
+              formApplication: "",
+            },
+          ],
+          // 所有数据的总数（没有分页）
+          totalCount: 70,
+        },
+      };
+
+      // 将数据放到vue中
+      this.tableData = result.data.tableData;
+      this.totalCount = result.data.totalCount;
     },
     // 点击切换命名空间
     namespaceToggle(selectedNamespaceId) {
@@ -838,34 +1002,64 @@ export default {
       this.multipleSelectionData = curMultipleSelectionData;
     },
     // 跳转配置详情
-    configDetail(id) {
+    configDetail(configId) {
       this.$router.push({
         path: "/config/detail",
         query: {
-          id: id,
+          configId: configId,
         },
       });
     },
     // 打开示例代码
-    exampleCode(id) {},
+    sampleCode(id) {
+      this.openSampleCodeDialog = true;
+      // 从后端获取默认的（Java）示例代码内容
+      this.javaSampleCodeContent = "";
+    },
+    // 切换示例代码回调方法
+    toggleSampleCode(tab) {
+      // 获取当前选择的标签的名称
+      let currentSelectTabName = tab.name;
+
+      // 根据当前选择的标签的名称,从后端获取指定的示例代码内容
+    },
     // 跳转修改/编辑配置
-    modifyConfig(id) {
+    modifyConfig(configId) {
       this.$router.push({
-        path: "/config/detail",
+        path: "/config/modify",
         query: {
-          id: id,
+          configId: configId,
         },
       });
     },
+    // 点击打开删除配置dialog(deleteConfigDialogData是用户所点击删除的那一行配置信息)
+    clickOpenDeleteDialog(deleteConfigDialogData) {
+      // 记录当前点击删除配置的dialog所需要的数据（这个不是批量删除,而是删除）
+      this.deleteConfigDialogData = deleteConfigDialogData;
+      // 打开dialog
+      this.openDeleteDialog = true;
+    },
     // 删除配置
-    deleteConfig(id) {
-      console.log(id);
+    deleteConfig() {
+      // 删除的配置id
+      let deleteConfigId = this.deleteConfigDialogData.id;
+      // 请求后端进行删除
+
+      // 重新加载tableData数据（记住要保留当前分页）
+      this.loadData();
+      // 关闭删除配置dialog
+      this.openDeleteDialog = false;
     },
     // 点击“更多”选项所展开的下拉菜单项
     clickMoreDropdownItem(command) {
       // 点击历史版本
       if (command == 1) {
-        console.log("历史版本");
+        this.$router.push({
+        path: "/config/history/version",
+        query: {
+          configId: configId,
+        },
+      });
       }
       // 点击监听查询
       else if (command == 2) {
@@ -882,13 +1076,20 @@ export default {
     },
     //批量删除配置
     batchDeleteConfig() {
-      console.log("批量删除");
+      // 获取所有多选的数据
+      let multipleSelectionData = this.multipleSelectionData;
+      // 根据所有多选的数据去后端进行批量删除
+
+      // 重新加载tableData数据
+      this.loadData();
+      // 关闭批量删除dialog
+      this.openBatchDeleteDialog = false;
     },
     // 点击打开克隆dialog
     clickOpenCloneDialog() {
       this.openCloneDialog = true;
       // 将multipleSelectionData对象深拷贝到cloneConfigTableData对象,深拷贝的作用是避免在修改克隆表格数据的时候影响到tableData对象的数据
-      this.cloneConfigTableData=this.deepCopy(this.multipleSelectionData);
+      this.cloneConfigTableData = this.deepCopy(this.multipleSelectionData);
     },
     // 开始克隆
     clone(cloneConfigDialogForm) {
