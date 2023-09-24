@@ -43,7 +43,12 @@ const router = new VueRouter({
                 {
                     path:'/config/list',
                     component: () => import('../views/config/list/index.vue')
-                }
+                },
+                {
+                    // 配置的历史版本路由
+                    path:'/config/history/version',
+                    component: () => import('../views/config/history/version/index.vue')
+                },
             ]  
         },
         {
@@ -65,11 +70,6 @@ const router = new VueRouter({
             // 修改配置路由
             path:'/config/modify',
             component: () => import('../views/config/modify/index.vue')
-        },
-        {
-            // 配置的历史版本路由
-            path:'/config/history/version',
-            component: () => import('../views/config/history/version/index.vue')
         },
         {
             // 配置的历史版本详情路由

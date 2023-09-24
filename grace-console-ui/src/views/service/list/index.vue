@@ -126,7 +126,9 @@
     </div>
 
     <!-- 表格内容  -->
-    <el-table :data="tableData" border style="width: 100%">
+    <el-table :data="tableData" border
+    :header-cell-style="{ background: '#eef1f6', color: '#606266' }"
+    style="width: 100%">
       <el-table-column prop="id" label="id" width="180"> </el-table-column>
       <el-table-column prop="serviceName" label="服务名称" width="210">
       </el-table-column>

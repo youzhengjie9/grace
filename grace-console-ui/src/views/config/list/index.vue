@@ -283,6 +283,7 @@
       border
       style="width: 100%"
       @selection-change="multipleSelection"
+      :header-cell-style="{ background: '#eef1f6', color: '#606266' }"
     >
       <!-- 多选框 -->
       <el-table-column type="selection" width="55"></el-table-column>

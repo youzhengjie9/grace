@@ -58,14 +58,11 @@
 
     <!-- 工具栏 -->
     <el-row :gutter="24">
-      <!-- 创建配置按钮 -->
-      <el-col :span="2" style="margin-top: 10px; margin-right: 8px">
-        <el-button type="primary" size="medium" @click="createConfig"
-          >创建配置</el-button
-        >
-      </el-col>
       <!-- 输入Data ID -->
-      <el-col :span="5" style="margin-top: 7px">
+      <el-col
+        :span="6"
+        style="margin-top: 7px; margin-bottom: 35px; margin-left: 10px"
+      >
         <span
           style="
             font-size: 14px;
@@ -75,15 +72,22 @@
           "
           >Data ID</span
         >
-        <el-input
+        <!-- dataId的可搜索+可提供建议的输入框 -->
+        <el-autocomplete
           v-model="queryCondition.dataId"
-          placeholder="已开启默认模糊查询"
-          style="width: 168px; height: 30px"
-        ></el-input>
+          :fetch-suggestions="getInputSuggestionsByDataId"
+          placeholder="请输入Data ID"
+          clearable
+          @select="selectDataIdCallback">
+          <!-- 展示输入框下面的dataId建议 -->
+          <template slot-scope="{ item }">
+            <div class="name">{{ item.dataId }}</div>
+          </template>
+        </el-autocomplete>
       </el-col>
 
       <!-- 输入分组名称 -->
-      <el-col :span="5" style="margin-top: 7px">
+      <el-col :span="6" style="margin-top: 7px">
         <span
           style="
             font-size: 14px;
@@ -93,63 +97,24 @@
           "
           >分组名称</span
         >
-        <el-input
+        <!-- 分组名称的可搜索+可提供建议的输入框 -->
+        <el-autocomplete
           v-model="queryCondition.groupName"
-          placeholder="已开启默认模糊查询"
-          style="width: 168px; height: 30px"
-        ></el-input>
-      </el-col>
+          :fetch-suggestions="getInputSuggestionsByGroupName"
+          placeholder="请输入分组名称"
+          clearable
+          @select="selectGroupNameCallback">
+          <!-- 展示输入框下面的dataId建议 -->
+          <template slot-scope="{ item }">
+            <div class="name">{{ item.groupName }}</div>
+          </template>
+        </el-autocomplete>
 
-      <!--  模糊匹配开关  -->
-      <el-col :span="3" style="margin-top: 12px">
-        <span style="color: #666; font-weight: bold; margin-right: 10px"
-          >模糊匹配</span
-        >
-        <el-switch
-          v-model="queryCondition.openFuzzyQuery"
-          active-color="#209bfa"
-          inactive-color="#f5f5f5"
-          :width="58"
-        >
-        </el-switch>
       </el-col>
 
       <!-- 查询按钮 -->
       <el-col :span="2" style="margin-top: 10px">
         <el-button type="primary" @click="query" size="medium">查询</el-button>
-      </el-col>
-
-      <!-- 高级查询按钮 -->
-      <el-col :span="3" style="margin-top: 10px">
-        <el-button size="medium" @click="oppositeShowAdvancedQueryCondition"
-          >高级查询
-          <!-- 向下的箭头(如果高级查询条件“没有展示”的话则触发这个) -->
-          <i
-            v-if="showAdvancedQueryCondition == false"
-            class="el-icon-arrow-down"
-          ></i>
-
-          <!-- 向上的箭头(如果高级查询条件“正在展示”的话则触发这个) -->
-          <i
-            v-if="showAdvancedQueryCondition == true"
-            class="el-icon-arrow-up"
-          ></i>
-        </el-button>
-      </el-col>
-
-      <!-- 导入配置按钮 -->
-      <el-col :span="2" style="margin-top: 10px; margin-right: 30px">
-        <el-button
-          type="primary"
-          size="medium"
-          @click="clickOpenImportConfigDialog"
-          >导入配置</el-button
-        >
-      </el-col>
-
-      <!-- 最右侧的用于创建配置的“+”号 -->
-      <el-col :span="1" style="margin-top: 10px">
-        <i class="el-icon-plus create-config-plus" @click="createConfig"></i>
       </el-col>
     </el-row>
 
@@ -157,75 +122,82 @@
     <el-table
       :data="tableData"
       border
-      style="width: 100%"
-      @selection-change="multipleSelection"
+      style="width: 100%; margin-bottom: 25px"
+      :header-cell-style="{ background: '#eef1f6', color: '#606266' }"
     >
-      <!-- 多选框 -->
-      <el-table-column type="selection" width="55"></el-table-column>
       <!-- dataId -->
-      <el-table-column prop="dataId" label="Data Id" width="290" sortable>
+      <el-table-column prop="dataId" label="Data Id" width="290">
       </el-table-column>
       <!-- 分组名称 -->
-      <el-table-column prop="groupName" label="分组名称" width="250" sortable>
+      <el-table-column prop="groupName" label="分组名称" width="250">
       </el-table-column>
-      <!-- 归属应用 -->
-      <el-table-column
-        prop="formApplication"
-        label="归属应用"
-        width="204"
-        sortable
-      >
+      <!-- 操作人 -->
+      <el-table-column prop="operator" label="操作人" width="204">
+      </el-table-column>
+
+      <!-- 最后修改时间 -->
+      <el-table-column prop="updateTime" label="最后修改时间" width="204">
       </el-table-column>
 
       <!-- 操作 -->
       <el-table-column label="操作" min-width="180">
         <template slot-scope="scope">
-          <!-- 配置详情 -->
-          <span class="operation" @click="configDetail(scope.row.id)"
-            >详情</span
+          <!-- 版本详情 -->
+          <span
+            class="operation"
+            @click="ConfigHistoryVersionDetail(scope.row.id)"
+            >版本详情</span
           >
           <span style="margin-right: 5px">|</span>
 
-          <!-- 示例代码 -->
-          <span class="operation" @click="sampleCode(scope.row.id)"
-            >示例代码</span
+          <!-- 版本回滚 -->
+          <span class="operation" @click="ConfigRollback(scope.row.id)"
+            >版本回滚</span
           >
           <span style="margin-right: 5px">|</span>
 
-          <!-- 修改/编辑配置 -->
-          <span class="operation" @click="modifyConfig(scope.row.id)"
-            >编辑</span
+          <!-- 版本比较 -->
+          <span
+            class="operation"
+            @click="clickOpenHistoryVersionCompareDialog(scope.row.id)"
+            >版本比较</span
           >
-          <span style="margin-right: 5px">|</span>
-
-          <!-- 删除配置 -->
-          <span class="operation" @click="clickOpenDeleteDialog(scope.row)"
-            >删除</span
-          >
-          <span style="margin-right: 5px">|</span>
-
-          <!-- “更多” 下拉菜单 -->
-          <el-dropdown
-            trigger="click"
-            @command="clickMoreDropdownItem"
-            placement="bottom-start"
-          >
-            <!-- “更多” 选项 -->
-            <span class="operation">更多</span>
-            <!-- 点击“更多”选项,展开的下拉菜单  -->
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="1">历史版本</el-dropdown-item>
-              <el-dropdown-item command="2">监听查询</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
 
+    <!-- 历史版本的比较dialog -->
+    <el-dialog
+      :visible.sync="openHistoryVersionCompareDialog"
+      top="15vh"
+      width="30%"
+    >
+      <!-- 标题插槽 -->
+      <div slot="title">
+        <span style="font-size: 20px">历史版本比较</span>
+      </div>
+
+      <!-- 内容 -->
+      <el-row :gutter="24" style="margin-left: 30px">
+        <!-- 当前选择的版本 -->
+
+        <!-- 最新版本 -->
+      </el-row>
+
+      <!-- 底部插槽 -->
+      <div slot="footer" class="dialog-footer">
+        <el-button
+          type="primary"
+          @click="openHistoryVersionCompareDialog = false"
+          >返回</el-button
+        >
+      </div>
+    </el-dialog>
+
     <!-- 表格底部 -->
     <el-row :gutter="24" style="margin-top: 25px">
       <!-- 分页 -->
-      <el-col :span="12" :offset="6">
+      <el-col :span="12" :offset="12">
         <div class="grid-content bg-purple">
           <el-pagination
             background
@@ -281,6 +253,10 @@ export default {
         // 分组名称
         groupName: "",
       },
+      // 数据库中所有dataId
+      allDataIdsInDatabase:[],
+      // 数据库中所有分组名称
+      allGroupNamesInDatabase: [],
       // 配置列表数据
       tableData: [],
       // 总记录数
@@ -291,12 +267,12 @@ export default {
       currentPage: 1,
       // 是否打开历史版本（同一个namespace、DataId、groupName的配置）比较dialog
       openHistoryVersionCompareDialog: false,
-      // 历史版本（同一个namespace、DataId、groupName的配置）比较dialog
-      openHistoryVersionCompareDialog: {
+      // 历史版本比较dialog所需要的数据
+      historyVersionCompareDialogData: {
         // 当前选择的版本的配置内容
-        currentSelectedVersionConfigContent: '',
+        currentSelectedVersionConfigContent: "",
         // 最新版本的配置内容
-        latestVersionConfigContent: ''
+        latestVersionConfigContent: "",
       },
       // 只读的（不能进行编辑的）代码编辑器配置
       readOnlyEditorOptions: {
@@ -367,8 +343,10 @@ export default {
               dataId: "application1-dev.yaml",
               // 分组名称
               groupName: "DEFAULT_GROUP",
-              // 归属应用
-              formApplication: "",
+              // 操作人
+              operator: "yzj",
+              // 最后修改时间
+              updateTime: "2023/9/24 07:47:18",
             },
             {
               id: 10002,
@@ -376,43 +354,167 @@ export default {
               dataId: "userservice2-test.properties",
               // 分组名称
               groupName: "DEFAULT_GROUP",
-              // 归属应用
-              formApplication: "",
+              // 操作人
+              operator: "abc",
+              // 最后修改时间
+              updateTime: "2023/9/26 07:47:18",
             },
           ],
           // 所有数据的总数（没有分页）
           totalCount: 70,
         },
       };
-
       // 将数据放到vue中
       this.tableData = result.data.tableData;
       this.totalCount = result.data.totalCount;
+
+      // 从后端服务器中查询在数据库中所有dataId
+      this.allDataIdsInDatabase = [
+        {
+          "dataId": 'application.yaml'
+        },
+        {
+          "dataId": 'application-test.yaml'
+        },
+        {
+          "dataId": 'application-dev.yaml'
+        },
+        {
+          "dataId": 'userservice.yaml'
+        },
+        {
+          "dataId": 'application.properties'
+        },
+      ];
+
+      // 从后端服务器中查询在数据库中所有分组名称
+      this.allGroupNamesInDatabase = [
+        {
+          "groupName": 'DEFAULT_GROUP'
+        },
+        {
+          "groupName": 'abc_group'
+        },
+      ]
     },
     // 点击切换命名空间
     namespaceToggle(selectedNamespaceId) {
       this.currentSelectedNamespaceId = selectedNamespaceId;
     },
+    // 根据dataId获取输入框建议(当我们点击dataId的输入框就会自动调用这个方法)
+    getInputSuggestionsByDataId(queryString, callback) {
+      // 数据库中所有dataId
+      var allDataIdsInDatabase = this.allDataIdsInDatabase;
+      // 输入框建议
+      var inputSuggestions = queryString ? allDataIdsInDatabase.filter(this.createDataIdFilter(queryString)) : allDataIdsInDatabase;
+      
+      // 调用callback方法返回输入建议（这里使用定时器延迟调用,作用是显示一下建议列表区的转圈圈）
+      clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+          callback(inputSuggestions);
+      }, 500);
+
+    },
+    // 创建dataId过滤器。筛选出和输入数据匹配的建议
+    createDataIdFilter(queryString) {
+      // //模糊匹配
+      // return (item) => {
+      //   return item.value.toUpperCase().match(queryString.toUpperCase());
+      // };
+
+      // 精确匹配
+        return (item) => {
+          return (item.dataId.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+        };
+    },
+    // 点击输入框的dataId建议项的回调方法
+    selectDataIdCallback(item){
+      // 将用户点击的dataId更新到输入框内容中
+      this.queryCondition.dataId = item.dataId;
+    },
+    // 根据分组名称获取输入框建议(当我们点击dataId的输入框就会自动调用这个方法)
+    getInputSuggestionsByGroupName(queryString, callback) {
+      // 数据库中所有分组名称
+      var allGroupNamesInDatabase = this.allGroupNamesInDatabase;
+      // 输入框建议
+      var inputSuggestions = queryString ? allGroupNamesInDatabase.filter(this.createGroupNameFilter(queryString)) : allGroupNamesInDatabase;
+      
+      // 调用callback方法返回输入建议（这里使用定时器延迟调用,作用是显示一下建议列表区的转圈圈）
+      clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+          callback(inputSuggestions);
+      }, 500);
+
+    },
+    // 创建分组名称过滤器。筛选出和输入数据匹配的建议
+    createGroupNameFilter(queryString) {
+      // //模糊匹配
+      // return (item) => {
+      //   return item.value.toUpperCase().match(queryString.toUpperCase());
+      // };
+
+      // 精确匹配
+        return (item) => {
+          return (item.groupName.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+        };
+    },
+    // 点击输入框的分组名称建议项的回调方法
+    selectGroupNameCallback(item){
+      // 将用户点击的分组名称更新到输入框内容中
+      this.queryCondition.groupName = item.groupName;
+    },
+    // 点击查询
+    query() {
+      console.log(this.queryCondition);
+    },
     // 跳转到配置历史版本详情路由
-    ConfigHistoryVersionDetail() {
+    ConfigHistoryVersionDetail(versionId) {
       this.$router.push({
         path: "/config/history/version/detail",
       });
     },
     // 跳转到配置回滚路由
-    ConfigRollback() {
+    ConfigRollback(versionId) {
       this.$router.push({
         path: "/config/history/version/rollback",
       });
     },
     // 点击打开历史版本的比较dialog
-    clickOpenHistoryVersionCompareDialog(){
-        this.openHistoryVersionCompareDialog = true;
-    }
-
+    clickOpenHistoryVersionCompareDialog(versionId) {
+      this.openHistoryVersionCompareDialog = true;
+    },
+    // pageSize（每页展示的数量）改变时触发
+    handlePageSizeChange(pageSize) {
+      console.log("pageSize=" + pageSize);
+    },
+    // currentPage（当前页）改变时触发
+    handleCurrentPageChange(currentPage) {
+      console.log("currentPage=" + currentPage);
+    },
   },
 };
 </script>
 
-<style>
+<style scoped>
+.namespace-toggle {
+  padding: 5px 15px;
+  overflow: hidden;
+  background-color: #efefef;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.operation {
+  color: #06c;
+  cursor: pointer;
+  text-decoration: none;
+  margin-right: 5px;
+}
+
+.operation:hover {
+  text-decoration: underline;
+}
 </style>
