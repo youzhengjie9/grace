@@ -1,5 +1,5 @@
 <template>
-  <div class="config-history-version-box">
+  <div class="config-revisions-list-box">
     <!-- 标题 -->
     <div
       style="
@@ -145,13 +145,13 @@
           <!-- 版本详情 -->
           <span
             class="operation"
-            @click="ConfigHistoryVersionDetail(scope.row.id)"
+            @click="ConfigRevisionsDetail(scope.row.id)"
             >版本详情</span
           >
           <span style="margin-right: 5px">|</span>
 
           <!-- 版本回滚 -->
-          <span class="operation" @click="ConfigRollback(scope.row.id)"
+          <span class="operation" @click="ConfigRevisionsRollback(scope.row.id)"
             >版本回滚</span
           >
           <span style="margin-right: 5px">|</span>
@@ -159,7 +159,7 @@
           <!-- 版本比较 -->
           <span
             class="operation"
-            @click="clickOpenHistoryVersionCompareDialog(scope.row.id)"
+            @click="clickOpenRevisionsCompareDialog(scope.row.id)"
             >版本比较</span
           >
         </template>
@@ -168,7 +168,7 @@
 
     <!-- 历史版本的比较dialog -->
     <el-dialog
-      :visible.sync="openHistoryVersionCompareDialog"
+      :visible.sync="openRevisionsCompareDialog"
       top="15vh"
       width="30%"
     >
@@ -188,7 +188,7 @@
       <div slot="footer" class="dialog-footer">
         <el-button
           type="primary"
-          @click="openHistoryVersionCompareDialog = false"
+          @click="openRevisionsCompareDialog = false"
           >返回</el-button
         >
       </div>
@@ -223,7 +223,7 @@
 import Editor from "vue2-ace-editor";
 
 export default {
-  name: "ConfigHistoryVersion",
+  name: "ConfigRevisionsList",
   components: {
     Editor,
   },
@@ -265,10 +265,10 @@ export default {
       pagesize: 7,
       // 当前页
       currentPage: 1,
-      // 是否打开历史版本（同一个namespace、DataId、groupName的配置）比较dialog
-      openHistoryVersionCompareDialog: false,
+      // 是否打开历史版本比较dialog（历史版本指的是同一个namespace、DataId、groupName的配置）
+      openRevisionsCompareDialog: false,
       // 历史版本比较dialog所需要的数据
-      historyVersionCompareDialogData: {
+      revisionsCompareDialogData: {
         // 当前选择的版本的配置内容
         currentSelectedVersionConfigContent: "",
         // 最新版本的配置内容
@@ -408,11 +408,8 @@ export default {
       // 输入框建议
       var inputSuggestions = queryString ? allDataIdsInDatabase.filter(this.createDataIdFilter(queryString)) : allDataIdsInDatabase;
       
-      // 调用callback方法返回输入建议（这里使用定时器延迟调用,作用是显示一下建议列表区的转圈圈）
-      clearTimeout(this.timeout);
-        this.timeout = setTimeout(() => {
-          callback(inputSuggestions);
-      }, 500);
+      // 调用callback方法返回输入建议
+      callback(inputSuggestions);
 
     },
     // 创建dataId过滤器。筛选出和输入数据匹配的建议
@@ -439,11 +436,8 @@ export default {
       // 输入框建议
       var inputSuggestions = queryString ? allGroupNamesInDatabase.filter(this.createGroupNameFilter(queryString)) : allGroupNamesInDatabase;
       
-      // 调用callback方法返回输入建议（这里使用定时器延迟调用,作用是显示一下建议列表区的转圈圈）
-      clearTimeout(this.timeout);
-        this.timeout = setTimeout(() => {
-          callback(inputSuggestions);
-      }, 500);
+      // 调用callback方法返回输入建议
+      callback(inputSuggestions);
 
     },
     // 创建分组名称过滤器。筛选出和输入数据匹配的建议
@@ -467,21 +461,27 @@ export default {
     query() {
       console.log(this.queryCondition);
     },
-    // 跳转到配置历史版本详情路由
-    ConfigHistoryVersionDetail(versionId) {
+    // 跳转到版本详情路由
+    ConfigRevisionsDetail(versionId) {
       this.$router.push({
-        path: "/config/history/version/detail",
+        path: "/config/revisions/detail",
+        query:{
+          versionId: versionId
+        }
       });
     },
-    // 跳转到配置回滚路由
-    ConfigRollback(versionId) {
+    // 跳转到版本回滚路由
+    ConfigRevisionsRollback(versionId) {
       this.$router.push({
-        path: "/config/history/version/rollback",
+        path: "/config/revisions/rollback",
+        query:{
+          versionId: versionId
+        }
       });
     },
-    // 点击打开历史版本的比较dialog
-    clickOpenHistoryVersionCompareDialog(versionId) {
-      this.openHistoryVersionCompareDialog = true;
+    // 点击打开版本比较dialog
+    clickOpenRevisionsCompareDialog(versionId) {
+      this.openRevisionsCompareDialog = true;
     },
     // pageSize（每页展示的数量）改变时触发
     handlePageSizeChange(pageSize) {

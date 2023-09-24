@@ -1056,7 +1056,7 @@ export default {
       // 点击历史版本
       if (command == 1) {
         this.$router.push({
-        path: "/config/history/version",
+        path: "/config/revisions/list",
         query: {
           configId: configId,
         },

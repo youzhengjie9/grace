@@ -45,9 +45,9 @@ const router = new VueRouter({
                     component: () => import('../views/config/list/index.vue')
                 },
                 {
-                    // 配置的历史版本路由
-                    path:'/config/history/version',
-                    component: () => import('../views/config/history/version/index.vue')
+                    // 配置的历史版本列表路由
+                    path:'/config/revisions/list',
+                    component: () => import('../views/config/revisions/list/index.vue')
                 },
             ]  
         },
@@ -73,13 +73,13 @@ const router = new VueRouter({
         },
         {
             // 配置的历史版本详情路由
-            path:'/config/history/version/detail',
-            component: () => import('../views/config/history/version/detail/index.vue')
+            path:'/config/revisions/detail',
+            component: () => import('../views/config/revisions/detail/index.vue')
         },
         {
             // 配置回滚路由
-            path:'/config/history/version/rollback',
-            component: () => import('../views/config/history/version/rollback/index.vue')
+            path:'/config/revisions/rollback',
+            component: () => import('../views/config/revisions/rollback/index.vue')
         },
         {
             // 登录路由
