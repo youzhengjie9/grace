@@ -16,6 +16,7 @@
     "less-loader": "^7.3.0",
     "moment": "^2.29.4",
     "nprogress": "^0.2.0",
+    "v-code-diff": "^1.7.1",
     "vue": "^2.7.14",
     "vue-axios": "^3.5.2",
     "vue-fragment": "^1.6.0",

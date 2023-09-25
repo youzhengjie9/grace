@@ -78,7 +78,8 @@
           :fetch-suggestions="getInputSuggestionsByDataId"
           placeholder="请输入Data ID"
           clearable
-          @select="selectDataIdCallback">
+          @select="selectDataIdCallback"
+        >
           <!-- 展示输入框下面的dataId建议 -->
           <template slot-scope="{ item }">
             <div class="name">{{ item.dataId }}</div>
@@ -103,13 +104,13 @@
           :fetch-suggestions="getInputSuggestionsByGroupName"
           placeholder="请输入分组名称"
           clearable
-          @select="selectGroupNameCallback">
+          @select="selectGroupNameCallback"
+        >
           <!-- 展示输入框下面的dataId建议 -->
           <template slot-scope="{ item }">
             <div class="name">{{ item.groupName }}</div>
           </template>
         </el-autocomplete>
-
       </el-col>
 
       <!-- 查询按钮 -->
@@ -143,9 +144,7 @@
       <el-table-column label="操作" min-width="180">
         <template slot-scope="scope">
           <!-- 版本详情 -->
-          <span
-            class="operation"
-            @click="ConfigRevisionsDetail(scope.row.id)"
+          <span class="operation" @click="ConfigRevisionsDetail(scope.row.id)"
             >版本详情</span
           >
           <span style="margin-right: 5px">|</span>
@@ -170,25 +169,36 @@
     <el-dialog
       :visible.sync="openRevisionsCompareDialog"
       top="15vh"
-      width="30%"
+      width="80%"
     >
-      <!-- 标题插槽 -->
+      <!-- dialog标题插槽 -->
       <div slot="title">
         <span style="font-size: 20px">历史版本比较</span>
       </div>
 
+      <!-- 代码差异对比上面的标题 -->
+      <el-row :gutter="24">
+        <el-col :span="5" :offset="3">
+          <span style="font-size:16px;font-weight:600;">当前选中的版本(左侧区域)</span>
+        </el-col>
+        <el-col :span="4" :offset="9">
+          <span style="font-size:16px;font-weight:600;">最新版本(右侧区域)</span>
+        </el-col>
+      </el-row>
       <!-- 内容 -->
-      <el-row :gutter="24" style="margin-left: 30px">
-        <!-- 当前选择的版本 -->
-
-        <!-- 最新版本 -->
+      <el-row :gutter="24">
+        <!-- 使用v-code-diff插件进行代码差异对比 -->
+        <code-diff
+          :old-string="this.revisionsCompareDialogData.currentSelectedVersionConfigContent"
+          :new-string="this.revisionsCompareDialogData.latestVersionConfigContent"
+          output-format="side-by-side"
+        >
+        </code-diff>
       </el-row>
 
       <!-- 底部插槽 -->
       <div slot="footer" class="dialog-footer">
-        <el-button
-          type="primary"
-          @click="openRevisionsCompareDialog = false"
+        <el-button type="primary" @click="openRevisionsCompareDialog = false"
           >返回</el-button
         >
       </div>
@@ -254,7 +264,7 @@ export default {
         groupName: "",
       },
       // 数据库中所有dataId
-      allDataIdsInDatabase:[],
+      allDataIdsInDatabase: [],
       // 数据库中所有分组名称
       allGroupNamesInDatabase: [],
       // 配置列表数据
@@ -371,31 +381,31 @@ export default {
       // 从后端服务器中查询在数据库中所有dataId
       this.allDataIdsInDatabase = [
         {
-          "dataId": 'application.yaml'
+          dataId: "application.yaml",
         },
         {
-          "dataId": 'application-test.yaml'
+          dataId: "application-test.yaml",
         },
         {
-          "dataId": 'application-dev.yaml'
+          dataId: "application-dev.yaml",
         },
         {
-          "dataId": 'userservice.yaml'
+          dataId: "userservice.yaml",
         },
         {
-          "dataId": 'application.properties'
+          dataId: "application.properties",
         },
       ];
 
       // 从后端服务器中查询在数据库中所有分组名称
       this.allGroupNamesInDatabase = [
         {
-          "groupName": 'DEFAULT_GROUP'
+          groupName: "DEFAULT_GROUP",
         },
         {
-          "groupName": 'abc_group'
+          groupName: "abc_group",
         },
-      ]
+      ];
     },
     // 点击切换命名空间
     namespaceToggle(selectedNamespaceId) {
@@ -406,11 +416,12 @@ export default {
       // 数据库中所有dataId
       var allDataIdsInDatabase = this.allDataIdsInDatabase;
       // 输入框建议
-      var inputSuggestions = queryString ? allDataIdsInDatabase.filter(this.createDataIdFilter(queryString)) : allDataIdsInDatabase;
-      
+      var inputSuggestions = queryString
+        ? allDataIdsInDatabase.filter(this.createDataIdFilter(queryString))
+        : allDataIdsInDatabase;
+
       // 调用callback方法返回输入建议
       callback(inputSuggestions);
-
     },
     // 创建dataId过滤器。筛选出和输入数据匹配的建议
     createDataIdFilter(queryString) {
@@ -420,12 +431,14 @@ export default {
       // };
 
       // 精确匹配
-        return (item) => {
-          return (item.dataId.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-        };
+      return (item) => {
+        return (
+          item.dataId.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+        );
+      };
     },
     // 点击输入框的dataId建议项的回调方法
-    selectDataIdCallback(item){
+    selectDataIdCallback(item) {
       // 将用户点击的dataId更新到输入框内容中
       this.queryCondition.dataId = item.dataId;
     },
@@ -434,11 +447,14 @@ export default {
       // 数据库中所有分组名称
       var allGroupNamesInDatabase = this.allGroupNamesInDatabase;
       // 输入框建议
-      var inputSuggestions = queryString ? allGroupNamesInDatabase.filter(this.createGroupNameFilter(queryString)) : allGroupNamesInDatabase;
-      
+      var inputSuggestions = queryString
+        ? allGroupNamesInDatabase.filter(
+            this.createGroupNameFilter(queryString)
+          )
+        : allGroupNamesInDatabase;
+
       // 调用callback方法返回输入建议
       callback(inputSuggestions);
-
     },
     // 创建分组名称过滤器。筛选出和输入数据匹配的建议
     createGroupNameFilter(queryString) {
@@ -448,12 +464,14 @@ export default {
       // };
 
       // 精确匹配
-        return (item) => {
-          return (item.groupName.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-        };
+      return (item) => {
+        return (
+          item.groupName.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+        );
+      };
     },
     // 点击输入框的分组名称建议项的回调方法
-    selectGroupNameCallback(item){
+    selectGroupNameCallback(item) {
       // 将用户点击的分组名称更新到输入框内容中
       this.queryCondition.groupName = item.groupName;
     },
@@ -465,23 +483,35 @@ export default {
     ConfigRevisionsDetail(versionId) {
       this.$router.push({
         path: "/config/revisions/detail",
-        query:{
-          versionId: versionId
-        }
+        query: {
+          versionId: versionId,
+        },
       });
     },
     // 跳转到版本回滚路由
     ConfigRevisionsRollback(versionId) {
       this.$router.push({
         path: "/config/revisions/rollback",
-        query:{
-          versionId: versionId
-        }
+        query: {
+          versionId: versionId,
+        },
       });
     },
     // 点击打开版本比较dialog
     clickOpenRevisionsCompareDialog(versionId) {
       this.openRevisionsCompareDialog = true;
+
+      // 从后端查询历史版本比较dialog所需要的数据
+      this.revisionsCompareDialogData = {
+        // 当前选择的版本的配置内容
+        currentSelectedVersionConfigContent: "2",
+        // 当前选择的版本的配置格式
+        currentSelectedVersionConfigFormat: "json",
+        // 最新版本的配置内容
+        latestVersionConfigContent: "123",
+        // 最新版本的配置格式
+        latestVersionConfigFormat: "json",
+      };
     },
     // pageSize（每页展示的数量）改变时触发
     handlePageSizeChange(pageSize) {

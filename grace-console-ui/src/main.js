@@ -10,13 +10,17 @@ import 'element-ui/lib/theme-chalk/index.css';
 import moment from 'moment'
 // 导入vuex的主模块
 import store from './store'
+// 全局引入代码差异对比插件
+import CodeDiff from 'v-code-diff'
 
 Vue.config.productionTip = false
 
 // 使用路由配置
 Vue.use(router)
 // 使用element-ui
-Vue.use(ElementUI)
+Vue.use(ElementUI);
+// 使用代码差异对比插件
+Vue.use(CodeDiff);
 
 
 //定义一个全局过滤器实现日期格式化

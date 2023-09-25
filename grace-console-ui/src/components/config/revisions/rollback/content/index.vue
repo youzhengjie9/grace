@@ -1,19 +1,19 @@
 <template>
-    <div class="config-revisions-detail-content">
+    <div class="config-revisions-rollback-content">
       <!-- 标题 -->
       <el-row :gutter="24">
         <el-col :span="24">
           <span style="font-size: 28px; height: 40px; font-weight: 500"
-            >版本详情</span
+            >版本回滚</span
           >
         </el-col>
       </el-row>
   
-      <!-- 版本详情表单  -->
+      <!-- 版本回滚表单  -->
       <el-form
-        :model="configRevisionsDetailForm"
+        :model="configRevisionsRollbackForm"
         label-width="113px"
-        ref="configRevisionsDetailForm"
+        ref="configRevisionsRollbackForm"
         style="margin-top: 35px; margin-bottom: 60px"
       >
         <!-- 命名空间 -->
@@ -24,7 +24,7 @@
           </span>
           <el-col :span="22">
             <el-input
-              v-model="configRevisionsDetailForm.namespaceName"
+              v-model="configRevisionsRollbackForm.namespaceName"
               :readonly="true"
             ></el-input>
           </el-col>
@@ -37,39 +37,11 @@
           </span>
           <el-col :span="22">
             <el-input
-              v-model="configRevisionsDetailForm.dataId"
+              v-model="configRevisionsRollbackForm.dataId"
               :readonly="true"
             ></el-input>
           </el-col>
-        </el-form-item>
-        <!-- 操作人 -->
-        <el-form-item>
-          <!-- 标题 -->
-          <span slot="label">
-            <span style="font-weight: bold">操作人</span>
-          </span>
-          <el-col :span="22">
-            <el-input
-              v-model="configRevisionsDetailForm.operator"
-              :readonly="true"
-            ></el-input>
-          </el-col>
-        </el-form-item>
-     
-        <!-- 操作人的IP -->
-        <el-form-item>
-          <!-- 标题 -->
-          <span slot="label">
-            <span style="font-weight: bold">操作人的IP</span>
-          </span>
-          <el-col :span="22">
-            <el-input
-              v-model="configRevisionsDetailForm.operatorIp"
-              :readonly="true"
-            ></el-input>
-          </el-col>
-        </el-form-item>
-
+        </el-form-item> 
         <!-- 操作类型 -->
         <el-form-item>
           <!-- 标题 -->
@@ -78,12 +50,11 @@
           </span>
           <el-col :span="22">
             <el-input
-              v-model="configRevisionsDetailForm.operationType"
+              v-model="configRevisionsRollbackForm.operationType"
               :readonly="true"
             ></el-input>
           </el-col>
         </el-form-item>
-
         <!-- MD5 -->
         <el-form-item>
           <!-- 标题 -->
@@ -91,10 +62,9 @@
             <span style="font-weight: bold">MD5</span>
           </span>
           <el-col :span="22">
-            <el-input v-model="configRevisionsDetailForm.md5" :readonly="true"></el-input>
+            <el-input v-model="configRevisionsRollbackForm.md5" :readonly="true"></el-input>
           </el-col>
         </el-form-item>
-
         <!-- 配置格式 -->
         <el-form-item>
           <!-- 标题 -->
@@ -103,25 +73,25 @@
           </span>
           <el-col :span="22">
             <!-- 配置格式单选框组(只显示当前配置选择的格式的单选框,作用是让用户不能切换单选框) -->
-            <el-radio-group v-model="configRevisionsDetailForm.format">
-              <el-radio v-if="configRevisionsDetailForm.format == 'text'" label="text"
+            <el-radio-group v-model="configRevisionsRollbackForm.format">
+              <el-radio v-if="configRevisionsRollbackForm.format == 'text'" label="text"
                 >text</el-radio
               >
-              <el-radio v-if="configRevisionsDetailForm.format == 'json'" label="json"
+              <el-radio v-if="configRevisionsRollbackForm.format == 'json'" label="json"
                 >json</el-radio
               >
               <el-radio
-                v-if="configRevisionsDetailForm.format == 'properties'"
+                v-if="configRevisionsRollbackForm.format == 'properties'"
                 label="properties"
                 >properties</el-radio
               >
-              <el-radio v-if="configRevisionsDetailForm.format == 'yaml'" label="yaml"
+              <el-radio v-if="configRevisionsRollbackForm.format == 'yaml'" label="yaml"
                 >yaml</el-radio
               >
-              <el-radio v-if="configRevisionsDetailForm.format == 'xml'" label="xml"
+              <el-radio v-if="configRevisionsRollbackForm.format == 'xml'" label="xml"
                 >xml</el-radio
               >
-              <el-radio v-if="configRevisionsDetailForm.format == 'html'" label="html"
+              <el-radio v-if="configRevisionsRollbackForm.format == 'html'" label="html"
                 >html</el-radio
               >
             </el-radio-group>
@@ -135,8 +105,8 @@
           </span>
           <!-- 代码编辑器 -->
           <editor
-            v-model="configRevisionsDetailForm.content"
-            :lang="configRevisionsDetailForm.format"
+            v-model="configRevisionsRollbackForm.content"
+            :lang="configRevisionsRollbackForm.format"
             theme="tomorrow_night"
             width="92%"
             height="320"
@@ -146,9 +116,10 @@
         </el-form-item>
         <!-- 底部 -->
         <el-row :gutter="24">
-          <el-col :span="3" :offset="20">
+          <el-col :span="4" :offset="18">
             <span style="font-size: 28px; height: 40px; font-weight: 500">
-              <el-button type="primary" size="medium" @click="back">返回</el-button>
+                <el-button type="primary" size="medium" @click="revisionsRollback">版本回滚</el-button>
+                <el-button size="medium" @click="back">返回</el-button>
             </span>
           </el-col>
         </el-row>
@@ -161,22 +132,18 @@
   import Editor from "vue2-ace-editor";
   
   export default {
-    name: "ConfigRevisionsDetailContent",
+    name: "ConfigRevisionsRollbackContent",
     components: {
       Editor,
     },
     data() {
       return {
-        // 版本详情表单
-        configRevisionsDetailForm: {
+        // 版本回滚表单
+        configRevisionsRollbackForm: {
           // 命名空间
           namespaceName: "",
           // dataId
           dataId: "",
-          // 操作人
-          operator: "",
-          // 操作人的IP
-          operatorIp: "",
           // 操作类型
           operationType: '',
           // MD5值
@@ -232,27 +199,27 @@
       },
       // 加载数据
       loadData() {
-        // 从路由的请求参数中获取配置id
-        let configId = this.$route.query.configId;
-        // 通过配置id去数据库中查询该版本的信息，并赋值给configRevisionsDetailForm对象
-        this.configRevisionsDetailForm = {
+        // 从路由的请求参数中获取历史版本id
+        let revisionsId = this.$route.query.revisionsId;
+        // 通过历史版本id去数据库中查询该版本的信息，并赋值给configRevisionsRollbackForm对象
+        this.configRevisionsRollbackForm = {
           // 命名空间
-          namespaceName: "",
+          namespaceName: "123abc",
           // dataId
           dataId: "123",
-          // 操作人
-          operator: "yzj1",
-          // 操作人的IP
-          operatorIp: "123.123.300.12",
           // 操作类型
-          operationType: '更新',
+          operationType: '插入',
           // MD5值
-          md5: "f2862ddbd6eb0a05bf6fe3ea3e771c9c",
+          md5: "f12345ddbd6eb0a05bf6fe3ea3e771c9c",
           // 配置格式
           format: "properties",
           // 配置内容
           content: 'spring:datasource:driver-class-name: com.mysql.jdbc.Driver',
         };
+      },
+      // 版本回滚
+      revisionsRollback(){
+
       },
       // 返回上一个页面
       back() {

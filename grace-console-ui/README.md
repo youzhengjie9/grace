@@ -27,9 +27,13 @@ npm i vue-router@3
 
 ### 安装sass
 
+- 1:
+
 ```
 npm install sass@1.26.8 --save-dev
 ```
+
+- 2:
 
 ```
 npm install sass-loader@8.0.2 --save-dev
@@ -74,8 +78,16 @@ npm install moment
 npm install --save-dev vue2-ace-editor
 ```
 
+### vue2代码差异对比插件
 
+- 1:
+```
+npm i v-code-diff
+```
 
+- **2:（注意,如果当前vue的版本>2.7则不需要执行这条命令,因为vue2.7自带composition-api）**
 
-
+```
+npm i @vue/composition-api
+```
 
