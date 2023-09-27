@@ -1,24 +1,27 @@
 <template>
   <div class="sidebar-box">
+    <!-- 侧边栏菜单(unique-opened为true说明只允许同时一个目录展开,如果打开多个目录,则其他目录会自动收缩回去) -->
     <el-menu
-      :default-openeds="defaultOpeneds"
+      :default-openeds="currentOpenSidebarDirIndexArray"
       :default-active="currentSidebarMenuHighlightIndex"
+      :unique-opened="true"
       class="el-menu-vertical-demo"
       router
     >
-      <!-- 递归生成动态多级菜单 -->
-      <menu-item :sidebarMenu="sidebarMenu"></menu-item>
+      <!-- 递归生成动态的多级菜单（侧边栏的菜单项） -->
+      <sidebar-menu-item :sidebarMenu="sidebarMenu"></sidebar-menu-item>
+
     </el-menu>
   </div>
 </template>
 
 <script>
-import MenuItem from "@/components/MenuItem/index.vue";
+import SidebarMenuItem from "@/components/SidebarMenuItem/index.vue";
 
 export default {
   name: "Sidebar",
   components: {
-    MenuItem,
+    SidebarMenuItem,
   },
   computed:{
     currentSidebarMenuHighlightIndex(){
@@ -27,8 +30,8 @@ export default {
   },
   data() {
     return {
-      // 默认打开的 sub-menu 的 index 的数组
-      defaultOpeneds: ['101'],
+      // 当前展开的侧边栏目录（sub-menu标签）的index数组。用于控制侧边栏目录的展开和收缩
+      currentOpenSidebarDirIndexArray: ['101'],
       // 侧边栏菜单
       sidebarMenu: [],
       //当前高亮的菜单标签,为null表示默认的tag（仪表盘）高亮
@@ -39,7 +42,7 @@ export default {
     // 初始化侧边栏菜单
     initSidebarMenu(){
        //从vuex中获取侧边栏菜单并赋值给this.sidebarMenu对象展示到页面
-       this.sidebarMenu=this.$store.state.sidebar.sidebarMenu
+       this.sidebarMenu=this.$store.state.sidebar.sidebarMenu;
     }
   },
   created(){

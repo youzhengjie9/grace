@@ -5,6 +5,7 @@
       参考文档：https://www.cnblogs.com/qiunanyan/p/14240272.html
      -->
   <fragment>
+    <!-- 侧边栏菜单项 -->
     <template v-for="(item, index) in sidebarMenu">
       <!-- 情况一：当前遍历到的item是《目录》（children数组不为空）。
         因为点击目录是不能进行路由跳转的,只能展开目录，所以要把当前的el-submenu标签上设置 :index="item.id + ''" 
@@ -22,7 +23,8 @@
           <span slot="title">{{ item.menuName }}</span>
         </template>
         <!-- 递归子菜单（当前item的children数组） -->
-        <menu-item :menuData="item.children"></menu-item>
+        <sidebar-menu-item :sidebarMenu="item.children"></sidebar-menu-item>
+
       </el-submenu>
 
       <!-- 情况二：当前遍历到的item是《菜单》（children数组为空）
@@ -38,14 +40,16 @@
         <i :class="item.icon"></i>
         <span slot="title">{{ item.menuName }}</span>
       </el-menu-item>
+
     </template>
   </fragment>
 </template>
     
 <script>
 import { Fragment } from "vue-fragment";
+
 export default {
-  name: "MenuItem",
+  name: "SidebarMenuItem",
   components: {
     Fragment
   },

@@ -49,6 +49,11 @@ const router = new VueRouter({
                     path:'/config/revisions/list',
                     component: () => import('../views/config/revisions/list/index.vue')
                 },
+                {
+                    // 命名空间列表路由
+                    path:'/namespace/list',
+                    component: () => import('../views/namespace/list/index.vue')
+                },
             ]  
         },
         {

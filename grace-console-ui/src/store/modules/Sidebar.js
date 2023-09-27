@@ -30,7 +30,23 @@ const state = {
                     icon: "el-icon-s-home",
                     children: []
                 },
+                {
+                    id: 2002,
+                    path: "/config/revisions/list",
+                    component: "../views/config/revisions/list/index.vue",
+                    menuName: "历史版本",
+                    icon: "el-icon-s-home",
+                    children: []
+                },
             ],
+        },
+        {
+            id: 301,
+            path: "/namespace/list",
+            component: "../views/namespace/list/index.vue",
+            menuName: "命名空间",
+            icon: "el-icon-s-home",
+            children: [],
         },
     ],
     // 当前高亮的侧边栏菜单的index（这里我们说的index是菜单的路由路径）
