@@ -35,7 +35,6 @@
         :key="index"
         v-else
         :index="item.path + ''"
-        @click="clickSidebarMenu(item)"
       >
         <i :class="item.icon"></i>
         <span slot="title">{{ item.menuName }}</span>
@@ -61,14 +60,6 @@ export default {
     },
   },
   methods: {
-    // 点击侧边栏菜单菜单
-    clickSidebarMenu(item) {
-      //当点击会跳转路由的菜单时，会把这个菜单存储到MenuTag的vuex中，实现面包屑和菜单标签的数据添加
-      // this.$store.dispatch("addMenuTag", item);
-
-      // 更新侧边栏的高亮菜单为我们当前所点击的侧边栏菜单
-      this.$store.dispatch("setCurrentSidebarMenuHighlightIndex", item.path);
-    },
   },
   // 注意： 在template标签上使用v-for，:key="index"不能写在template标签上，因为其标签不会被渲染，会引起循环错误
 };

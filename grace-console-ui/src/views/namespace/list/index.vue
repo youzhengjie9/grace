@@ -49,12 +49,15 @@
         <!-- 内容 -->
         <el-row :gutter="24" style="margin-left: 30px">
           <!-- 命名空间ID(不填则自动生成) -->
-          <el-form-item  prop="namespaceId">
+          <el-form-item prop="namespaceId">
             <!-- 标题 -->
             <span slot="label">
               <span style="font-weight: bold">命名空间ID(不填则自动生成)</span>
             </span>
-            <el-input style="width: 80%;" v-model="createNamespaceForm.namespaceId"></el-input>
+            <el-input
+              style="width: 80%"
+              v-model="createNamespaceForm.namespaceId"
+            ></el-input>
           </el-form-item>
           <!-- 命名空间名称 -->
           <el-form-item prop="namespaceName">
@@ -62,7 +65,10 @@
             <span slot="label">
               <span style="font-weight: bold">命名空间名称</span>
             </span>
-            <el-input style="width: 80%;" v-model="createNamespaceForm.namespaceName"></el-input>
+            <el-input
+              style="width: 80%"
+              v-model="createNamespaceForm.namespaceName"
+            ></el-input>
           </el-form-item>
           <!-- 描述 -->
           <el-form-item prop="namespaceDesc">
@@ -70,7 +76,10 @@
             <span slot="label">
               <span style="font-weight: bold">描述</span>
             </span>
-            <el-input style="width: 80%;" v-model="createNamespaceForm.namespaceDesc"></el-input>
+            <el-input
+              style="width: 80%"
+              v-model="createNamespaceForm.namespaceDesc"
+            ></el-input>
           </el-form-item>
         </el-row>
       </el-form>
@@ -87,6 +96,10 @@
       border
       style="width: 100%; margin-top: 20px"
       :header-cell-style="{ background: '#eef1f6', color: '#606266' }"
+      v-loading="tableLoading"
+      element-loading-background="rgba(255, 255, 255, .5)"
+      element-loading-text="加载中，请稍后..."
+      element-loading-spinner="el-icon-loading"
     >
       <!-- 命名空间名称 -->
       <el-table-column prop="namespaceName" label="命名空间名称" width="235">
@@ -95,46 +108,40 @@
       <el-table-column prop="namespaceId" label="命名空间ID" width="290">
       </el-table-column>
       <!-- 描述 -->
-      <el-table-column
-        prop="namespaceDesc"
-        label="描述"
-        width="230"
-      >
+      <el-table-column prop="namespaceDesc" label="描述" width="230">
       </el-table-column>
 
       <!-- 服务数 -->
-      <el-table-column
-        prop="serviceCount"
-        label="服务数"
-        width="130"
-      >
+      <el-table-column prop="serviceCount" label="服务数" width="130">
       </el-table-column>
 
       <!-- 配置数 -->
-      <el-table-column
-        prop="configCount"
-        label="配置数"
-        width="130"
-      >
+      <el-table-column prop="configCount" label="配置数" width="130">
       </el-table-column>
 
       <!-- 操作 -->
       <el-table-column label="操作" min-width="180">
         <template slot-scope="scope">
           <!-- 命名空间详情 -->
-          <span class="operation" @click="clickOpenNamespaceDetailDialog(scope.row.id)"
+          <span
+            class="operation"
+            @click="clickOpenNamespaceDetailDialog(scope.row.id)"
             >详情</span
           >
           <span style="margin-right: 5px">|</span>
 
           <!-- 修改命名空间 -->
-          <span class="operation" @click="clickOpenModifyNamespaceDialog(scope.row)"
+          <span
+            class="operation"
+            @click="clickOpenModifyNamespaceDialog(scope.row)"
             >编辑</span
           >
           <span style="margin-right: 5px">|</span>
 
           <!-- 删除命名空间 -->
-          <span class="operation" @click="clickOpenDeleteNamespaceDialog(scope.row)"
+          <span
+            class="operation"
+            @click="clickOpenDeleteNamespaceDialog(scope.row)"
             >删除</span
           >
         </template>
@@ -189,17 +196,17 @@
         <el-col :span="24" style="margin-bottom: 10px">
           <span style="font-size: 16px">描述: </span>
           <span style="color: rgb(199, 37, 78); font-size: 16px">
-            {{ namespaceDetailDialogData.namespaceDesc }} 
+            {{ namespaceDetailDialogData.namespaceDesc }}
           </span>
         </el-col>
-
       </el-row>
       <!-- 底部插槽 -->
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="openNamespaceDetailDialog = false">返回</el-button>
+        <el-button type="primary" @click="openNamespaceDetailDialog = false"
+          >返回</el-button
+        >
       </div>
     </el-dialog>
-
 
     <!-- 编辑命名空间的dialog  -->
     <el-dialog :visible.sync="openModifyNamespaceDialog" top="15vh" width="50%">
@@ -222,7 +229,10 @@
             <span slot="label">
               <span style="font-weight: bold">命名空间名称</span>
             </span>
-            <el-input style="width: 80%;" v-model="modifyNamespaceForm.namespaceName"></el-input>
+            <el-input
+              style="width: 80%"
+              v-model="modifyNamespaceForm.namespaceName"
+            ></el-input>
           </el-form-item>
           <!-- 描述 -->
           <el-form-item prop="namespaceDesc">
@@ -230,7 +240,10 @@
             <span slot="label">
               <span style="font-weight: bold">描述</span>
             </span>
-            <el-input style="width: 80%;" v-model="modifyNamespaceForm.namespaceDesc"></el-input>
+            <el-input
+              style="width: 80%"
+              v-model="modifyNamespaceForm.namespaceDesc"
+            ></el-input>
           </el-form-item>
         </el-row>
       </el-form>
@@ -323,10 +336,12 @@ export default {
       requestHeaders: { accessToken: "123456789" },
       // 命名空间列表数据
       tableData: [],
+      // 表格是否加载中（ true说明表格正在加载中,则会显示加载动画。反之false则关闭加载动画）
+      tableLoading: false,
       // 是否打开命名空间详情dialog
       openNamespaceDetailDialog: false,
       // namespace详情的dialog所需要的数据
-      namespaceDetailDialogData:{
+      namespaceDetailDialogData: {
         // 命名空间名称
         namespaceName: "",
         // 命名空间ID
@@ -357,7 +372,7 @@ export default {
       // 是否打开删除命名空间dialog
       openDeleteNamespaceDialog: false,
       // 删除namespace的dialog所需要的数据
-      deleteNamespaceDialogData:{
+      deleteNamespaceDialogData: {
         // 命名空间名称
         namespaceName: "",
         // 命名空间ID
@@ -374,6 +389,9 @@ export default {
   methods: {
     // 加载数据
     loadData() {
+      // 开启表格的加载动画
+      this.tableLoading = true;
+
       // 根据上面的属性从后端获取tableData数据
       let result = {
         code: 200,
@@ -413,6 +431,9 @@ export default {
       // 将数据放到vue中
       this.tableData = result.data.tableData;
       this.totalCount = result.data.totalCount;
+
+      // 关闭表格的加载动画
+      this.tableLoading = false;
     },
     // 跳转到创建配置路由
     createConfig() {
@@ -429,13 +450,11 @@ export default {
       this.openCreateNamespaceDialog = true;
     },
     // 创建命名空间
-    createNamespace() {
-
-    },
+    createNamespace() {},
     // 点击打开命名空间详情dialog
-    clickOpenNamespaceDetailDialog(namespaceId){
+    clickOpenNamespaceDetailDialog(namespaceId) {
       // 根据namespaceId从后端获取当前点击namespace详情的dialog所需要的数据
-      this.namespaceDetailDialogData = {
+      (this.namespaceDetailDialogData = {
         // 命名空间名称
         namespaceName: "abc",
         // 命名空间ID
@@ -446,37 +465,32 @@ export default {
         configCount: 20,
         // 描述
         namespaceDesc: "666",
-      },
-     
-      this.openNamespaceDetailDialog = true;
+      }),
+        (this.openNamespaceDetailDialog = true);
     },
     // 点击打开修改命名空间dialog
     clickOpenModifyNamespaceDialog(namespace) {
-
       // 深拷贝当前所点击的那行namespace记录
       let ns = this.deepCopy(namespace);
-      
+
       this.modifyNamespaceForm = {
         namespaceName: ns.namespaceName,
-        namespaceDesc: ns.namespaceDesc
-      }
+        namespaceDesc: ns.namespaceDesc,
+      };
 
       this.openModifyNamespaceDialog = true;
     },
     // 修改命名空间
-    modifyNamespace(){
-
-    },
+    modifyNamespace() {},
     // 点击打开删除命名空间
     clickOpenDeleteNamespaceDialog(namespace) {
       // 记录当前点击删除namespace的dialog所需要的数据
       this.deleteNamespaceDialogData = {
         namespaceName: namespace.namespaceName,
-        namespaceId: namespace.namespaceId
-      }
+        namespaceId: namespace.namespaceId,
+      };
       // 打开dialog
       this.openDeleteNamespaceDialog = true;
-
     },
     // 删除命名空间
     deleteNamespace() {
@@ -487,7 +501,7 @@ export default {
       // 重新加载tableData数据
       this.loadData();
       // 关闭删除命名空间dialog
-      this.openDeleteNamespaceDialog = false
+      this.openDeleteNamespaceDialog = false;
     },
     // 深拷贝(将obj对象进行深拷贝,返回值就是深拷贝出来的对象)
     deepCopy(obj) {
@@ -510,7 +524,6 @@ export default {
 </script>
   
 <style scoped>
-
 .operation {
   color: #06c;
   cursor: pointer;

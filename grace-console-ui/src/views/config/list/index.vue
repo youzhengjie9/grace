@@ -284,6 +284,10 @@
       style="width: 100%"
       @selection-change="multipleSelection"
       :header-cell-style="{ background: '#eef1f6', color: '#606266' }"
+      v-loading="tableLoading"
+      element-loading-background="rgba(255, 255, 255, .5)"
+      element-loading-text="加载中，请稍后..."
+      element-loading-spinner="el-icon-loading"
     >
       <!-- 多选框 -->
       <el-table-column type="selection" width="55"></el-table-column>
@@ -543,22 +547,25 @@
       </div>
 
       <!-- 底部插槽(如果多选的数据不为空) -->
-      <div slot="footer"
-      v-if="this.multipleSelectionData.length > 0"
-      class="dialog-footer">
+      <div
+        slot="footer"
+        v-if="this.multipleSelectionData.length > 0"
+        class="dialog-footer"
+      >
         <el-button type="primary" @click="batchDeleteConfig">确定</el-button>
         <el-button @click="clickCloseBatchDeleteDialog">取消</el-button>
       </div>
 
       <!-- 底部插槽(如果多选的数据为空) -->
-      <div slot="footer" 
-      v-if="this.multipleSelectionData.length <= 0"
-      class="dialog-footer">
+      <div
+        slot="footer"
+        v-if="this.multipleSelectionData.length <= 0"
+        class="dialog-footer"
+      >
         <el-button type="primary" @click="clickCloseBatchDeleteDialog"
           >确定</el-button
         >
       </div>
-
     </el-dialog>
 
     <!-- 克隆配置dialog -->
@@ -781,6 +788,8 @@ export default {
       multipleSelectionData: [],
       // 配置列表数据
       tableData: [],
+      // 表格是否加载中（ true说明表格正在加载中,则会显示加载动画。反之false则关闭加载动画）
+      tableLoading: false,
       // 总记录数
       totalCount: 0,
       // 每页展示的数量
@@ -885,7 +894,9 @@ export default {
     },
     // 加载数据
     loadData() {
-      // console.log('loadData')
+      // 开启表格的加载动画
+      this.tableLoading = true;
+
       // 每页展示的数量
       let pageSize = this.pagesize;
       // 当前页
@@ -923,6 +934,8 @@ export default {
       // 将数据放到vue中
       this.tableData = result.data.tableData;
       this.totalCount = result.data.totalCount;
+      // 关闭表格的加载动画
+      this.tableLoading = false;
     },
     // 点击切换命名空间
     namespaceToggle(selectedNamespaceId) {
@@ -1056,11 +1069,11 @@ export default {
       // 点击历史版本
       if (command == 1) {
         this.$router.push({
-        path: "/config/revisions/list",
-        query: {
-          configId: configId,
-        },
-      });
+          path: "/config/revisions/list",
+          query: {
+            configId: configId,
+          },
+        });
       }
       // 点击监听查询
       else if (command == 2) {

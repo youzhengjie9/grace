@@ -2,8 +2,7 @@
   <div class="sidebar-box">
     <!-- 侧边栏菜单(unique-opened为true说明只允许同时一个目录展开,如果打开多个目录,则其他目录会自动收缩回去) -->
     <el-menu
-      :default-openeds="currentOpenSidebarDirIndexArray"
-      :default-active="currentSidebarMenuHighlightIndex"
+      :default-active="currentSidebarMenuHighlightPath"
       :unique-opened="true"
       class="el-menu-vertical-demo"
       router
@@ -24,17 +23,17 @@ export default {
     SidebarMenuItem,
   },
   computed:{
-    currentSidebarMenuHighlightIndex(){
-      return this.$store.state.sidebar.currentSidebarMenuHighlightIndex
+    currentSidebarMenuHighlightPath(){
+      return this.$store.state.sidebar.currentSidebarMenuHighlightPath
     }
   },
   data() {
     return {
       // 当前展开的侧边栏目录（sub-menu标签）的index数组。用于控制侧边栏目录的展开和收缩
-      currentOpenSidebarDirIndexArray: ['101'],
+      // currentOpenSidebarDirIndexArray: ['101'],
       // 侧边栏菜单
       sidebarMenu: [],
-      //当前高亮的菜单标签,为null表示默认的tag（仪表盘）高亮
+      // 当前高亮的菜单标签,为null表示默认的tag（仪表盘）高亮
       currentMenuTag: null,
     };
   },

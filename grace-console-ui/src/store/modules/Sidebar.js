@@ -49,8 +49,8 @@ const state = {
             children: [],
         },
     ],
-    // 当前高亮的侧边栏菜单的index（这里我们说的index是菜单的路由路径）
-    currentSidebarMenuHighlightIndex: '/service/list',
+    // 当前高亮的侧边栏菜单的路由路径,（注意：高亮的菜单所在的目录也会被自动展开）
+    currentSidebarMenuHighlightPath: '',
 
 }
 
@@ -60,9 +60,9 @@ const mutations = {
     SET_SIDEBAR_MENU(state,newSidebarMenu){
         state.sidebarMenu = newSidebarMenu
     },
-    //将newCurrentSidebarMenuHighlightIndex替换成新的侧边栏高亮的菜单index（这里我们说的index是路由路径）
-    SET_CURRENT_SIDEBAR_MENU_HIGHLIGHT_INDEX(state, newCurrentSidebarMenuHighlightIndex) {
-        state.currentSidebarMenuHighlightIndex = newCurrentSidebarMenuHighlightIndex;
+    //将newCurrentSidebarMenuHighlightPath替换成新的侧边栏高亮的菜单路由路径
+    SET_CURRENT_SIDEBAR_MENU_HIGHLIGHT_PATH(state, newCurrentSidebarMenuHighlightPath) {
+        state.currentSidebarMenuHighlightPath = newCurrentSidebarMenuHighlightPath;
     }
 
 }
@@ -73,9 +73,10 @@ const actions = {
     setSidebarMenu(context,newSidebarMenu){
         context.commit('SET_SIDEBAR_MENU', newSidebarMenu);
     },
-    //将newCurrentSidebarMenuHighlightIndex替换成新的侧边栏高亮的菜单index（这里我们说的index是路由路径）
-    setCurrentSidebarMenuHighlightIndex(context, newCurrentSidebarMenuHighlightIndex) {
-        context.commit('SET_CURRENT_SIDEBAR_MENU_HIGHLIGHT_INDEX', newCurrentSidebarMenuHighlightIndex);
+    //将newCurrentSidebarMenuHighlightPath替换成新的侧边栏高亮的菜单路由路径
+    setCurrentSidebarMenuHighlightPath(context, newCurrentSidebarMenuHighlightPath) {
+        // 更新到vuex
+        context.commit('SET_CURRENT_SIDEBAR_MENU_HIGHLIGHT_PATH', newCurrentSidebarMenuHighlightPath);
     }
 
 }

@@ -125,6 +125,10 @@
       border
       style="width: 100%; margin-bottom: 25px"
       :header-cell-style="{ background: '#eef1f6', color: '#606266' }"
+      v-loading="tableLoading"
+      element-loading-background="rgba(255, 255, 255, .5)"
+      element-loading-text="加载中，请稍后..."
+      element-loading-spinner="el-icon-loading"
     >
       <!-- dataId -->
       <el-table-column prop="dataId" label="Data Id" width="290">
@@ -179,18 +183,26 @@
       <!-- 代码差异对比上面的标题 -->
       <el-row :gutter="24">
         <el-col :span="5" :offset="3">
-          <span style="font-size:16px;font-weight:600;">当前选中的版本(左侧区域)</span>
+          <span style="font-size: 16px; font-weight: 600"
+            >当前选中的版本(左侧区域)</span
+          >
         </el-col>
         <el-col :span="4" :offset="9">
-          <span style="font-size:16px;font-weight:600;">最新版本(右侧区域)</span>
+          <span style="font-size: 16px; font-weight: 600"
+            >最新版本(右侧区域)</span
+          >
         </el-col>
       </el-row>
       <!-- 内容 -->
       <el-row :gutter="24">
         <!-- 使用v-code-diff插件进行代码差异对比 -->
         <code-diff
-          :old-string="this.revisionsCompareDialogData.currentSelectedVersionConfigContent"
-          :new-string="this.revisionsCompareDialogData.latestVersionConfigContent"
+          :old-string="
+            this.revisionsCompareDialogData.currentSelectedVersionConfigContent
+          "
+          :new-string="
+            this.revisionsCompareDialogData.latestVersionConfigContent
+          "
           output-format="side-by-side"
         >
         </code-diff>
@@ -269,6 +281,8 @@ export default {
       allGroupNamesInDatabase: [],
       // 配置列表数据
       tableData: [],
+      // 表格是否加载中（ true说明表格正在加载中,则会显示加载动画。反之false则关闭加载动画）
+      tableLoading: false,
       // 总记录数
       totalCount: 0,
       // 每页展示的数量
@@ -336,7 +350,8 @@ export default {
     },
     // 加载数据
     loadData() {
-      // console.log('loadData')
+      // 开启表格的加载动画
+      this.tableLoading = true;
       // 每页展示的数量
       let pageSize = this.pagesize;
       // 当前页
@@ -406,6 +421,8 @@ export default {
           groupName: "abc_group",
         },
       ];
+      // 关闭表格的加载动画
+      this.tableLoading = false;
     },
     // 点击切换命名空间
     namespaceToggle(selectedNamespaceId) {

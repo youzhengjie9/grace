@@ -126,9 +126,16 @@
     </div>
 
     <!-- 表格内容  -->
-    <el-table :data="tableData" border
-    :header-cell-style="{ background: '#eef1f6', color: '#606266' }"
-    style="width: 100%">
+    <el-table
+      :data="tableData"
+      border
+      :header-cell-style="{ background: '#eef1f6', color: '#606266' }"
+      v-loading="tableLoading"
+      element-loading-background="rgba(255, 255, 255, .5)"
+      element-loading-text="加载中，请稍后..."
+      element-loading-spinner="el-icon-loading"
+      style="width: 100%"
+    >
       <el-table-column prop="id" label="id" width="180"> </el-table-column>
       <el-table-column prop="serviceName" label="服务名称" width="210">
       </el-table-column>
@@ -271,37 +278,9 @@ export default {
         hideEmptyService: true,
       },
       // 表格数据
-      tableData: [
-        {
-          id: 10001,
-          // 服务名称
-          serviceName: "abc",
-          // 分组名称
-          groupName: "DEFAULT_GROUP",
-          // 实例数
-          instanceCount: 3,
-          // 健康实例数
-          healthInstanceCount: 3,
-          // 是否触发保护阈值
-          reachProtectionThreshold: "false",
-        },
-        {
-          id: 10002,
-          serviceName: "abc22",
-          groupName: "DEFAULT_GROUP",
-          instanceCount: 3,
-          healthInstanceCount: 3,
-          reachProtectionThreshold: "false",
-        },
-        {
-          id: 10003,
-          serviceName: "abc33",
-          groupName: "DEFAULT_GROUP",
-          instanceCount: 3,
-          healthInstanceCount: 3,
-          reachProtectionThreshold: "false",
-        },
-      ],
+      tableData: [],
+      // 表格是否加载中（ true说明表格正在加载中,则会显示加载动画。反之false则关闭加载动画）
+      tableLoading: false,
       // 总记录数
       totalCount: 200,
       // 每页展示的数量
@@ -360,6 +339,9 @@ export default {
       },
     };
   },
+  mounted(){
+    this.loadData();
+  },
   methods: {
     // vue2-ace-editor代码编辑器初始化(下面的额外配置（例如主题、语言等）可以在node_modules\brace文件夹找 ,然后导入即可)
     editorInit() {
@@ -375,6 +357,63 @@ export default {
       // 编译器代码段（html、java、javascript、golang、json、mysql、python、properties、sql、xml、yaml 等）
       require("brace/snippets/json");
     },
+    // 加载数据
+    loadData() {
+      // 开启表格的加载动画
+      this.tableLoading = true;
+      // 每页展示的数量
+      let pageSize = this.pagesize;
+      // 当前页
+      let currentPage = this.currentPage;
+      // 根据上面的属性从后端分页的获取tableData数据
+      let result = {
+        code: 200,
+        data: {
+          // 分页查询出来的数据
+          tableData: [
+            {
+              id: 10001,
+              // 服务名称
+              serviceName: "abc",
+              // 分组名称
+              groupName: "DEFAULT_GROUP",
+              // 实例数
+              instanceCount: 3,
+              // 健康实例数
+              healthInstanceCount: 3,
+              // 是否触发保护阈值
+              reachProtectionThreshold: "false",
+            },
+            {
+              id: 10002,
+              serviceName: "abc22",
+              groupName: "DEFAULT_GROUP",
+              instanceCount: 3,
+              healthInstanceCount: 3,
+              reachProtectionThreshold: "false",
+            },
+            {
+              id: 10003,
+              serviceName: "abc33",
+              groupName: "DEFAULT_GROUP",
+              instanceCount: 3,
+              healthInstanceCount: 3,
+              reachProtectionThreshold: "false",
+            },
+          ],
+          // 所有数据的总数（没有分页）
+          totalCount: 70,
+        },
+      };
+
+      // 将数据放到vue中
+      this.tableData = result.data.tableData;
+      this.totalCount = result.data.totalCount;
+
+      // 关闭表格的加载动画
+      this.tableLoading = false;
+
+    },
     // 点击切换命名空间
     namespaceToggle(selectedNamespaceId) {
       this.currentSelectedNamespaceId = selectedNamespaceId;
@@ -384,17 +423,17 @@ export default {
       console.log(this.queryCondition);
     },
     // 点击打开创建服务dialog
-    clickOpenCreateServiceDialog(){
+    clickOpenCreateServiceDialog() {
       this.openCreateServiceDialog = true;
     },
     // 服务详情
     serviceDetail(id) {
       this.$router.push({
-        path:'/service/detail',
+        path: "/service/detail",
         query: {
-          id : id
-        }
-      })
+          id: id,
+        },
+      });
     },
     // 删除服务
     deleteService(id) {

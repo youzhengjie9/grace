@@ -7,6 +7,7 @@ import NProgress from "nprogress";
 import 'nprogress/nprogress.css'
 // 导入我们后台系统整体布局组件Layout
 import Layout from '../layout/index.vue'
+import store from "@/store";
 
 
 //解决Vue路由重复跳转报错,要放到Vue.use(VueRouter)之前
@@ -113,6 +114,9 @@ router.beforeEach((to,from,next) => {
 
     //当进入路由前进度条开启
     NProgress.start();
+
+    // 把侧边栏高亮菜单的路由路径更新为当前跳转到的路由路径（to.path）
+    store.dispatch('setCurrentSidebarMenuHighlightPath', to.path)
 
     next();
 
