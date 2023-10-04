@@ -16,9 +16,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GraceRegistryProperties {
 
     /**
-     * grace服务端的ip地址（格式例如:127.0.0.1:8500）
+     * grace控制台（服务端）的ip地址（格式例如:127.0.0.1:8848）
      */
-    private String serverAddr = "127.0.0.1:8500";
+    private String consoleAddress = "127.0.0.1:8848";
 
     /**
      * grace用户名
@@ -77,15 +77,18 @@ public class GraceRegistryProperties {
     private Integer heartBeatTimeout;
 
     /**
-     * 是否为临时实例,如果为false则会持久化到数据库中
+     * 是否为临时实例
+     * <p>
+     * 如果为true,则实例为临时实例,该实例需要定时向grace控制台发送心跳包,否则会被剔除。
+     * 如果为false，则实例为永久实例，不需要发送心跳包，而是控制台会发送请求询问永久实例是否在线，就算该永久实例不在线也不会被剔除）
      */
-    private boolean ephemeral = false;
+    private boolean ephemeral = true;
 
     public GraceRegistryProperties() {
     }
 
-    public GraceRegistryProperties(String serverAddr, String username, String password, String namespace, String serviceName, int weight, String clusterName, String groupName, Map<String, String> metadata, boolean enableRegister, Integer heartBeatInterval, Integer heartBeatTimeout, boolean ephemeral) {
-        this.serverAddr = serverAddr;
+    public GraceRegistryProperties(String consoleAddress, String username, String password, String namespace, String serviceName, int weight, String clusterName, String groupName, Map<String, String> metadata, boolean enableRegister, Integer heartBeatInterval, Integer heartBeatTimeout, boolean ephemeral) {
+        this.consoleAddress = consoleAddress;
         this.username = username;
         this.password = password;
         this.namespace = namespace;
@@ -100,12 +103,12 @@ public class GraceRegistryProperties {
         this.ephemeral = ephemeral;
     }
 
-    public String getServerAddr() {
-        return serverAddr;
+    public String getConsoleAddress() {
+        return consoleAddress;
     }
 
-    public void setServerAddr(String serverAddr) {
-        this.serverAddr = serverAddr;
+    public void setConsoleAddress(String consoleAddress) {
+        this.consoleAddress = consoleAddress;
     }
 
     public String getUsername() {
@@ -207,7 +210,7 @@ public class GraceRegistryProperties {
     @Override
     public String toString() {
         return "GraceRegistryProperties{" +
-                "serverAddr='" + serverAddr + '\'' +
+                "consoleAddress='" + consoleAddress + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", namespace='" + namespace + '\'' +

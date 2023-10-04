@@ -1,15 +1,13 @@
 package com.grace.common.http.request;
 
 import com.grace.common.http.config.HttpClientConfig;
-import com.grace.common.http.entity.RequestHttpEntity;
 import com.grace.common.http.param.Header;
-import com.grace.common.http.param.RequestParam;
 import com.grace.common.http.response.HttpClientResponse;
 
 import java.net.URI;
 
 /**
- * http客户端请求
+ * http客户端请求,作用是发送请求
  *
  * @author youzhengjie
  * @date 2023/08/17 23:27:07

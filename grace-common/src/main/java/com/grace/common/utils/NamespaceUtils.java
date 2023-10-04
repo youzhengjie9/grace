@@ -1,11 +1,7 @@
 package com.grace.common.utils;
 
 import com.grace.common.constant.Constants;
-import com.grace.common.entity.Instance;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import static com.grace.common.constant.Constants.CLUSTER_NAME_PATTERN_STRING;

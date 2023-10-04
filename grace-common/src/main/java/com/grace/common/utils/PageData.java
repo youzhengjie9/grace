@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * 分页数据展示
  */
-public class ListView<T> {
+public class PageData<T> {
 
     // 分页后的数据
     private List<T> data;

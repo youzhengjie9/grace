@@ -4,10 +4,8 @@ import com.alibaba.fastjson2.JSON;
 import com.grace.common.constant.RequestHeaderConstants;
 import com.grace.common.enums.RequestMethod;
 import com.grace.common.http.config.HttpClientConfig;
-import com.grace.common.http.entity.RequestHttpEntity;
-import com.grace.common.http.param.MediaType;
 import com.grace.common.http.param.Header;
-import com.grace.common.http.param.RequestParam;
+import com.grace.common.http.param.MediaType;
 import com.grace.common.http.response.DefaultHttpClientResponse;
 import com.grace.common.http.response.HttpClientResponse;
 import com.grace.common.utils.StringUtils;
@@ -39,8 +37,14 @@ import java.util.Map;
  */
 public class DefaultHttpClientRequest implements HttpClientRequest {
 
+    /**
+     * Apache HttpClient对象（发送请求全靠这个类，非常重要！）
+     */
     private final CloseableHttpClient httpClient;
 
+    /**
+     * Apache HttpClient默认的请求配置
+     */
     private final RequestConfig defaultRequestConfig;
 
     public DefaultHttpClientRequest(CloseableHttpClient httpClient, RequestConfig defaultRequestConfig) {

@@ -1,19 +1,18 @@
-package com.grace.client.service;
+package com.grace.client.registry;
 
 import com.grace.common.entity.Instance;
-import com.grace.common.utils.ListView;
+import com.grace.common.utils.PageData;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * 命名空间服务
+ * 注册中心的服务,用于操作注册中心
  *
  * @author youzhengjie
- * @date 2023/06/19 20:53:09
+ * @date 2023-09-27 23:33:58
  */
-public interface NamespaceService {
-
+public interface RegistryService {
 
     void registerInstance(String serviceName, String ipAddr, int port);
 
@@ -25,6 +24,13 @@ public interface NamespaceService {
 
     void registerInstance(String serviceName, Instance instance);
 
+    /**
+     * 将实例注册到注册中心上
+     *
+     * @param serviceName 服务名称
+     * @param groupName 分组名称
+     * @param instance 实例
+     */
     void registerInstance(String serviceName, String groupName, Instance instance);
 
     void batchRegisterInstance(String serviceName, List<Instance> instances);
@@ -107,7 +113,7 @@ public interface NamespaceService {
      * @param size page size
      * @return list of service names
      */
-    ListView<String> getServiceNameList(int page, int size);
+    PageData<String> getServiceNameList(int page, int size);
 
     /**
      * 分页获取服务名称列表
@@ -117,20 +123,8 @@ public interface NamespaceService {
      * @param groupName group name
      * @return list of service names
      */
-    ListView<String> getServiceNameList(int page, int size, String groupName);
+    PageData<String> getServiceNameList(String groupName,int page, int size);
 
-
-//    void createNamespace(String namespace);
-//
-//    void createNamespace(String namespace,String desc);
-//
-//    boolean createService(String serviceName);
-//
-//    boolean createService(String serviceName,String namespace);
-//
-//    boolean createService(String serviceName,String namespace,String groupName);
-//
-//    boolean createService(String serviceName,String namespace,String groupName,String metaData);
 
 
 }

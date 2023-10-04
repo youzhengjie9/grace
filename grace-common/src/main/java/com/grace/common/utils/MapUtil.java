@@ -16,7 +16,7 @@
 
 package com.grace.common.utils;
 
-import com.alibaba.nacos.common.NotThreadSafe;
+import oshi.annotation.concurrent.NotThreadSafe;
 
 import java.util.Collection;
 import java.util.Dictionary;

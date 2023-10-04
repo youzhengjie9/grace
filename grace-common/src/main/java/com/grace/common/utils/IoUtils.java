@@ -16,7 +16,7 @@
 
 package com.grace.common.utils;
 
-import com.alibaba.nacos.api.common.Constants;
+import com.grace.common.constant.Constants;
 
 import java.io.*;
 import java.net.HttpURLConnection;

@@ -1,12 +1,14 @@
 package com.grace.common.http.client;
 
 import com.grace.common.constant.RequestMethodConstants;
+import com.grace.common.enums.RequestMethod;
 import com.grace.common.http.RestResult;
 import com.grace.common.http.config.HttpClientConfig;
 import com.grace.common.http.convert.HttpClientResponseRestResultConverter;
 import com.grace.common.http.param.Header;
 import com.grace.common.http.param.MediaType;
 import com.grace.common.http.param.RequestParam;
+import com.grace.common.http.request.DefaultHttpClientRequest;
 import com.grace.common.http.request.HttpClientRequest;
 import com.grace.common.http.response.HttpClientResponse;
 import org.slf4j.Logger;
@@ -18,7 +20,7 @@ import java.net.URISyntaxException;
 import java.util.Map;
 
 /**
- * GraceRestTemplate
+ * 通过操作HttpClientRequest类（底层为Apache HttpClient）发送api请求
  *
  * @author youzhengjie
  * @date 2023/08/14 21:43:24
@@ -28,7 +30,6 @@ public class GraceRestTemplate implements GraceRestOperations{
     private final Logger log;
 
     private final HttpClientRequest httpClientRequest;
-
 
     public GraceRestTemplate(HttpClientRequest httpClientRequest) {
         this.httpClientRequest = httpClientRequest;
@@ -47,11 +48,10 @@ public class GraceRestTemplate implements GraceRestOperations{
      * @param httpClientConfig http客户端配置（不需要传配置则传null值）
      * @param responseType     RestResult的data对象类型（也就是响应结果类型）
      * @return {@link RestResult}<{@link T}>
-     * @throws URISyntaxException urisyntax例外
      */
     private <T> RestResult<T> execute(String url, String requestMethod, Header requestHeader,
                                       RequestParam requestParam, Object requestBody,
-                                      HttpClientConfig httpClientConfig, Type responseType) throws Exception {
+                                      HttpClientConfig httpClientConfig, Class<T> responseType) throws Exception {
         // 构建uri（将url和请求参数进行拼接）格式为（例如https://www.baidu.com/s?wd=你好）
         URI uri = buildUri(url, requestParam);
         if (log.isDebugEnabled()) {
@@ -62,7 +62,8 @@ public class GraceRestTemplate implements GraceRestOperations{
         HttpClientResponse httpClientResponse =
                 getHttpClientRequest().sendRequest(uri, requestMethod, requestHeader, requestBody, httpClientConfig);
 
-        HttpClientResponseRestResultConverter<T> httpClientResponseRestResultConverter = new HttpClientResponseRestResultConverter<>();
+        HttpClientResponseRestResultConverter<T> httpClientResponseRestResultConverter =
+                new HttpClientResponseRestResultConverter<>();
 
         // 将apache httpclient的响应结果（httpClientResponse）
         // 转换成我们自己写的响应结果RestResult（这才是GraceRestTemplate需要的响应结果）
@@ -96,7 +97,8 @@ public class GraceRestTemplate implements GraceRestOperations{
     }
 
     @Override
-    public <T> RestResult<T> get(String url, Header requestHeader, RequestParam requestParam, Type responseType) throws Exception {
+    public <T> RestResult<T> get(String url, Header requestHeader, RequestParam requestParam,
+                                 Class<T> responseType) throws Exception {
         return execute(
                 url,
                 RequestMethodConstants.GET,
@@ -109,7 +111,7 @@ public class GraceRestTemplate implements GraceRestOperations{
 
     @Override
     public <T> RestResult<T> get(String url, Header requestHeader, RequestParam requestParam,
-                                 HttpClientConfig httpClientConfig, Type responseType) throws Exception {
+                                 HttpClientConfig httpClientConfig, Class<T> responseType) throws Exception {
         return execute(
                 url,
                 RequestMethodConstants.GET,
@@ -122,7 +124,7 @@ public class GraceRestTemplate implements GraceRestOperations{
 
     @Override
     public <T> RestResult<T> getLarge(String url, Header requestHeader, RequestParam requestParam,
-                                      Object requestBody, Type responseType) throws Exception {
+                                      Object requestBody, Class<T> responseType) throws Exception {
         return execute(
                 url,
                 RequestMethodConstants.GET_LARGE,
@@ -135,7 +137,7 @@ public class GraceRestTemplate implements GraceRestOperations{
 
     @Override
     public <T> RestResult<T> getLarge(String url, Header requestHeader, RequestParam requestParam,
-                                      String requestBodyJson, Type responseType) throws Exception {
+                                      String requestBodyJson, Class<T> responseType) throws Exception {
 
         // 因为请求体（requestBodyJson）是JSON字符串类型,所以要将
         // 请求头（requestHeader）中的Content-Type设置为application/json;charset=UTF-8
@@ -153,7 +155,7 @@ public class GraceRestTemplate implements GraceRestOperations{
 
     @Override
     public <T> RestResult<T> getLarge(String url, Header requestHeader, RequestParam requestParam,
-                                      Map<String, String> requestBodyMap, Type responseType) throws Exception {
+                                      Map<String, String> requestBodyMap, Class<T> responseType) throws Exception {
 
         // 因为请求体（requestBodyMap）是Map类型,所以要将
         // 请求头（requestHeader）中的Content-Type设置为application/x-www-form-urlencoded;charset=UTF-8
@@ -171,7 +173,7 @@ public class GraceRestTemplate implements GraceRestOperations{
 
     @Override
     public <T> RestResult<T> post(String url, Header requestHeader, RequestParam requestParam,
-                                  Object requestBody, Type responseType) throws Exception {
+                                  Object requestBody, Class<T> responseType) throws Exception {
 
         return execute(
                 url,
@@ -185,7 +187,7 @@ public class GraceRestTemplate implements GraceRestOperations{
 
     @Override
     public <T> RestResult<T> post(String url, Header requestHeader, RequestParam requestParam,
-                                  String requestBodyJson, Type responseType) throws Exception {
+                                  String requestBodyJson, Class<T> responseType) throws Exception {
 
         // 因为请求体（requestBodyJson）是JSON字符串类型,所以要将
         // 请求头（requestHeader）中的Content-Type设置为application/json;charset=UTF-8
@@ -203,7 +205,7 @@ public class GraceRestTemplate implements GraceRestOperations{
 
     @Override
     public <T> RestResult<T> post(String url, Header requestHeader,
-                                  String requestBodyJson, Type responseType) throws Exception {
+                                  String requestBodyJson, Class<T> responseType) throws Exception {
 
         // 因为请求体（requestBodyJson）是JSON字符串类型,所以要将
         // 请求头（requestHeader）中的Content-Type设置为application/json;charset=UTF-8
@@ -221,7 +223,7 @@ public class GraceRestTemplate implements GraceRestOperations{
 
     @Override
     public <T> RestResult<T> post(String url, Header requestHeader, RequestParam requestParam,
-                                  Map<String, String> requestBodyMap, Type responseType) throws Exception {
+                                  Map<String, String> requestBodyMap, Class<T> responseType) throws Exception {
 
         // 因为请求体（requestBodyMap）是Map类型,所以要将
         // 请求头（requestHeader）中的Content-Type设置为application/x-www-form-urlencoded;charset=UTF-8
@@ -239,7 +241,7 @@ public class GraceRestTemplate implements GraceRestOperations{
 
     @Override
     public <T> RestResult<T> post(String url, Header requestHeader,
-                                  Map<String, String> requestBodyMap, Type responseType) throws Exception {
+                                  Map<String, String> requestBodyMap, Class<T> responseType) throws Exception {
 
         // 因为请求体（requestBodyMap）是Map类型,所以要将
         // 请求头（requestHeader）中的Content-Type设置为application/x-www-form-urlencoded;charset=UTF-8
@@ -257,7 +259,7 @@ public class GraceRestTemplate implements GraceRestOperations{
 
     @Override
     public <T> RestResult<T> post(String url, Header requestHeader, Map<String, String> requestBodyMap,
-                                  HttpClientConfig httpClientConfig, Type responseType) throws Exception {
+                                  HttpClientConfig httpClientConfig, Class<T> responseType) throws Exception {
 
         // 因为请求体（requestBodyMap）是Map类型,所以要将
         // 请求头（requestHeader）中的Content-Type设置为application/x-www-form-urlencoded;charset=UTF-8
@@ -275,7 +277,7 @@ public class GraceRestTemplate implements GraceRestOperations{
 
     @Override
     public <T> RestResult<T> put(String url, Header requestHeader, RequestParam requestParam,
-                                 Object requestBody, Type responseType) throws Exception {
+                                 Object requestBody, Class<T> responseType) throws Exception {
         return execute(
                 url,
                 RequestMethodConstants.PUT,
@@ -288,7 +290,7 @@ public class GraceRestTemplate implements GraceRestOperations{
 
     @Override
     public <T> RestResult<T> put(String url, Header requestHeader, RequestParam requestParam,
-                                 String requestBodyJson, Type responseType) throws Exception {
+                                 String requestBodyJson, Class<T> responseType) throws Exception {
 
         // 因为请求体（requestBodyJson）是JSON字符串类型,所以要将
         // 请求头（requestHeader）中的Content-Type设置为application/json;charset=UTF-8
@@ -305,7 +307,8 @@ public class GraceRestTemplate implements GraceRestOperations{
     }
 
     @Override
-    public <T> RestResult<T> put(String url, Header requestHeader, String requestBodyJson, Type responseType) throws Exception {
+    public <T> RestResult<T> put(String url, Header requestHeader, String requestBodyJson,
+                                 Class<T> responseType) throws Exception {
 
         // 因为请求体（requestBodyJson）是JSON字符串类型,所以要将
         // 请求头（requestHeader）中的Content-Type设置为application/json;charset=UTF-8
@@ -323,7 +326,7 @@ public class GraceRestTemplate implements GraceRestOperations{
 
     @Override
     public <T> RestResult<T> put(String url, Header requestHeader, RequestParam requestParam,
-                                 Map<String, String> requestBodyMap, Type responseType) throws Exception {
+                                 Map<String, String> requestBodyMap, Class<T> responseType) throws Exception {
 
         // 因为请求体（requestBodyMap）是Map类型,所以要将
         // 请求头（requestHeader）中的Content-Type设置为application/x-www-form-urlencoded;charset=UTF-8
@@ -341,7 +344,7 @@ public class GraceRestTemplate implements GraceRestOperations{
 
     @Override
     public <T> RestResult<T> put(String url, Header requestHeader,
-                                 Map<String, String> requestBodyMap, Type responseType) throws Exception {
+                                 Map<String, String> requestBodyMap, Class<T> responseType) throws Exception {
 
         // 因为请求体（requestBodyMap）是Map类型,所以要将
         // 请求头（requestHeader）中的Content-Type设置为application/x-www-form-urlencoded;charset=UTF-8
@@ -359,7 +362,7 @@ public class GraceRestTemplate implements GraceRestOperations{
 
     @Override
     public <T> RestResult<T> put(String url, Header requestHeader, Map<String, String> requestBodyMap,
-                                 HttpClientConfig httpClientConfig, Type responseType) throws Exception {
+                                 HttpClientConfig httpClientConfig, Class<T> responseType) throws Exception {
 
         // 因为请求体（requestBodyMap）是Map类型,所以要将
         // 请求头（requestHeader）中的Content-Type设置为application/x-www-form-urlencoded;charset=UTF-8
@@ -377,7 +380,8 @@ public class GraceRestTemplate implements GraceRestOperations{
     }
 
     @Override
-    public <T> RestResult<T> delete(String url, Header requestHeader, RequestParam requestParam, Type responseType) throws Exception {
+    public <T> RestResult<T> delete(String url, Header requestHeader, RequestParam requestParam,
+                                    Class<T> responseType) throws Exception {
 
         return execute(
                 url,
@@ -390,7 +394,8 @@ public class GraceRestTemplate implements GraceRestOperations{
     }
 
     @Override
-    public <T> RestResult<T> delete(String url, Header requestHeader, RequestParam requestParam, HttpClientConfig httpClientConfig, Type responseType) throws Exception {
+    public <T> RestResult<T> delete(String url, Header requestHeader, RequestParam requestParam,
+                                    HttpClientConfig httpClientConfig, Class<T> responseType) throws Exception {
 
         return execute(
                 url,
@@ -405,7 +410,7 @@ public class GraceRestTemplate implements GraceRestOperations{
     @Override
     public <T> RestResult<T> exchange(String url, String requestMethod, Header requestHeader,
                                       RequestParam requestParam, Object requestBody,
-                                      HttpClientConfig httpClientConfig, Type responseType) throws Exception {
+                                      HttpClientConfig httpClientConfig, Class<T> responseType) throws Exception {
 
         return execute(
                 url,
@@ -420,7 +425,7 @@ public class GraceRestTemplate implements GraceRestOperations{
     @Override
     public <T> RestResult<T> exchange(String url, String requestMethod, Header requestHeader,
                                       RequestParam requestParam, String requestBodyJson,
-                                      Type responseType) throws Exception {
+                                      Class<T> responseType) throws Exception {
 
         // 因为请求体（requestBodyJson）是JSON字符串类型,所以要将
         // 请求头（requestHeader）中的Content-Type设置为application/json;charset=UTF-8
@@ -439,7 +444,7 @@ public class GraceRestTemplate implements GraceRestOperations{
     @Override
     public <T> RestResult<T> exchange(String url, String requestMethod, Header requestHeader,
                                       RequestParam requestParam, Map<String, String> requestBodyMap,
-                                      Type responseType) throws Exception {
+                                      Class<T> responseType) throws Exception {
 
         // 因为请求体（requestBodyMap）是Map类型,所以要将
         // 请求头（requestHeader）中的Content-Type设置为application/x-www-form-urlencoded;charset=UTF-8

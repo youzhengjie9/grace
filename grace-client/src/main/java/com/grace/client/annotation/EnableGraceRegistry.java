@@ -1,7 +1,6 @@
 package com.grace.client.annotation;
 
 import com.grace.client.properties.GraceRegistryProperties;
-import com.grace.client.service.impl.RestTemplateNamespaceServiceImpl;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
 
@@ -21,7 +20,7 @@ import java.lang.annotation.*;
         GraceRegistryProperties.class
 })
 @Import({
-        RestTemplateNamespaceServiceImpl.class
+        RestTemplateRegistryServiceImpl.class
 })
 public @interface EnableGraceRegistry {
 

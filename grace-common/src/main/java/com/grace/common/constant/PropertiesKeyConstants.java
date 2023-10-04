@@ -19,8 +19,11 @@ public final class PropertiesKeyConstants {
     public static final String ENDPOINT_PORT = "endpointPort";
     
     public static final String SERVER_NAME = "serverName";
-    
-    public static final String NAMESPACE = "namespace";
+
+    /**
+     * 命名空间名称
+     */
+    public static final String NAMESPACE_NAME = "namespaceName";
 
     public static final String NAMESPACE_DESC = "namespaceDesc";
 
@@ -38,8 +41,11 @@ public final class PropertiesKeyConstants {
     public static final String SECRET_KEY = "secretKey";
     
     public static final String RAM_ROLE_NAME = "ramRoleName";
-    
-    public static final String SERVER_ADDR = "serverAddr";
+
+    /**
+     * 控制台地址key
+     */
+    public static final String CONSOLE_ADDRESS = "consoleAddress";
     
     public static final String CONTEXT_PATH = "contextPath";
     

@@ -41,5 +41,4 @@ public class RestResult<T> extends Result<T> {
         super.setData(result.getData());
     }
 
-
 }

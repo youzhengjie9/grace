@@ -1,11 +1,11 @@
-package com.grace.client.service.remote;
+package com.grace.client.registry.remote;
 
-import com.grace.client.core.ServerListManager;
-import com.grace.client.service.remote.http.NamespaceHttpClientProxy;
+import com.grace.client.registry.core.GraceConsoleAddressManager;
+import com.grace.client.registry.remote.http.RegistryHttpClientProxy;
 import com.grace.common.entity.Instance;
 import com.grace.common.entity.Service;
 import com.grace.common.utils.CollectionUtils;
-import com.grace.common.utils.ListView;
+import com.grace.common.utils.PageData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,25 +14,25 @@ import java.util.Properties;
 import java.util.concurrent.ScheduledExecutorService;
 
 /**
- * 命名空间客户端代理的委托
+ * 注册中心的客户端代理的委托（作用是: 这个类会根据条件选择一个RegistryClientProxy的实现类的对象进行方法调用）
  *
  * @author youzhengjie
- * @date 2023/08/06 00:41:51
+ * @date 2023-09-28 00:57:50
  */
-public class NamespaceClientProxyDelegate implements NamespaceClientProxy {
+public class RegistryClientProxyDelegate implements RegistryClientProxy {
 
-    private final Logger log = LoggerFactory.getLogger(NamespaceClientProxyDelegate.class);
+    private final Logger log = LoggerFactory.getLogger(RegistryClientProxyDelegate.class);
     
-    private final ServerListManager serverListManager;
+    private final GraceConsoleAddressManager graceConsoleAddressManager;
     
-    private final NamespaceHttpClientProxy httpClientProxy;
+    private final RegistryHttpClientProxy httpClientProxy;
     
     private ScheduledExecutorService executorService;
 
-    public NamespaceClientProxyDelegate(Long namespaceId, Properties properties) {
-
-        this.serverListManager = new ServerListManager(properties, namespaceId);
-        this.httpClientProxy = new NamespaceHttpClientProxy(namespaceId, serverListManager, properties);
+    public RegistryClientProxyDelegate(Long namespaceId, Properties properties) {
+        this.graceConsoleAddressManager = new GraceConsoleAddressManager(properties, namespaceId);
+        this.httpClientProxy =
+                new RegistryHttpClientProxy(namespaceId, graceConsoleAddressManager, properties);
     }
 
     @Override
@@ -91,8 +91,8 @@ public class NamespaceClientProxyDelegate implements NamespaceClientProxy {
     }
 
     @Override
-    public ListView<String> getServiceNameList(int page, int size, String groupName) {
-        return httpClientProxy.getServiceNameList(page, size, groupName);
+    public PageData<String> getServiceNameList(String groupName,int page, int size) {
+        return httpClientProxy.getServiceNameList(groupName,page,size);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class NamespaceClientProxyDelegate implements NamespaceClientProxy {
 //        return instance.isEphemeral() ? grpcClientProxy : httpClientProxy;
 //    }
 
-    private NamespaceClientProxy getExecuteClientProxy(Instance instance) {
+    private RegistryClientProxy getExecuteClientProxy(Instance instance) {
         return httpClientProxy;
     }
 

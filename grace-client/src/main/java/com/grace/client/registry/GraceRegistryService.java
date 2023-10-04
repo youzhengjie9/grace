@@ -1,45 +1,75 @@
-package com.grace.client.service.impl;
+package com.grace.client.registry;
 
-import com.grace.client.service.NamespaceService;
-import com.grace.client.service.remote.NamespaceClientProxy;
-import com.grace.client.service.remote.NamespaceClientProxyDelegate;
+import com.grace.client.registry.remote.RegistryClientProxy;
+import com.grace.client.registry.remote.RegistryClientProxyDelegate;
 import com.grace.common.constant.PropertiesKeyConstants;
 import com.grace.common.entity.Instance;
 import com.grace.common.utils.CollectionUtils;
-import com.grace.common.utils.ListView;
+import com.grace.common.utils.PageData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class GraceNamespaceService implements NamespaceService {
+/**
+ * 注册中心的服务的实现类（用户操作注册中心就是使用这个类！）
+ *
+ * @author youzhengjie
+ * @date 2023/09/28 00:46:55
+ */
+public class GraceRegistryService implements RegistryService {
 
-    private static final Logger log = LoggerFactory.getLogger(GraceNamespaceService.class);
+    private static final Logger log = LoggerFactory.getLogger(GraceRegistryService.class);
 
-    private static final String DEFAULT_NAMESPACE = "DEFAULT";
+    /**
+     * 默认的命名空间id
+     */
+    private static final Long DEFAULT_NAMESPACE_ID = 101L;
 
-    private static final String DEFAULT_GROUP = "DEFAULT_GROUP";
+    /**
+     * 默认的命名空间名称
+     */
+    private static final String DEFAULT_NAMESPACE_NAME = "public";
 
-    private String namespace;
+//    /**
+//     * 默认的分组id
+//     */
+//    private static final Long DEFAULT_GROUP_ID = 101L;
 
-    private NamespaceClientProxy clientProxy;
+    /**
+     * 默认的分组名称
+     */
+    private static final String DEFAULT_GROUP_NAME = "DEFAULT_GROUP";
+
+    /**
+     * 当前操作的命名空间id
+     * <p>
+     * 基本思想就是用户传命名空间名称到GraceRegistryService类中,
+     * 在GraceRegistryService类中的初始化方法通过命名空间名称查询命名空间id并保存起来传给clientProxy类
+     */
+    private Long namespaceId;
+
+    /**
+     * 注册中心的客户端代理（作用是: 向注册中心发送api请求）
+     */
+    private RegistryClientProxy clientProxy;
 
 
-    public GraceNamespaceService(String serverAddr) {
+    public GraceRegistryService(String consoleAddress) {
         Properties properties = new Properties();
-        properties.setProperty(PropertiesKeyConstants.SERVER_ADDR,serverAddr);
-        properties.setProperty(PropertiesKeyConstants.NAMESPACE,DEFAULT_NAMESPACE);
+        properties.setProperty(PropertiesKeyConstants.CONSOLE_ADDRESS,consoleAddress);
+        properties.setProperty(PropertiesKeyConstants.NAMESPACE_NAME,DEFAULT_NAMESPACE_NAME);
         init(properties);
     }
 
-    public GraceNamespaceService(String serverAddr,String namespace) {
+    public GraceRegistryService(String consoleAddress, String namespaceName) {
         Properties properties = new Properties();
-        properties.setProperty(PropertiesKeyConstants.SERVER_ADDR,serverAddr);
-        properties.setProperty(PropertiesKeyConstants.NAMESPACE,namespace);
+        properties.setProperty(PropertiesKeyConstants.CONSOLE_ADDRESS,consoleAddress);
+        properties.setProperty(PropertiesKeyConstants.NAMESPACE_DESC,namespaceName);
         init(properties);
     }
 
-    public GraceNamespaceService(Properties properties) {
+    public GraceRegistryService(Properties properties) {
         init(properties);
     }
 
@@ -49,24 +79,23 @@ public class GraceNamespaceService implements NamespaceService {
      * @param properties 属性
      */
     private void init(Properties properties) {
-        this.namespace = properties.getProperty(PropertiesKeyConstants.NAMESPACE);
-//        String autoCreateNamespace = properties.getProperty(PropertiesKeyConstant.AUTO_CREATE_NAMESPACE, PropertiesValueConstant.OFF);
-//        //如果开启了自动创建命名空间
-//        if(autoCreateNamespace.equals(PropertiesValueConstant.ON)) {
-//            //如果该namespace没有被创建则创建
-//            if (!hasNamespace(namespace)) {
-//                this.namespaceDesc = properties.getProperty(PropertiesKeyConstant.NAMESPACE_DESC, "");
-//                boolean createNamespaceSuccess = createNamespace(namespace, namespaceDesc);
-//                log.info("命名空间:" + namespace + "创建" + (createNamespaceSuccess ? "成功" : "失败"));
-//            }
-//        }
-        this.clientProxy = new NamespaceClientProxyDelegate(this.namespace, properties);
+        String namespaceName = properties.getProperty(PropertiesKeyConstants.NAMESPACE_NAME);
+        // 如果命名空间名称为public
+        if(namespaceName.equalsIgnoreCase(DEFAULT_NAMESPACE_NAME)){
+            this.namespaceId = DEFAULT_NAMESPACE_ID;
+        }
+        // 如果命名空间名称不为public
+        else {
+            // TODO: 2023/9/28  根据命名空间名称去数据库中查询命名空间id
+            this.namespaceId = 666666666L;
+        }
+        this.clientProxy = new RegistryClientProxyDelegate(this.namespaceId, properties);
     }
 
 
     @Override
     public void registerInstance(String serviceName, String ipAddr, int port) {
-        registerInstance(serviceName, DEFAULT_GROUP, ipAddr, port);
+        registerInstance(serviceName, DEFAULT_GROUP_NAME, ipAddr, port);
     }
 
     @Override
@@ -75,8 +104,8 @@ public class GraceNamespaceService implements NamespaceService {
     }
 
     @Override
-    public void registerInstance(String serviceName, String ipAddr, int port, Map<String, String> metadata) {
-        registerInstance(serviceName, DEFAULT_GROUP, ipAddr, port,metadata);
+    public void registerInstance(String serviceName, String ipAddr, int port, Map<String, String> metadata){
+        registerInstance(serviceName, DEFAULT_GROUP_NAME, ipAddr, port,metadata);
     }
 
     @Override
@@ -91,7 +120,7 @@ public class GraceNamespaceService implements NamespaceService {
 
     @Override
     public void registerInstance(String serviceName, Instance instance) {
-        registerInstance(serviceName, DEFAULT_GROUP, instance);
+        registerInstance(serviceName, DEFAULT_GROUP_NAME, instance);
     }
 
     @Override
@@ -101,7 +130,7 @@ public class GraceNamespaceService implements NamespaceService {
 
     @Override
     public void batchRegisterInstance(String serviceName, List<Instance> instances) {
-        clientProxy.batchRegisterInstance(serviceName, DEFAULT_GROUP, instances);
+        clientProxy.batchRegisterInstance(serviceName, DEFAULT_GROUP_NAME, instances);
     }
 
     @Override
@@ -111,7 +140,7 @@ public class GraceNamespaceService implements NamespaceService {
 
     @Override
     public void batchDeregisterInstance(String serviceName, List<Instance> instances) {
-        clientProxy.batchDeregisterInstance(serviceName, DEFAULT_GROUP, instances);
+        clientProxy.batchDeregisterInstance(serviceName, DEFAULT_GROUP_NAME, instances);
     }
 
     @Override
@@ -121,7 +150,7 @@ public class GraceNamespaceService implements NamespaceService {
 
     @Override
     public void deregisterInstance(String serviceName, String ipAddr, int port) {
-        deregisterInstance(serviceName, DEFAULT_GROUP, ipAddr, port, null);
+        deregisterInstance(serviceName, DEFAULT_GROUP_NAME, ipAddr, port, null);
     }
 
     @Override
@@ -131,7 +160,7 @@ public class GraceNamespaceService implements NamespaceService {
 
     @Override
     public void deregisterInstance(String serviceName, String ipAddr, int port, Map<String, String> metadata) {
-        deregisterInstance(serviceName, DEFAULT_GROUP, ipAddr, port, metadata);
+        deregisterInstance(serviceName, DEFAULT_GROUP_NAME, ipAddr, port, metadata);
     }
 
     @Override
@@ -149,7 +178,7 @@ public class GraceNamespaceService implements NamespaceService {
 
     @Override
     public void deregisterInstance(String serviceName, Instance instance) {
-        deregisterInstance(serviceName, DEFAULT_GROUP, instance);
+        deregisterInstance(serviceName, DEFAULT_GROUP_NAME, instance);
     }
 
     @Override
@@ -159,7 +188,7 @@ public class GraceNamespaceService implements NamespaceService {
 
     @Override
     public List<Instance> getAllInstances(String serviceName) {
-        return clientProxy.getAllInstances(serviceName, DEFAULT_GROUP,false);
+        return clientProxy.getAllInstances(serviceName, DEFAULT_GROUP_NAME,false);
     }
 
     @Override
@@ -170,7 +199,7 @@ public class GraceNamespaceService implements NamespaceService {
     @Override
     public List<Instance> selectInstances(String serviceName, boolean healthy) {
 
-        return selectInstances(serviceName,DEFAULT_GROUP,healthy);
+        return selectInstances(serviceName,DEFAULT_GROUP_NAME,healthy);
     }
 
     @Override
@@ -195,7 +224,7 @@ public class GraceNamespaceService implements NamespaceService {
 
     @Override
     public Instance selectOneHealthyInstance(String serviceName) {
-        return selectOneHealthyInstance(serviceName,DEFAULT_GROUP);
+        return selectOneHealthyInstance(serviceName,DEFAULT_GROUP_NAME);
     }
 
     @Override
@@ -206,12 +235,12 @@ public class GraceNamespaceService implements NamespaceService {
     }
 
     @Override
-    public ListView<String> getServiceNameList(int page, int size) {
-        return getServiceNameList(page, size , DEFAULT_GROUP);
+    public PageData<String> getServiceNameList(int page, int size) {
+        return getServiceNameList(DEFAULT_GROUP_NAME,page,size);
     }
 
     @Override
-    public ListView<String> getServiceNameList(int page, int size, String groupName) {
-        return clientProxy.getServiceNameList(page,size,groupName);
+    public PageData<String> getServiceNameList(String groupName,int page, int size) {
+        return clientProxy.getServiceNameList(groupName, page, size);
     }
 }
