@@ -1,13 +1,11 @@
 package com.grace.common.entity;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * grace注册中心的服务表实体类
@@ -20,19 +18,9 @@ public class Service implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 服务名id
-     */
-    private Long id;
-
-    /**
      * 命名空间id
      */
-    private Long namespaceId;
-
-    /**
-     * 服务名称
-     */
-    private String serviceName;
+    private String namespaceId;
 
     /**
      * 分组名称
@@ -40,9 +28,19 @@ public class Service implements Serializable {
     private String groupName;
 
     /**
-     * 该service下的所有实例
+     * 服务名称
      */
-    private List<Instance> instances = new ArrayList<>();
+    private String serviceName;
+
+    /**
+     * 存储该service下的所有临时实例
+     */
+    private Set<Instance> ephemeralInstances = new HashSet<>();
+
+    /**
+     * 存储该service下的所有永久实例
+     */
+    private Set<Instance> persistentInstances = new HashSet<>();
 
     /**
      * 元数据
@@ -57,31 +55,22 @@ public class Service implements Serializable {
     public Service() {
     }
 
-    public Service(Long id, Long namespaceId, String serviceName, String groupName, List<Instance> instances, Map<String, String> metadata, LocalDateTime createTime) {
-        this.id = id;
+    public Service(String namespaceId, String groupName, String serviceName, Set<Instance> ephemeralInstances, Set<Instance> persistentInstances, Map<String, String> metadata, LocalDateTime createTime) {
         this.namespaceId = namespaceId;
-        this.serviceName = serviceName;
         this.groupName = groupName;
-        this.instances = instances;
+        this.serviceName = serviceName;
+        this.ephemeralInstances = ephemeralInstances;
+        this.persistentInstances = persistentInstances;
         this.metadata = metadata;
         this.createTime = createTime;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Service setId(Long id) {
-        this.id = id;
-        return this;
-    }
-
-    public Service setNamespaceId(Long namespaceId) {
+    public Service setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
         return this;
     }
 
-    public Long getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 
@@ -103,12 +92,21 @@ public class Service implements Serializable {
         return this;
     }
 
-    public List<Instance> getInstances() {
-        return instances;
+    public Set<Instance> getEphemeralInstances() {
+        return ephemeralInstances;
     }
 
-    public Service setInstances(List<Instance> instances) {
-        this.instances = instances;
+    public Service settEphemeralInstances(Set<Instance> ephemeralInstances) {
+        this.ephemeralInstances = ephemeralInstances;
+        return this;
+    }
+
+    public Set<Instance> getPersistentInstances() {
+        return persistentInstances;
+    }
+
+    public Service setPersistentInstances(Set<Instance> persistentInstances) {
+        this.persistentInstances = persistentInstances;
         return this;
     }
 
@@ -130,99 +128,33 @@ public class Service implements Serializable {
         return this;
     }
 
-    /**
-     * Service建造者类
-     *
-     * @author youzhengjie
-     * @date 2023-07-07 19:15:38
-     */
-    private static final class ServiceBuilder {
-
-        /**
-         * 服务名id
-         */
-        private Long id;
-
-        /**
-         * 命名空间id
-         */
-        private Long namespaceId;
-
-        /**
-         * 服务名称
-         */
-        private String serviceName;
-
-        /**
-         * 分组名称
-         */
-        private String groupName;
-
-        /**
-         * 该service下的所有实例
-         */
-        private List<Instance> instances = new ArrayList<>();
-
-        /**
-         * 元数据
-         */
-        private Map<String, String> metadata = new HashMap<>();
-
-        /**
-         * 创建时间
-         */
-        private LocalDateTime createTime;
-
-        public ServiceBuilder id(Long id) {
-            this.id = id;
-            return this;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o){
+            return true;
         }
-        public ServiceBuilder namespaceId(Long namespaceId) {
-            this.namespaceId = namespaceId;
-            return this;
+        if (o == null || getClass() != o.getClass()){
+            return false;
         }
-        public ServiceBuilder serviceName(String serviceName) {
-            this.serviceName = serviceName;
-            return this;
-        }
+        Service service = (Service) o;
+        return Objects.equals(namespaceId, service.namespaceId)
+                && Objects.equals(groupName, service.groupName)
+                && Objects.equals(serviceName, service.serviceName);
+    }
 
-        public ServiceBuilder groupName(String groupName) {
-            this.groupName = groupName;
-            return this;
-        }
-
-        public ServiceBuilder instances(List<Instance> instances) {
-            this.instances = instances;
-            return this;
-        }
-
-        public ServiceBuilder metadata(Map<String, String> metadata) {
-            this.metadata = metadata;
-            return this;
-        }
-
-        public ServiceBuilder createTime(LocalDateTime createTime) {
-            this.createTime = createTime;
-            return this;
-        }
-
-        /**
-         * 构建对象
-         */
-        public Service build(){
-            return BeanUtil.copyProperties(this, Service.class);
-        }
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(namespaceId, groupName ,serviceName);
     }
 
     @Override
     public String toString() {
         return "Service{" +
-                "id=" + id +
-                ", namespaceId=" + namespaceId +
-                ", serviceName='" + serviceName + '\'' +
+                "namespaceId='" + namespaceId + '\'' +
                 ", groupName='" + groupName + '\'' +
-                ", instances=" + instances +
+                ", serviceName='" + serviceName + '\'' +
+                ", ephemeralInstances=" + ephemeralInstances +
+                ", persistentInstances=" + persistentInstances +
                 ", metadata=" + metadata +
                 ", createTime=" + createTime +
                 '}';

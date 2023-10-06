@@ -84,7 +84,7 @@ public class SvcServiceImpl implements SvcService {
     }
 
     @Override
-    public boolean hasService(String namespace, String serviceName) {
+    public boolean hasService(long namespaceId, String serviceName) {
         // 如果命名空间名称为空
         if(StringUtils.isBlank(namespace)){
             log.error("传入的namespace名称为空");
@@ -113,7 +113,7 @@ public class SvcServiceImpl implements SvcService {
     }
 
     @Override
-    public List<Service> getAllServices(String namespace) {
+    public List<Service> getAllServiceByPage(long namespaceId, int page, int size) {
         // 如果命名空间名称为空
         if(StringUtils.isBlank(namespace)){
             log.error("传入的namespace名称为空");
@@ -132,7 +132,20 @@ public class SvcServiceImpl implements SvcService {
     }
 
     @Override
-    public Service getService(String namespace, String serviceName) {
+    public List<String> getAllServiceNameByPage(long namespaceId, int page, int size) {
+
+
+    }
+
+    @Override
+    public int getServiceTotalCount() {
+
+
+    }
+
+
+    @Override
+    public Service getService(long namespaceId, String serviceName) {
         // 如果命名空间名称为空
         if(StringUtils.isBlank(namespace)){
             log.error("传入的namespace名称为空");

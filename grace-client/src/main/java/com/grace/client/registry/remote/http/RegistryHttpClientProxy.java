@@ -4,9 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.grace.client.registry.core.GraceConsoleAddressManager;
 import com.grace.client.registry.remote.RegistryClientProxy;
-import com.grace.common.constant.ParentMappingConstants;
-import com.grace.common.constant.RequestMethodConstants;
-import com.grace.common.constant.URLPrefixConstants;
+import com.grace.common.constant.*;
 import com.grace.common.entity.Instance;
 import com.grace.common.entity.Service;
 import com.grace.common.http.RestResult;
@@ -43,26 +41,6 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
     private static final int DEFAULT_CONSOLE_PORT = 8848;
 
     /**
-     * instance常量
-     */
-    public static final String NAMESPACE_ID = "namespaceId";
-
-    public static final String GROUP_NAME = "groupName";
-
-    public static final String SERVICE_NAME = "serviceName";
-
-    private static final String IP_ADDR = "ipAddr";
-
-    private static final String PORT = "port";
-
-    private static final String WEIGHT = "weight";
-
-    private static final String HEALTHY = "healthy";
-    private static final String EPHEMERAL = "ephemeral";
-    private static final String META_DATA = "metadata";
-    private static final String ONLY_HEALTHY = "onlyHealthy";
-
-    /**
      * 其他常量
      */
     private static final String PROTECT_THRESHOLD_PARAM = "protectThreshold";
@@ -93,15 +71,15 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
                     "不支持通过HTTP方式注册临时实例，请使用gRPC方式");
         }
         final Map<String, String> requestBodyMap = new HashMap<>(32);
-        requestBodyMap.put(NAMESPACE_ID, String.valueOf(namespaceId));
-        requestBodyMap.put(SERVICE_NAME, serviceName);
-        requestBodyMap.put(GROUP_NAME, groupName);
-        requestBodyMap.put(IP_ADDR, instance.getIpAddr());
-        requestBodyMap.put(PORT, String.valueOf(instance.getPort()));
-        requestBodyMap.put(WEIGHT, String.valueOf(instance.getWeight()));
-        requestBodyMap.put(HEALTHY, String.valueOf(instance.isHealthy()));
-        requestBodyMap.put(EPHEMERAL, String.valueOf(instance.isEphemeral()));
-        requestBodyMap.put(META_DATA, JSON.toJSONString(instance.getMetadata()));
+        requestBodyMap.put(Constants.NAMESPACE_ID, String.valueOf(namespaceId));
+        requestBodyMap.put(Constants.SERVICE_NAME, serviceName);
+        requestBodyMap.put(Constants.GROUP_NAME, groupName);
+        requestBodyMap.put(Constants.IP_ADDR, instance.getIpAddr());
+        requestBodyMap.put(Constants.PORT, String.valueOf(instance.getPort()));
+        requestBodyMap.put(Constants.WEIGHT, String.valueOf(instance.getWeight()));
+        requestBodyMap.put(Constants.HEALTHY, String.valueOf(instance.isHealthy()));
+        requestBodyMap.put(Constants.EPHEMERAL, String.valueOf(instance.isEphemeral()));
+        requestBodyMap.put(Constants.META_DATA, JSON.toJSONString(instance.getMetadata()));
         requestApi(ParentMappingConstants.INSTANCE_CONTROLLER + "/registerInstance",
                 RequestMethodConstants.POST,
                 null,
@@ -131,11 +109,11 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
         }
 
         final Map<String, String> requestParamMap = new HashMap<>(16);
-        requestParamMap.put(NAMESPACE_ID, String.valueOf(namespaceId));
-        requestParamMap.put(SERVICE_NAME, serviceName);
-        requestParamMap.put(GROUP_NAME, groupName);
-        requestParamMap.put(IP_ADDR, instance.getIpAddr());
-        requestParamMap.put(PORT, String.valueOf(instance.getPort()));
+        requestParamMap.put(Constants.NAMESPACE_ID, String.valueOf(namespaceId));
+        requestParamMap.put(Constants.SERVICE_NAME, serviceName);
+        requestParamMap.put(Constants.GROUP_NAME, groupName);
+        requestParamMap.put(Constants.IP_ADDR, instance.getIpAddr());
+        requestParamMap.put(Constants.PORT, String.valueOf(instance.getPort()));
 
         requestApi(ParentMappingConstants.INSTANCE_CONTROLLER + "/deregisterInstance",
                 RequestMethodConstants.DELETE,
@@ -149,15 +127,15 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
         log.info("namespaceId={}, serviceName={}, groupName={} , instance={}",
                 namespaceId, serviceName, groupName , instance.toString());
         final Map<String, String> requestBodyMap = new HashMap<>(32);
-        requestBodyMap.put(NAMESPACE_ID, String.valueOf(namespaceId));
-        requestBodyMap.put(SERVICE_NAME, serviceName);
-        requestBodyMap.put(GROUP_NAME, groupName);
-        requestBodyMap.put(IP_ADDR, instance.getIpAddr());
-        requestBodyMap.put(PORT, String.valueOf(instance.getPort()));
-        requestBodyMap.put(WEIGHT, String.valueOf(instance.getWeight()));
-        requestBodyMap.put(HEALTHY, String.valueOf(instance.isHealthy()));
-        requestBodyMap.put(EPHEMERAL, String.valueOf(instance.isEphemeral()));
-        requestBodyMap.put(META_DATA, JSON.toJSONString(instance.getMetadata()));
+        requestBodyMap.put(Constants.NAMESPACE_ID, String.valueOf(namespaceId));
+        requestBodyMap.put(Constants.SERVICE_NAME, serviceName);
+        requestBodyMap.put(Constants.GROUP_NAME, groupName);
+        requestBodyMap.put(Constants.IP_ADDR, instance.getIpAddr());
+        requestBodyMap.put(Constants.PORT, String.valueOf(instance.getPort()));
+        requestBodyMap.put(Constants.WEIGHT, String.valueOf(instance.getWeight()));
+        requestBodyMap.put(Constants.HEALTHY, String.valueOf(instance.isHealthy()));
+        requestBodyMap.put(Constants.EPHEMERAL, String.valueOf(instance.isEphemeral()));
+        requestBodyMap.put(Constants.META_DATA, JSON.toJSONString(instance.getMetadata()));
         requestApi(ParentMappingConstants.INSTANCE_CONTROLLER + "/updateInstance",
                 RequestMethodConstants.PUT,
                 null,
@@ -178,15 +156,16 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
                 namespaceId, serviceName, groupName , onlyHealthy);
 
         final Map<String, String> requestParamMap = new HashMap<>(32);
-        requestParamMap.put(NAMESPACE_ID, String.valueOf(namespaceId));
-        requestParamMap.put(SERVICE_NAME, serviceName);
-        requestParamMap.put(GROUP_NAME, groupName);
-        requestParamMap.put(ONLY_HEALTHY, String.valueOf(onlyHealthy));
+        requestParamMap.put(Constants.NAMESPACE_ID, String.valueOf(namespaceId));
+        requestParamMap.put(Constants.SERVICE_NAME, serviceName);
+        requestParamMap.put(Constants.GROUP_NAME, groupName);
+        requestParamMap.put(Constants.ONLY_HEALTHY, String.valueOf(onlyHealthy));
 
         requestApi(ParentMappingConstants.INSTANCE_CONTROLLER + "/getAllInstances",
                 RequestMethodConstants.GET,
                 requestParamMap,
                 null);
+
     }
 
     @Override
@@ -195,9 +174,9 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
                 namespaceId, serviceName, groupName);
 
         final Map<String, String> requestParamMap = new HashMap<>(16);
-        requestParamMap.put(NAMESPACE_ID, String.valueOf(namespaceId));
-        requestParamMap.put(SERVICE_NAME, serviceName);
-        requestParamMap.put(GROUP_NAME, groupName);
+        requestParamMap.put(ServiceConstants.NAMESPACE_ID, String.valueOf(namespaceId));
+        requestParamMap.put(ServiceConstants.SERVICE_NAME, serviceName);
+        requestParamMap.put(ServiceConstants.GROUP_NAME, groupName);
 
         String resultData = requestApi(ParentMappingConstants.SERVICE_CONTROLLER + "/queryService",
                 RequestMethodConstants.GET,
@@ -211,10 +190,10 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
         log.info("namespaceId={}, service={}", namespaceId, service.toString());
 
         final Map<String, String> requestBodyMap = new HashMap<>(16);
-        requestBodyMap.put(NAMESPACE_ID, String.valueOf(namespaceId));
-        requestBodyMap.put(SERVICE_NAME, service.getServiceName());
-        requestBodyMap.put(GROUP_NAME, service.getGroupName());
-        requestBodyMap.put(META_DATA, JSON.toJSONString(service.getMetadata()));
+        requestBodyMap.put(ServiceConstants.NAMESPACE_ID, String.valueOf(namespaceId));
+        requestBodyMap.put(ServiceConstants.SERVICE_NAME, service.getServiceName());
+        requestBodyMap.put(ServiceConstants.GROUP_NAME, service.getGroupName());
+        requestBodyMap.put(ServiceConstants.META_DATA, JSON.toJSONString(service.getMetadata()));
 
         requestApi(ParentMappingConstants.SERVICE_CONTROLLER + "/createService",
                 RequestMethodConstants.POST,
@@ -228,9 +207,9 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
                 namespaceId, serviceName, groupName);
 
         final Map<String, String> requestParamMap = new HashMap<>(16);
-        requestParamMap.put(NAMESPACE_ID, String.valueOf(namespaceId));
-        requestParamMap.put(SERVICE_NAME, serviceName);
-        requestParamMap.put(GROUP_NAME, groupName);
+        requestParamMap.put(ServiceConstants.NAMESPACE_ID, String.valueOf(namespaceId));
+        requestParamMap.put(ServiceConstants.SERVICE_NAME, serviceName);
+        requestParamMap.put(ServiceConstants.GROUP_NAME, groupName);
 
         String resultData = requestApi(ParentMappingConstants.SERVICE_CONTROLLER + "/deleteService",
                 RequestMethodConstants.DELETE,
@@ -244,10 +223,10 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
         log.info("namespaceId={}, service={}", namespaceId, service.toString());
 
         final Map<String, String> requestBodyMap = new HashMap<>(16);
-        requestBodyMap.put(NAMESPACE_ID, String.valueOf(namespaceId));
-        requestBodyMap.put(SERVICE_NAME, service.getServiceName());
-        requestBodyMap.put(GROUP_NAME, service.getGroupName());
-        requestBodyMap.put(META_DATA, JSON.toJSONString(service.getMetadata()));
+        requestBodyMap.put(ServiceConstants.NAMESPACE_ID, String.valueOf(namespaceId));
+        requestBodyMap.put(ServiceConstants.SERVICE_NAME, service.getServiceName());
+        requestBodyMap.put(ServiceConstants.GROUP_NAME, service.getGroupName());
+        requestBodyMap.put(ServiceConstants.META_DATA, JSON.toJSONString(service.getMetadata()));
 
         requestApi(ParentMappingConstants.SERVICE_CONTROLLER + "/updateService",
                 RequestMethodConstants.PUT,
@@ -262,8 +241,8 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
                 namespaceId,groupName,page,size);
 
         Map<String, String> requestParamMap = new HashMap<>(16);
-        requestParamMap.put(NAMESPACE_ID, String.valueOf(namespaceId));
-        requestParamMap.put(GROUP_NAME, groupName);
+        requestParamMap.put(ServiceConstants.NAMESPACE_ID, String.valueOf(namespaceId));
+        requestParamMap.put(ServiceConstants.GROUP_NAME, groupName);
         requestParamMap.put(PAGE, String.valueOf(page));
         requestParamMap.put(SIZE, String.valueOf(size));
 

@@ -2,6 +2,7 @@ package com.grace.client.registry;
 
 import com.grace.client.registry.remote.RegistryClientProxy;
 import com.grace.client.registry.remote.RegistryClientProxyDelegate;
+import com.grace.common.constant.Constants;
 import com.grace.common.constant.PropertiesKeyConstants;
 import com.grace.common.entity.Instance;
 import com.grace.common.utils.CollectionUtils;
@@ -22,26 +23,6 @@ public class GraceRegistryService implements RegistryService {
     private static final Logger log = LoggerFactory.getLogger(GraceRegistryService.class);
 
     /**
-     * 默认的命名空间id
-     */
-    private static final Long DEFAULT_NAMESPACE_ID = 101L;
-
-    /**
-     * 默认的命名空间名称
-     */
-    private static final String DEFAULT_NAMESPACE_NAME = "public";
-
-//    /**
-//     * 默认的分组id
-//     */
-//    private static final Long DEFAULT_GROUP_ID = 101L;
-
-    /**
-     * 默认的分组名称
-     */
-    private static final String DEFAULT_GROUP_NAME = "DEFAULT_GROUP";
-
-    /**
      * 当前操作的命名空间id
      * <p>
      * 基本思想就是用户传命名空间名称到GraceRegistryService类中,
@@ -58,7 +39,7 @@ public class GraceRegistryService implements RegistryService {
     public GraceRegistryService(String consoleAddress) {
         Properties properties = new Properties();
         properties.setProperty(PropertiesKeyConstants.CONSOLE_ADDRESS,consoleAddress);
-        properties.setProperty(PropertiesKeyConstants.NAMESPACE_NAME,DEFAULT_NAMESPACE_NAME);
+        properties.setProperty(PropertiesKeyConstants.NAMESPACE_NAME, Constants.DEFAULT_NAMESPACE_NAME);
         init(properties);
     }
 
@@ -81,8 +62,8 @@ public class GraceRegistryService implements RegistryService {
     private void init(Properties properties) {
         String namespaceName = properties.getProperty(PropertiesKeyConstants.NAMESPACE_NAME);
         // 如果命名空间名称为public
-        if(namespaceName.equalsIgnoreCase(DEFAULT_NAMESPACE_NAME)){
-            this.namespaceId = DEFAULT_NAMESPACE_ID;
+        if(namespaceName.equalsIgnoreCase(Constants.DEFAULT_NAMESPACE_NAME)){
+            this.namespaceId = Constants.DEFAULT_NAMESPACE_ID;
         }
         // 如果命名空间名称不为public
         else {
@@ -95,7 +76,7 @@ public class GraceRegistryService implements RegistryService {
 
     @Override
     public void registerInstance(String serviceName, String ipAddr, int port) {
-        registerInstance(serviceName, DEFAULT_GROUP_NAME, ipAddr, port);
+        registerInstance(serviceName, Constants.DEFAULT_GROUP_NAME, ipAddr, port);
     }
 
     @Override
@@ -105,7 +86,7 @@ public class GraceRegistryService implements RegistryService {
 
     @Override
     public void registerInstance(String serviceName, String ipAddr, int port, Map<String, String> metadata){
-        registerInstance(serviceName, DEFAULT_GROUP_NAME, ipAddr, port,metadata);
+        registerInstance(serviceName, Constants.DEFAULT_GROUP_NAME, ipAddr, port,metadata);
     }
 
     @Override
@@ -120,7 +101,7 @@ public class GraceRegistryService implements RegistryService {
 
     @Override
     public void registerInstance(String serviceName, Instance instance) {
-        registerInstance(serviceName, DEFAULT_GROUP_NAME, instance);
+        registerInstance(serviceName, Constants.DEFAULT_GROUP_NAME, instance);
     }
 
     @Override
@@ -130,7 +111,7 @@ public class GraceRegistryService implements RegistryService {
 
     @Override
     public void batchRegisterInstance(String serviceName, List<Instance> instances) {
-        clientProxy.batchRegisterInstance(serviceName, DEFAULT_GROUP_NAME, instances);
+        clientProxy.batchRegisterInstance(serviceName, Constants.DEFAULT_GROUP_NAME, instances);
     }
 
     @Override
@@ -140,7 +121,7 @@ public class GraceRegistryService implements RegistryService {
 
     @Override
     public void batchDeregisterInstance(String serviceName, List<Instance> instances) {
-        clientProxy.batchDeregisterInstance(serviceName, DEFAULT_GROUP_NAME, instances);
+        clientProxy.batchDeregisterInstance(serviceName, Constants.DEFAULT_GROUP_NAME, instances);
     }
 
     @Override
@@ -150,7 +131,7 @@ public class GraceRegistryService implements RegistryService {
 
     @Override
     public void deregisterInstance(String serviceName, String ipAddr, int port) {
-        deregisterInstance(serviceName, DEFAULT_GROUP_NAME, ipAddr, port, null);
+        deregisterInstance(serviceName, Constants.DEFAULT_GROUP_NAME, ipAddr, port, null);
     }
 
     @Override
@@ -160,7 +141,7 @@ public class GraceRegistryService implements RegistryService {
 
     @Override
     public void deregisterInstance(String serviceName, String ipAddr, int port, Map<String, String> metadata) {
-        deregisterInstance(serviceName, DEFAULT_GROUP_NAME, ipAddr, port, metadata);
+        deregisterInstance(serviceName, Constants.DEFAULT_GROUP_NAME, ipAddr, port, metadata);
     }
 
     @Override
@@ -178,7 +159,7 @@ public class GraceRegistryService implements RegistryService {
 
     @Override
     public void deregisterInstance(String serviceName, Instance instance) {
-        deregisterInstance(serviceName, DEFAULT_GROUP_NAME, instance);
+        deregisterInstance(serviceName, Constants.DEFAULT_GROUP_NAME, instance);
     }
 
     @Override
@@ -188,7 +169,7 @@ public class GraceRegistryService implements RegistryService {
 
     @Override
     public List<Instance> getAllInstances(String serviceName) {
-        return clientProxy.getAllInstances(serviceName, DEFAULT_GROUP_NAME,false);
+        return clientProxy.getAllInstances(serviceName, Constants.DEFAULT_GROUP_NAME,false);
     }
 
     @Override
@@ -199,7 +180,7 @@ public class GraceRegistryService implements RegistryService {
     @Override
     public List<Instance> selectInstances(String serviceName, boolean healthy) {
 
-        return selectInstances(serviceName,DEFAULT_GROUP_NAME,healthy);
+        return selectInstances(serviceName,Constants.DEFAULT_GROUP_NAME,healthy);
     }
 
     @Override
@@ -224,7 +205,7 @@ public class GraceRegistryService implements RegistryService {
 
     @Override
     public Instance selectOneHealthyInstance(String serviceName) {
-        return selectOneHealthyInstance(serviceName,DEFAULT_GROUP_NAME);
+        return selectOneHealthyInstance(serviceName,Constants.DEFAULT_GROUP_NAME);
     }
 
     @Override
@@ -236,7 +217,7 @@ public class GraceRegistryService implements RegistryService {
 
     @Override
     public PageData<String> getServiceNameList(int page, int size) {
-        return getServiceNameList(DEFAULT_GROUP_NAME,page,size);
+        return getServiceNameList(Constants.DEFAULT_GROUP_NAME,page,size);
     }
 
     @Override

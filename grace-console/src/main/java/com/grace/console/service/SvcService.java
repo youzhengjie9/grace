@@ -19,29 +19,46 @@ public interface SvcService{
     /**
      * 是否在该命名空间中有该service名称
      *
-     * @param namespace   命名空间名称
+     * @param namespaceId   命名空间id
      * @param serviceName 服务名称
      * @return boolean
      */
-    boolean hasService(String namespace,String serviceName);
-
+    boolean hasService(long namespaceId,String serviceName);
 
     /**
-     * 获取所有service
+     * 分页获取service
      *
-     * @param namespace 命名空间名称
+     * @param namespaceId 命名空间id
+     * @param page page
+     * @param size size
      * @return {@link List}<{@link Service}>
      */
-    List<Service> getAllServices(String namespace);
+    List<Service> getAllServiceByPage(long namespaceId, int page, int size);
 
+    /**
+     * 分页获取所有service名称
+     *
+     * @param namespaceId 命名空间id
+     * @param page      page
+     * @param size      size
+     * @return {@link List}<{@link String}>
+     */
+    List<String> getAllServiceNameByPage(long namespaceId,int page,int size);
+
+    /**
+     * 获取service的总记录数
+     *
+     * @return int
+     */
+    int getServiceTotalCount();
 
     /**
      * 获取service
      *
-     * @param namespace   命名空间名称
+     * @param namespaceId   命名空间id
      * @param serviceName 服务名称
      * @return {@link Service}
      */
-    Service getService(String namespace,String serviceName);
+    Service getService(long namespaceId,String serviceName);
 
 }

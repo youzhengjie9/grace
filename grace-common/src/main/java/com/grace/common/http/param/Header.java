@@ -1,6 +1,5 @@
 package com.grace.common.http.param;
 
-import com.grace.common.constant.Constants;
 import com.grace.common.constant.RequestHeaderConstants;
 import com.grace.common.utils.MapUtil;
 import com.grace.common.utils.StringUtils;

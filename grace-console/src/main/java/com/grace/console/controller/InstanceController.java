@@ -2,17 +2,30 @@ package com.grace.console.controller;
 
 import com.grace.common.constant.ParentMappingConstants;
 import com.grace.common.entity.Instance;
+import com.grace.common.entity.builder.InstanceBuilder;
 import com.grace.common.utils.Result;
+import com.grace.console.dto.InstanceDTO;
 import com.grace.console.service.InstanceService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+/**
+ * 操作实例的控制器
+ *
+ * @author youzhengjie
+ * @date 2023/10/05 14:58:28
+ */
 @RestController
 @RequestMapping(path = ParentMappingConstants.INSTANCE_CONTROLLER)
 public class InstanceController {
@@ -24,50 +37,51 @@ public class InstanceController {
         this.instanceService = instanceService;
     }
 
-//    @PostMapping(path = "/registerInstance")
-//    public ResponseResult<Boolean> registerInstance(@RequestBody Instance instance){
-//
-//        return ResponseResult.ok(instanceService.registerInstance(instance));
-//    }
-//
-//
-//    @GetMapping(path = "/getAllInstances/{namespace}/{serviceName}")
-//    public ResponseResult<List<Instance>> getAllInstances(@PathVariable("namespace") String namespace,
-//                                                          @PathVariable("serviceName") String serviceName){
-//
-//        return ResponseResult.ok(instanceService.getAllInstances(namespace, serviceName));
-//    }
-//
-//
-//    @GetMapping(path = "/getInstance/{namespace}/{serviceName}/{ipAddr}/{port}")
-//    public ResponseResult<Instance> getInstance(@PathVariable("namespace") String namespace,
-//                                                @PathVariable("serviceName") String serviceName,
-//                                                @PathVariable("ipAddr") String ipAddr,
-//                                                @PathVariable("port") int port){
-//
-//        return ResponseResult.ok(instanceService.getInstance(namespace, serviceName, ipAddr, port));
-//    }
-
-
     @PostMapping(path = "/registerInstance")
-    public Result<Boolean> registerInstance(HttpServletRequest request){
+    public Result<Boolean> registerInstance(InstanceDTO instanceDTO){
+        // 校验InstanceDTO对象的必填属性是否为空,为空则抛出异常
+        instanceDTO.validateRequired();
+        // 填充默认值（注意: 不会填充必填属性！）
+        instanceDTO.fillDefaultValue();
+        // 通过InstanceDTO对象构建实例（Instance）
+        Instance instance = buildInstance(instanceDTO);
 
         return Result.ok(instanceService.registerInstance(instance));
     }
 
-
-    @GetMapping(path = "/getAllInstances")
-    public Result<List<Instance>> getAllInstances(HttpServletRequest request){
-
-        return Result.ok(instanceService.getAllInstances(namespace, serviceName));
+    /**
+     * 通过InstanceDTO对象构建实例（Instance）
+     *
+     * @param instanceDTO instanceDTO
+     * @return {@link Instance}
+     */
+    private Instance buildInstance(InstanceDTO instanceDTO) {
+        return InstanceBuilder.newBuilder()
+                .serviceName(instanceDTO.getServiceName())
+                .ipAddr(instanceDTO.getIpAddr())
+                .port(instanceDTO.getPort())
+                .weight(instanceDTO.getWeight())
+                .healthy(instanceDTO.getHealthy())
+                .ephemeral(instanceDTO.getEphemeral())
+                .metadata(parseMetadata(instanceDTO.getMetadata()))
+                .createTime(LocalDateTime.now())
+                .build();
     }
 
+    /**
+     * 将String类型的metadata转成Map类型的metadata
+     */
+    public static Map<String, String> parseMetadata(String metadata) {
 
-    @GetMapping(path = "/getInstance")
-    public Result<Instance> getInstance(HttpServletRequest request){
+        Map<String, String> metadataMap = new HashMap<>(16);
 
-        return Result.ok(instanceService.getInstance(namespace, serviceName, ipAddr, port));
+        if (StringUtils.isBlank(metadata)) {
+            return metadataMap;
+        }
+
+        // TODO: 2023/10/5 暂未实现
+
+        return metadataMap;
     }
-
 
 }
