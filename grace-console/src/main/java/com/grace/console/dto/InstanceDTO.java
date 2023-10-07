@@ -19,7 +19,7 @@ public class InstanceDTO implements Serializable {
     /**
      * 该实例所在的命名空间id
      */
-    private Long namespaceId;
+    private String namespaceId;
 
     /**
      * 该实例所属的服务名
@@ -67,15 +67,15 @@ public class InstanceDTO implements Serializable {
     public void validateRequired(){
         // 如果serviceName为空,则报错
         if (StringUtils.isBlank(serviceName)) {
-            throw new RuntimeException("serviceName为空");
+            throw new RuntimeException("serviceName不能为空");
         }
         // 如果ipAddr为空,则报错
         if (StringUtils.isBlank(ipAddr)) {
-            throw new RuntimeException("ipAddr为空");
+            throw new RuntimeException("ipAddr不能为空");
         }
         // 如果port为空,则报错
         if (port == null) {
-            throw new RuntimeException("port为空");
+            throw new RuntimeException("port不能为空");
         }
     }
 
@@ -100,11 +100,11 @@ public class InstanceDTO implements Serializable {
         }
     }
 
-    public void setNamespaceId(Long namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
     }
 
-    public Long getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 

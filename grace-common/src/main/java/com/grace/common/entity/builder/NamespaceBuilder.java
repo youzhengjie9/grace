@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
  * Namespace建造者类
  *
  * @author youzhengjie
- * @date 2023/07/02 21:56:30
+ * @date 2023-10-07 09:27:31
  */
 public class NamespaceBuilder {
 
@@ -24,24 +24,25 @@ public class NamespaceBuilder {
     private String namespaceName;
 
     /**
-     * 描述
+     * 配额
      */
-    private String desc;
+    private int quota;
 
     /**
-     * 创建时间
+     * 配置数量
      */
-    private LocalDateTime createTime;
+    private int configCount;
 
     /**
-     * 最后一次修改时间
+     * 命名空间类型。（ 0 : Global configuration， 1 : Default private namespace ，2 : Custom namespace.）
      */
-    private LocalDateTime updateTime;
+    private int type;
+
 
     /**
-     * 删除标志（0代表未删除，1代表已删除）
+     * 命名空间描述
      */
-    private int delFlag;
+    private String namespaceDesc;
 
     /**
      * 创建建造者对象
@@ -62,25 +63,25 @@ public class NamespaceBuilder {
         return this;
     }
 
-    public NamespaceBuilder desc(String desc) {
-        this.desc = desc;
+    public NamespaceBuilder quota(int quota) {
+        this.quota = quota;
         return this;
     }
 
-    public NamespaceBuilder createTime(LocalDateTime createTime) {
-        this.createTime = createTime;
+    public NamespaceBuilder configCount(int configCount) {
+        this.configCount = configCount;
         return this;
     }
 
-    public NamespaceBuilder updateTime(LocalDateTime updateTime) {
-        this.updateTime = updateTime;
+    public NamespaceBuilder type(int type) {
+        this.type = type;
+        return this;
+    }
+    public NamespaceBuilder namespaceDesc(String namespaceDesc) {
+        this.namespaceDesc = namespaceDesc;
         return this;
     }
 
-    public NamespaceBuilder delFlag(int delFlag) {
-        this.delFlag = delFlag;
-        return this;
-    }
 
     /**
      * 构建对象

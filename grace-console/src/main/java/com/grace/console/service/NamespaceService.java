@@ -3,14 +3,30 @@ package com.grace.console.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.grace.common.entity.Namespace;
 
+import java.util.List;
+
 /**
  * 命名空间服务
  *
  * @author youzhengjie
  * @date 2023-06-19 22:42:58
  */
-public interface NamespaceService extends IService<Namespace> {
+public interface NamespaceService {
 
+    /**
+     * 获取命名空间列表
+     *
+     * @return {@link List}<{@link Namespace}>
+     */
+    List<Namespace> getNamespaceList();
+
+    /**
+     * 根据namespaceId获取命名空间
+     *
+     * @param namespaceId namespaceId
+     * @return {@link Namespace}
+     */
+    Namespace getNamespace(String namespaceId);
 
     /**
      * 创建命名空间
@@ -18,24 +34,23 @@ public interface NamespaceService extends IService<Namespace> {
      * @param namespace 命名空间
      * @return boolean
      */
-    boolean createNamespace(Namespace namespace);
-
-
-    /**
-     * 获取命名空间id
-     *
-     * @param namespaceName 命名空间名称
-     * @return long
-     */
-    long getNamespaceId(String namespaceName);
-
+    Boolean createNamespace(Namespace namespace);
 
     /**
-     * 是否存在该命名空间
+     * 修改namespace
      *
-     * @param namespaceName 命名空间名称
-     * @return boolean
+     * @param namespace 新的namespace
+     * @return {@link Boolean}
      */
-    boolean hasNamespace(String namespaceName);
+    Boolean modifyNamespace(Namespace namespace);
+
+    /**
+     * 删除namespace
+     *
+     * @param namespaceId namespaceId
+     * @return {@link Boolean}
+     */
+    Boolean deleteNamespace(String namespaceId);
+
 
 }

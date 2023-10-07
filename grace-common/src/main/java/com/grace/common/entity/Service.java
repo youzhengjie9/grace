@@ -33,14 +33,19 @@ public class Service implements Serializable {
     private String serviceName;
 
     /**
+     * 保护阈值
+     */
+    private Float protectThreshold;
+
+    /**
      * 存储该service下的所有临时实例
      */
-    private Set<Instance> ephemeralInstances = new HashSet<>();
+    private Set<Instance> ephemeralInstances;
 
     /**
      * 存储该service下的所有永久实例
      */
-    private Set<Instance> persistentInstances = new HashSet<>();
+    private Set<Instance> persistentInstances;
 
     /**
      * 元数据
@@ -52,17 +57,24 @@ public class Service implements Serializable {
      */
     private LocalDateTime createTime;
 
+    /**
+     * 最后一次的修改时间
+     */
+    private LocalDateTime lastUpdatedTime;
+
     public Service() {
     }
 
-    public Service(String namespaceId, String groupName, String serviceName, Set<Instance> ephemeralInstances, Set<Instance> persistentInstances, Map<String, String> metadata, LocalDateTime createTime) {
+    public Service(String namespaceId, String groupName, String serviceName, Float protectThreshold, Set<Instance> ephemeralInstances, Set<Instance> persistentInstances, Map<String, String> metadata, LocalDateTime createTime, LocalDateTime lastUpdatedTime) {
         this.namespaceId = namespaceId;
         this.groupName = groupName;
         this.serviceName = serviceName;
+        this.protectThreshold = protectThreshold;
         this.ephemeralInstances = ephemeralInstances;
         this.persistentInstances = persistentInstances;
         this.metadata = metadata;
         this.createTime = createTime;
+        this.lastUpdatedTime = lastUpdatedTime;
     }
 
     public Service setNamespaceId(String namespaceId) {
@@ -89,6 +101,15 @@ public class Service implements Serializable {
 
     public Service setGroupName(String groupName) {
         this.groupName = groupName;
+        return this;
+    }
+
+    public Float getProtectThreshold() {
+        return protectThreshold;
+    }
+
+    public Service setProtectThreshold(Float protectThreshold) {
+        this.protectThreshold = protectThreshold;
         return this;
     }
 
@@ -128,6 +149,15 @@ public class Service implements Serializable {
         return this;
     }
 
+    public LocalDateTime getLastUpdatedTime() {
+        return lastUpdatedTime;
+    }
+
+    public Service setLastUpdatedTime(LocalDateTime lastUpdatedTime) {
+        this.lastUpdatedTime = lastUpdatedTime;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o){
@@ -153,10 +183,12 @@ public class Service implements Serializable {
                 "namespaceId='" + namespaceId + '\'' +
                 ", groupName='" + groupName + '\'' +
                 ", serviceName='" + serviceName + '\'' +
+                ", protectThreshold=" + protectThreshold +
                 ", ephemeralInstances=" + ephemeralInstances +
                 ", persistentInstances=" + persistentInstances +
                 ", metadata=" + metadata +
                 ", createTime=" + createTime +
+                ", lastUpdatedTime=" + lastUpdatedTime +
                 '}';
     }
 }

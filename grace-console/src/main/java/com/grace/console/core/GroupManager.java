@@ -273,24 +273,14 @@ public class GroupManager {
     }
 
 
-    public int getNamespaceCount() {
+    /**
+     * 获取所有命名空间的总数
+     *
+     * @return int
+     */
+    public int getAllNamespaceCount() {
 
-        return 0;
-    }
-
-    public int getGroupCount() {
-
-        return 0;
-    }
-
-    public int getServiceCount() {
-
-        return 0;
-    }
-
-    public int getInstanceCount() {
-
-        return 0;
+        return getAllNamespaceId().size();
     }
 
 }

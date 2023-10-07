@@ -4,6 +4,7 @@ import com.grace.common.constant.Constants;
 import com.grace.common.constant.ParentMappingConstants;
 import com.grace.common.entity.Service;
 import com.grace.common.utils.Result;
+import com.grace.console.dto.ServiceDTO;
 import com.grace.console.service.SvcService;
 import com.grace.console.vo.ServiceNameListVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +26,19 @@ public class ServiceController {
     @Autowired
     private SvcService svcService;
 
+    @PostMapping(path = "/createService")
+    public Result<String> createService(ServiceDTO serviceDTO){
+
+
+
+    }
+
     /**
      * 分页获取服务名称列表
      */
     @GetMapping("/getServiceNameList")
     public Result<ServiceNameListVO> getServiceNameList(
-            @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_STRING_NAMESPACE_ID) Long namespaceId,
+            @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) Long namespaceId,
             @RequestParam(value = "groupName", required = false, defaultValue = Constants.DEFAULT_GROUP_NAME) String groupName,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "8") Integer size) {

@@ -5,10 +5,7 @@ import com.grace.common.entity.Instance;
 import com.grace.common.entity.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Service建造者类
@@ -34,19 +31,34 @@ public class ServiceBuilder {
     private String serviceName;
 
     /**
-     * 该service下的所有实例
+     * 保护阈值
      */
-    private List<Instance> instances = new ArrayList<>();
+    private Float protectThreshold;
+
+    /**
+     * 存储该service下的所有临时实例
+     */
+    private Set<Instance> ephemeralInstances;
+
+    /**
+     * 存储该service下的所有永久实例
+     */
+    private Set<Instance> persistentInstances;
 
     /**
      * 元数据
      */
-    private Map<String, String> metadata = new HashMap<>();
+    private Map<String, String> metadata;
 
     /**
      * 创建时间
      */
     private LocalDateTime createTime;
+
+    /**
+     * 最后一次的修改时间
+     */
+    private LocalDateTime lastUpdatedTime;
 
     /**
      * 创建建造者对象
@@ -72,8 +84,18 @@ public class ServiceBuilder {
         return this;
     }
 
-    public ServiceBuilder instances(List<Instance> instances) {
-        this.instances = instances;
+    public ServiceBuilder protectThreshold(Float protectThreshold) {
+        this.protectThreshold = protectThreshold;
+        return this;
+    }
+
+    public ServiceBuilder ephemeralInstances(Set<Instance> ephemeralInstances) {
+        this.ephemeralInstances = ephemeralInstances;
+        return this;
+    }
+
+    public ServiceBuilder persistentInstances(Set<Instance> persistentInstances) {
+        this.persistentInstances = persistentInstances;
         return this;
     }
 
@@ -84,6 +106,11 @@ public class ServiceBuilder {
 
     public ServiceBuilder createTime(LocalDateTime createTime) {
         this.createTime = createTime;
+        return this;
+    }
+
+    public ServiceBuilder lastUpdatedTime(LocalDateTime lastUpdatedTime) {
+        this.lastUpdatedTime = lastUpdatedTime;
         return this;
     }
 

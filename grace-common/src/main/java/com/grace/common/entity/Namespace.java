@@ -1,125 +1,106 @@
 package com.grace.common.entity;
 
-import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.annotation.*;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.grace.common.entity.builder.NamespaceBuilder;
-
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * grace命名空间表实体类
  *
  * @author youzhengjie
- * @date 2023/06/16 08:43:03
+ * @date 2023-10-07 09:25:39
  */
-@TableName("sys_name_space")
 public class Namespace implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键,命令空间id
+     * 命令空间id
      */
-    @TableId(value = "namespaceId",type = IdType.INPUT)
     private String namespaceId;
 
     /**
      * 命名空间名称
      */
-    @TableField("`namespace_name`")
     private String namespaceName;
 
     /**
-     * 描述
+     * 配额
      */
-    @TableField("`desc`")
-    private String desc;
+    private int quota;
 
     /**
-     * 创建时间
+     * 配置数量
      */
-    @TableField("create_time")
-    private LocalDateTime createTime;
+    private int configCount;
 
     /**
-     * 最后一次修改时间
+     * 命名空间类型。（ 0 : Global configuration， 1 : Default private namespace ，2 : Custom namespace.）
      */
-    @TableField("update_time")
-    private LocalDateTime updateTime;
+    private int type;
 
     /**
-     * 删除标志（0代表未删除，1代表已删除）
+     * 命名空间描述
      */
-    @TableLogic
-    @TableField("del_flag")
-    private int delFlag;
+    private String namespaceDesc;
+
 
     public Namespace() {
     }
 
-    public Namespace(String namespaceId, String namespaceName, String desc, LocalDateTime createTime, LocalDateTime updateTime, int delFlag) {
+    public Namespace(String namespaceId, String namespaceName, int quota, int configCount, int type, String namespaceDesc) {
         this.namespaceId = namespaceId;
         this.namespaceName = namespaceName;
-        this.desc = desc;
-        this.createTime = createTime;
-        this.updateTime = updateTime;
-        this.delFlag = delFlag;
+        this.quota = quota;
+        this.configCount = configCount;
+        this.type = type;
+        this.namespaceDesc = namespaceDesc;
     }
 
     public String getNamespaceId() {
         return namespaceId;
     }
 
-    public Namespace setNamespaceId(String namespaceId) {
+    public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
-        return this;
-    }
-
-    public void setNamespaceName(String namespaceName) {
-        this.namespaceName = namespaceName;
     }
 
     public String getNamespaceName() {
         return namespaceName;
     }
 
-    public String getDesc() {
-        return desc;
+    public void setNamespaceName(String namespaceName) {
+        this.namespaceName = namespaceName;
     }
 
-    public Namespace setDesc(String desc) {
-        this.desc = desc;
-        return this;
+    public int getQuota() {
+        return quota;
     }
 
-    public LocalDateTime getCreateTime() {
-        return createTime;
+    public void setQuota(int quota) {
+        this.quota = quota;
     }
 
-    public Namespace setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-        return this;
+    public int getConfigCount() {
+        return configCount;
     }
 
-    public LocalDateTime getUpdateTime() {
-        return updateTime;
+    public void setConfigCount(int configCount) {
+        this.configCount = configCount;
     }
 
-    public Namespace setUpdateTime(LocalDateTime updateTime) {
-        this.updateTime = updateTime;
-        return this;
+    public int getType() {
+        return type;
     }
 
-    public int getDelFlag() {
-        return delFlag;
+    public void setType(int type) {
+        this.type = type;
     }
 
-    public Namespace setDelFlag(int delFlag) {
-        this.delFlag = delFlag;
-        return this;
+    public String getNamespaceDesc() {
+        return namespaceDesc;
+    }
+
+    public void setNamespaceDesc(String namespaceDesc) {
+        this.namespaceDesc = namespaceDesc;
     }
 
     @Override
@@ -127,10 +108,10 @@ public class Namespace implements Serializable {
         return "Namespace{" +
                 "namespaceId='" + namespaceId + '\'' +
                 ", namespaceName='" + namespaceName + '\'' +
-                ", desc='" + desc + '\'' +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                ", delFlag=" + delFlag +
+                ", quota=" + quota +
+                ", configCount=" + configCount +
+                ", type=" + type +
+                ", namespaceDesc='" + namespaceDesc + '\'' +
                 '}';
     }
 }

@@ -28,22 +28,12 @@ public class Constants {
     /**
      * 默认的命名空间id
      */
-    public static final Long DEFAULT_NAMESPACE_ID = 101L;
-
-    /**
-     * 默认的字符串类型的命名空间id（解决@RequestParam注解上的defaultValue属性只能接收String类型的常量的问题）
-     */
-    public static final String DEFAULT_STRING_NAMESPACE_ID = "101";
+    public static final String DEFAULT_NAMESPACE_ID = "public";
 
     /**
      * 默认的命名空间名称
      */
     public static final String DEFAULT_NAMESPACE_NAME = "public";
-
-    /**
-     * 默认的分组id
-     */
-//    public static final Long DEFAULT_GROUP_ID = 101L;
 
     /**
      * 默认的分组名称
