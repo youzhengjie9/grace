@@ -5,6 +5,7 @@ import com.grace.common.entity.Instance;
 import com.grace.common.entity.Service;
 import com.grace.common.entity.builder.ServiceBuilder;
 import com.grace.common.executor.NameThreadFactory;
+import com.grace.console.dto.ServiceDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +68,25 @@ public class GroupManager {
     }
 
     /**
+     * 获取所有命名空间下面的所有service名称
+     *
+     * @return {@link Map}<{@link String},{@link Set}<{@link String}>>
+     */
+    public Map<String, Set<String>> getAllServiceName() {
+        // key=namespaceId,value=该命名空间下面的所有service名称
+        Map<String, Set<String>> allServiceNames = new ConcurrentHashMap<>();
+        // 获取所有命名空间id
+        Set<String> namespaceIds = getAllNamespaceId();
+        // 遍历所有命名空间id
+        for (String namespaceId : namespaceIds) {
+            // 根据namespaceId获取该命名空间下面的所有service名称
+            Set<String> serviceNames = getAllServiceName(namespaceId);
+            allServiceNames.put(namespaceId, serviceNames);
+        }
+        return allServiceNames;
+    }
+
+    /**
      * 根据namespaceId获取该命名空间下面的所有service名称
      *
      * @param namespaceId namespaceId
@@ -90,22 +110,108 @@ public class GroupManager {
     }
 
     /**
-     * 获取所有命名空间下面的所有service名称
+     * 获取所有符合条件的service(不进行分页)
      *
-     * @return {@link Map}<{@link String},{@link Set}<{@link String}>>
+     * @param namespaceId      namespaceId
+     * @param hideEmptyService 是否隐藏空服务（也就是说不统计没有instance的service）
+     * @return {@link Set}<{@link Service}>
      */
-    public Map<String, Set<String>> getAllServiceName() {
-        // key=namespaceId,value=该命名空间下面的所有service名称
-        Map<String, Set<String>> allServiceNames = new ConcurrentHashMap<>();
-        // 获取所有命名空间id
-        Set<String> namespaceIds = getAllNamespaceId();
-        // 遍历所有命名空间id
-        for (String namespaceId : namespaceIds) {
-            // 根据namespaceId获取该命名空间下面的所有service名称
-            Set<String> serviceNames = getAllServiceName(namespaceId);
-            allServiceNames.put(namespaceId, serviceNames);
+    public Set<Service> getAllService(String namespaceId,boolean hideEmptyService) {
+        // 最终需要返回的集合
+        Set<Service> services = new CopyOnWriteArraySet<>();
+        // 根据namespaceId获取该命名空间下面的所有分组
+        Set<Group> groups = groupMap.get(namespaceId);
+        // 遍历分组集合
+        for (Group group : groups) {
+            // 获取每一个分组下面的所有service
+            Set<Service> svc = group.getServices();
+            for (Service service : svc) {
+                // 如果隐藏空服务
+                if(hideEmptyService){
+                    // 获取该服务的临时实例数量
+                    int ephemeralInstanceCount = service.getEphemeralInstances().size();
+                    // 获取该服务的永久实例数量
+                    int persistentInstanceCount = service.getPersistentInstances().size();
+                    // 如果该服务的临时实例数量或者永久实例数量只要有一个大于0（说明该服务不是空服务,则可以将该服务统计进去）
+                    if(ephemeralInstanceCount > 0 || persistentInstanceCount > 0){
+                        services.add(service);
+                    }
+                }
+                // 如果没有隐藏空服务
+                else {
+                    services.add(service);
+                }
+            }
         }
-        return allServiceNames;
+        return services;
+    }
+
+    /**
+     * 根据namespaceId获取该命名空间下面的所有service名称
+     *
+     * @param namespaceId namespaceId
+     * @return {@link Set}<{@link String}>
+     */
+    public Set<String> getAllServiceName(String namespaceId,String groupName) {
+        Set<String> serviceNames = new CopyOnWriteArraySet<>();
+        // 根据namespaceId获取该命名空间下面的所有分组
+        Set<Group> groups = groupMap.get(namespaceId);
+        // 遍历分组集合
+        for (Group group : groups) {
+            // 找到指定的分组
+            if(group.getGroupName().equals(groupName)){
+                // 获取该分组下面的所有service
+                Set<Service> services = group.getServices();
+                for (Service service : services) {
+                    String serviceName = service.getServiceName();
+                    // 将service名称放到一个集合中存储起来
+                    serviceNames.add(serviceName);
+                }
+                break;
+            }
+
+        }
+        return serviceNames;
+    }
+
+    /**
+     * 根据ServiceDTO来创建Service
+     *
+     * @param serviceDTO serviceDTO
+     * @return {@link Boolean}
+     */
+    public Boolean createServiceByServiceDTO(ServiceDTO serviceDTO) {
+        String namespaceId = serviceDTO.getNamespaceId();
+        String groupName = serviceDTO.getGroupName();
+        String serviceName = serviceDTO.getServiceName();
+        // 获取指定service
+        Service service = getService(namespaceId, groupName, serviceName);
+        // 如果该service不存在
+        if (service == null) {
+            // 将ServiceDTO对象转成Service对象
+            service = ServiceBuilder.newBuilder()
+                    .namespaceId(serviceDTO.getNamespaceId())
+                    .groupName(serviceDTO.getGroupName())
+                    .serviceName(serviceDTO.getServiceName())
+                    .protectThreshold(serviceDTO.getProtectThreshold())
+                    .ephemeralInstances(new CopyOnWriteArraySet<>())
+                    .persistentInstances(new CopyOnWriteArraySet<>())
+                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
+//                .metadata(serviceDTO.getMetadata())
+                    .createTime(LocalDateTime.now())
+                    .lastUpdatedTime(LocalDateTime.now())
+                    .build();
+            Set<Group> groups = groupMap.get(namespaceId);
+            for (Group group : groups) {
+                // 找到我们的目标分组
+                if (group.getGroupName().equals(groupName)) {
+                    Set<Service> services = group.getServices();
+                    // 将新创建的service放入分组对象的service列表中,并返回添加是否成功的信息
+                    return services.add(service);
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -204,7 +310,7 @@ public class GroupManager {
      * @param groupName   groupName
      * @param instance    instance
      */
-    public void deleteInstance(String namespaceId, String groupName, Instance instance){
+    public void deleteInstance(String namespaceId, String groupName, Instance instance) {
 
         // TODO: 2023/10/7
 
@@ -265,7 +371,7 @@ public class GroupManager {
      * @param port
      * @return {@link Instance}
      */
-    public Instance getInstance(String namespaceId, String groupName, String serviceName, String ipAddr, int port){
+    public Instance getInstance(String namespaceId, String groupName, String serviceName, String ipAddr, int port) {
 
         // TODO: 2023/10/7
 

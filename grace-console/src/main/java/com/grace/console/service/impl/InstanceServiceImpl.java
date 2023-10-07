@@ -68,7 +68,7 @@ public class InstanceServiceImpl implements InstanceService {
             return false;
         }
         // 查询service
-        Service service = svcService.getService(namespace, serviceName);
+        Service service = svcService.getService(namespace, , serviceName);
         long instanceId = SnowId.nextId();
         Long serviceId = service.getId();
         instance.setId(instanceId)
@@ -119,7 +119,7 @@ public class InstanceServiceImpl implements InstanceService {
             return null;
         }
         // 查询service
-        Service service = svcService.getService(namespace, serviceName);
+        Service service = svcService.getService(namespace, , serviceName);
 
         return instanceMap.get(service.getId());
     }
@@ -143,7 +143,7 @@ public class InstanceServiceImpl implements InstanceService {
             return null;
         }
         // 查询service
-        Service service = svcService.getService(namespace, serviceName);
+        Service service = svcService.getService(namespace, , serviceName);
 
         return instanceMap.get(service.getId())
                 .stream()
