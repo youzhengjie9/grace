@@ -66,6 +66,18 @@ public class Instance implements Serializable {
 
     }
 
+    public Instance(String instanceId, String serviceName, String ipAddr, int port, double weight, boolean healthy, boolean ephemeral, Map<String, String> metadata, LocalDateTime createTime) {
+        this.instanceId = instanceId;
+        this.serviceName = serviceName;
+        this.ipAddr = ipAddr;
+        this.port = port;
+        this.weight = weight;
+        this.healthy = healthy;
+        this.ephemeral = ephemeral;
+        this.metadata = metadata;
+        this.createTime = createTime;
+    }
+
     public void setInstanceId(String instanceId) {
         this.instanceId = instanceId;
     }

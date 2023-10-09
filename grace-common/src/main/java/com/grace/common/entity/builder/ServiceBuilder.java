@@ -65,7 +65,7 @@ public class ServiceBuilder {
      *
      * @return {@link ServiceBuilder}
      */
-    public static ServiceBuilder newBuilder(){
+    public static ServiceBuilder newBuilder() {
         return new ServiceBuilder();
     }
 
@@ -118,7 +118,7 @@ public class ServiceBuilder {
      * 构建对象
      */
     public Service build() {
-        return BeanUtil.copyProperties(this, Service.class);
+        return new Service(namespaceId, groupName, serviceName, protectThreshold, ephemeralInstances, persistentInstances, metadata, createTime, lastUpdatedTime);
     }
 
 

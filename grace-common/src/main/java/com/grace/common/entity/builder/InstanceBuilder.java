@@ -65,7 +65,7 @@ public class InstanceBuilder {
      *
      * @return {@link InstanceBuilder}
      */
-    public static InstanceBuilder newBuilder(){
+    public static InstanceBuilder newBuilder() {
         return new InstanceBuilder();
     }
 
@@ -118,7 +118,7 @@ public class InstanceBuilder {
      * 构建对象
      */
     public Instance build() {
-        return BeanUtil.copyProperties(this, Instance.class);
+        return new Instance(instanceId, serviceName, ipAddr, port, weight, healthy, ephemeral, metadata, createTime);
     }
 
 }

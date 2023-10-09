@@ -19,7 +19,7 @@
       <div
         style="cursor: pointer"
         v-for="(namespace, index) in namespaceData"
-        :key="namespace.id"
+        :key="namespace.namespaceId"
       >
         <!-- 没有高亮显示（也就是当前选择的命名空间不是这个） -->
         <span
@@ -29,8 +29,8 @@
             border: none;
             font-size: 14px;
           "
-          v-if="namespace.id != currentSelectedNamespaceId"
-          @click="namespaceToggle(namespace.id)"
+          v-if="namespace.namespaceId != currentSelectedNamespaceId"
+          @click="namespaceToggle(namespace.namespaceId)"
           >{{ namespace.namespaceName }}</span
         >
 
@@ -42,7 +42,7 @@
             border: none;
             font-size: 14px;
           "
-          v-if="namespace.id == currentSelectedNamespaceId"
+          v-if="namespace.namespaceId == currentSelectedNamespaceId"
           >{{ namespace.namespaceName }}</span
         >
 
@@ -99,6 +99,7 @@
                 v-model="queryCondition.hideEmptyService"
                 active-color="#209bfa"
                 inactive-color="#f5f5f5"
+                @change="changeHideEmptyService"
               >
               </el-switch>
             </el-form-item>
@@ -136,7 +137,6 @@
       element-loading-spinner="el-icon-loading"
       style="width: 100%"
     >
-      <el-table-column prop="id" label="id" width="180"> </el-table-column>
       <el-table-column prop="serviceName" label="服务名称" width="210">
       </el-table-column>
       <el-table-column prop="groupName" label="分组名称" width="210">
@@ -144,13 +144,13 @@
       <el-table-column prop="instanceCount" label="实例数" width="150">
       </el-table-column>
       <el-table-column
-        prop="healthInstanceCount"
+        prop="healthyInstanceCount"
         label="健康实例数"
         width="150"
       >
       </el-table-column>
       <el-table-column
-        prop="reachProtectionThreshold"
+        prop="triggerProtectThresholdFlag"
         label="触发保护阈值"
         width="160"
       >
@@ -179,10 +179,10 @@
             next-text="下一页"
             :page-sizes="[10, 20, 30, 50, 100]"
             :total="totalCount"
-            :page-size="pagesize"
-            :current-page="currentPage"
-            @size-change="handlePageSizeChange"
-            @current-change="handleCurrentPageChange"
+            :current-page="page"
+            :page-size="size"
+            @current-change="handlePageChange"
+            @size-change="handleSizeChange"
           >
           </el-pagination>
         </div>
@@ -243,7 +243,7 @@
 <script>
 // 引入vue2-ace-editor代码编辑器
 import Editor from "vue2-ace-editor";
-import {getServiceList} from '@/api/service'
+import { getServiceList } from "@/api/service";
 
 export default {
   name: "ServiceList",
@@ -255,20 +255,20 @@ export default {
       // 命名空间数据
       namespaceData: [
         {
-          id: 1,
+          namespaceId: "",
           namespaceName: "public",
         },
         {
-          id: 2,
+          namespaceId: "abc66-dev",
           namespaceName: "dev",
         },
         {
-          id: 3,
+          namespaceId: "ab123-test",
           namespaceName: "test",
         },
       ],
       // 当前选择的命名空间的id
-      currentSelectedNamespaceId: 1,
+      currentSelectedNamespaceId: "",
       // 查询条件
       queryCondition: {
         // 服务名称
@@ -276,7 +276,7 @@ export default {
         // 分组名称
         groupName: "",
         // 是否隐藏空服务
-        hideEmptyService: true,
+        hideEmptyService: false,
       },
       // 表格数据
       tableData: [],
@@ -284,10 +284,10 @@ export default {
       tableLoading: false,
       // 总记录数
       totalCount: 200,
-      // 每页展示的数量
-      pagesize: 10,
       // 当前页
-      currentPage: 1,
+      page: 1,
+      // 每页展示的数量
+      size: 10,
       // 是否打开创建服务的对话框（dialog）
       openCreateServiceDialog: false,
       // 创建服务表单
@@ -340,7 +340,7 @@ export default {
       },
     };
   },
-  mounted(){
+  mounted() {
     this.loadData();
   },
   methods: {
@@ -362,70 +362,59 @@ export default {
     loadData() {
       // 开启表格的加载动画
       this.tableLoading = true;
-      // 每页展示的数量
-      let pageSize = this.pagesize;
+      //当前选择的命名空间的id
+      let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
+      // 是否隐藏空服务
+      let hideEmptyService = this.queryCondition.hideEmptyService;
       // 当前页
-      let currentPage = this.currentPage;
-      // 根据上面的属性从后端分页的获取tableData数据
-      // let result = {
-      //   code: 200,
-      //   data: {
-      //     // 分页查询出来的数据
-      //     tableData: [
-      //       {
-      //         id: 10001,
-      //         // 服务名称
-      //         serviceName: "abc",
-      //         // 分组名称
-      //         groupName: "DEFAULT_GROUP",
-      //         // 实例数
-      //         instanceCount: 3,
-      //         // 健康实例数
-      //         healthInstanceCount: 3,
-      //         // 是否触发保护阈值
-      //         reachProtectionThreshold: "false",
-      //       },
-      //       {
-      //         id: 10002,
-      //         serviceName: "abc22",
-      //         groupName: "DEFAULT_GROUP",
-      //         instanceCount: 3,
-      //         healthInstanceCount: 3,
-      //         reachProtectionThreshold: "false",
-      //       },
-      //       {
-      //         id: 10003,
-      //         serviceName: "abc33",
-      //         groupName: "DEFAULT_GROUP",
-      //         instanceCount: 3,
-      //         healthInstanceCount: 3,
-      //         reachProtectionThreshold: "false",
-      //       },
-      //     ],
-      //     // 所有数据的总数（没有分页）
-      //     totalCount: 70,
-      //   },
-      // };
+      let page = this.page;
+      // 每页展示的数量
+      let size = this.size;
+      // 从后端分页的获取service列表的数据
+      getServiceList(
+        currentSelectedNamespaceId,
+        hideEmptyService,
+        page,
+        size
+      ).then((response) => {
+        // 后端返回给前端的result对象
+        let result = response.data;
 
-      getServiceList('',false,1,8).then(res=>{
-
-        console.log(res)
-
-      })
-
-
-
-      // 将数据放到vue中
-      this.tableData = result.data.tableData;
-      this.totalCount = result.data.totalCount;
-
-      // 关闭表格的加载动画
-      this.tableLoading = false;
-
+        // 将数据放到vue中
+        this.tableData = result.data.pagedServiceList;
+        this.totalCount = result.data.totalCount;
+        // 关闭表格的加载动画
+        this.tableLoading = false;
+      });
     },
     // 点击切换命名空间
     namespaceToggle(selectedNamespaceId) {
       this.currentSelectedNamespaceId = selectedNamespaceId;
+    },
+    // 点击切换隐藏空服务
+    changeHideEmptyService(hideEmptyService) {
+      //当前选择的命名空间的id
+      let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
+      // 当前页
+      let page = this.page;
+      // 每页展示的数量
+      let size = this.size;
+      // 从后端分页的获取service列表的数据
+      getServiceList(
+        currentSelectedNamespaceId,
+        hideEmptyService,
+        page,
+        size
+      ).then((response) => {
+        // 后端返回给前端的result对象
+        let result = response.data;
+
+        // 将数据放到vue中
+        this.tableData = result.data.pagedServiceList;
+        this.totalCount = result.data.totalCount;
+        // 关闭表格的加载动画
+        this.tableLoading = false;
+      });
     },
     // 点击查询
     query() {
@@ -448,13 +437,13 @@ export default {
     deleteService(id) {
       console.log(id);
     },
-    // pageSize（每页展示的数量）改变时触发
-    handlePageSizeChange(pageSize) {
-      console.log("pageSize=" + pageSize);
+    // page（当前页）改变时触发
+    handlePageChange(page) {
+      console.log("page=" + page);
     },
-    // currentPage（当前页）改变时触发
-    handleCurrentPageChange(currentPage) {
-      console.log("currentPage=" + currentPage);
+    // size（每页展示的数量）改变时触发
+    handleSizeChange(size) {
+      console.log("size=" + size);
     },
     // 创建服务
     createService() {},

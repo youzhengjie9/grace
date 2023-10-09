@@ -49,7 +49,7 @@ public class NamespaceBuilder {
      *
      * @return {@link NamespaceBuilder}
      */
-    public static NamespaceBuilder newBuilder(){
+    public static NamespaceBuilder newBuilder() {
         return new NamespaceBuilder();
     }
 
@@ -77,6 +77,7 @@ public class NamespaceBuilder {
         this.type = type;
         return this;
     }
+
     public NamespaceBuilder namespaceDesc(String namespaceDesc) {
         this.namespaceDesc = namespaceDesc;
         return this;
@@ -89,8 +90,7 @@ public class NamespaceBuilder {
      * @return {@link Namespace}
      */
     public Namespace build() {
-        //使用bean拷贝,将当前对象（NamespaceBuilder），转成建造出来的对象（Namespace）
-        return BeanUtil.copyProperties(this, Namespace.class);
+        return new Namespace(namespaceId, namespaceName, quota, configCount, type, namespaceDesc);
     }
 
 }
