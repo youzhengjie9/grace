@@ -1,5 +1,7 @@
 package com.grace.common.constant;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * instance常量
  *
@@ -26,12 +28,12 @@ public class Constants {
     public static final String ONLY_HEALTHY = "onlyHealthy";
 
     /**
-     * 默认的命名空间id
+     * 默认的命名空间（public）的命名空间id为空字符串
      */
-    public static final String DEFAULT_NAMESPACE_ID = "public";
+    public static final String DEFAULT_NAMESPACE_ID = "";
 
     /**
-     * 默认的命名空间名称
+     * 默认的命名空间名称为public
      */
     public static final String DEFAULT_NAMESPACE_NAME = "public";
 
@@ -54,4 +56,7 @@ public class Constants {
      * 默认是否为临时实例
      */
     public static final Boolean DEFAULT_EPHEMERAL = true;
+
+    public static final String ENCODE = "UTF-8";
+
 }

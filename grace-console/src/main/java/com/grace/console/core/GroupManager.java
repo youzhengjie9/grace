@@ -1,20 +1,20 @@
 package com.grace.console.core;
 
+import com.grace.common.constant.Constants;
 import com.grace.common.entity.Group;
 import com.grace.common.entity.Instance;
 import com.grace.common.entity.Service;
 import com.grace.common.entity.builder.ServiceBuilder;
-import com.grace.common.executor.NameThreadFactory;
 import com.grace.console.dto.ServiceDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * 分组管理器（用于管理group）
@@ -29,6 +29,7 @@ public class GroupManager {
     private static final GroupManager INSTANCE = new GroupManager();
 
     /**
+     * key=命名空间id,value=group集合
      * 这里体现了一个命名空间可以有多个分组、一个分组可以有多个服务、一个服务可以有多个实例（分为临时实例和永久实例）
      */
     private final Map<String, Set<Group>> groupMap;
@@ -37,6 +38,53 @@ public class GroupManager {
     private GroupManager() {
         // 初始化默认容量为1<<2（也就是为 4）
         groupMap = new ConcurrentHashMap<>(1 << 2);
+
+//        // 初始化public命名空间到groupMap中
+//        // TODO: 2023/10/9 将数据库中有关public命名空间的数据都加载到publicNamespaceGroups中
+//        Set<Group> publicNamespaceGroups = new CopyOnWriteArraySet<>();
+//        groupMap.put(Constants.DEFAULT_NAMESPACE_ID,publicNamespaceGroups);
+
+        // TODO: 2023/10/9 暂时的模拟数据，到时要该成从数据库查询数据
+        // public命名空间的分组group集合
+        Set<Group> publicNamespaceGroups = new CopyOnWriteArraySet<>();
+        // 默认分组(DEFAULT_GROUP)的service集合
+        Set<Service> defaultGroupService = new CopyOnWriteArraySet<>();
+
+        // userService
+        Service userService = ServiceBuilder.newBuilder()
+                .namespaceId(Constants.DEFAULT_NAMESPACE_ID)
+                .groupName(Constants.DEFAULT_GROUP_NAME)
+                .serviceName("userService")
+                .protectThreshold(0.5F)
+                .ephemeralInstances(new CopyOnWriteArraySet<>())
+                .persistentInstances(new CopyOnWriteArraySet<>())
+                // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
+//                .metadata(serviceDTO.getMetadata())
+                .createTime(LocalDateTime.now())
+                .lastUpdatedTime(LocalDateTime.now())
+                .build();
+
+        // systemService
+        Service systemService = ServiceBuilder.newBuilder()
+                .namespaceId(Constants.DEFAULT_NAMESPACE_ID)
+                .groupName(Constants.DEFAULT_GROUP_NAME)
+                .serviceName("systemService")
+                .protectThreshold(0.3F)
+                .ephemeralInstances(new CopyOnWriteArraySet<>())
+                .persistentInstances(new CopyOnWriteArraySet<>())
+                // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
+//                .metadata(serviceDTO.getMetadata())
+                .createTime(LocalDateTime.now())
+                .lastUpdatedTime(LocalDateTime.now())
+                .build();
+        defaultGroupService.add(userService);
+        defaultGroupService.add(systemService);
+        // 默认分组(DEFAULT_GROUP)
+        Group defaultGroup = new Group();
+        defaultGroup.setGroupName(Constants.DEFAULT_GROUP_NAME);
+        defaultGroup.setServices(defaultGroupService);
+        publicNamespaceGroups.add(defaultGroup);
+        groupMap.put(Constants.DEFAULT_NAMESPACE_ID,publicNamespaceGroups);
     }
 
     public static GroupManager getInstance() {
@@ -378,7 +426,6 @@ public class GroupManager {
         return null;
     }
 
-
     /**
      * 获取所有命名空间的总数
      *
@@ -388,5 +435,6 @@ public class GroupManager {
 
         return getAllNamespaceId().size();
     }
+
 
 }

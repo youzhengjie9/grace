@@ -31,9 +31,9 @@ public class GraceRegistryProperties {
     private String password = "grace";
 
     /**
-     * 命名空间（将该服务的实例注册到哪个命名空间上）
+     * 命名空间名称（将该服务的实例注册到哪个命名空间上）
      */
-    private String namespace;
+    private String namespaceName;
 
     /**
      * 该服务实例所属的服务名
@@ -87,11 +87,11 @@ public class GraceRegistryProperties {
     public GraceRegistryProperties() {
     }
 
-    public GraceRegistryProperties(String consoleAddress, String username, String password, String namespace, String serviceName, int weight, String clusterName, String groupName, Map<String, String> metadata, boolean enableRegister, Integer heartBeatInterval, Integer heartBeatTimeout, boolean ephemeral) {
+    public GraceRegistryProperties(String consoleAddress, String username, String password, String namespaceName, String serviceName, int weight, String clusterName, String groupName, Map<String, String> metadata, boolean enableRegister, Integer heartBeatInterval, Integer heartBeatTimeout, boolean ephemeral) {
         this.consoleAddress = consoleAddress;
         this.username = username;
         this.password = password;
-        this.namespace = namespace;
+        this.namespaceName = namespaceName;
         this.serviceName = serviceName;
         this.weight = weight;
         this.clusterName = clusterName;
@@ -127,12 +127,12 @@ public class GraceRegistryProperties {
         this.password = password;
     }
 
-    public String getNamespace() {
-        return namespace;
+    public String getNamespaceName() {
+        return namespaceName;
     }
 
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
+    public void setNamespaceName(String namespaceName) {
+        this.namespaceName = namespaceName;
     }
 
     public String getServiceName() {
@@ -205,24 +205,5 @@ public class GraceRegistryProperties {
 
     public void setEphemeral(boolean ephemeral) {
         this.ephemeral = ephemeral;
-    }
-
-    @Override
-    public String toString() {
-        return "GraceRegistryProperties{" +
-                "consoleAddress='" + consoleAddress + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", namespace='" + namespace + '\'' +
-                ", serviceName='" + serviceName + '\'' +
-                ", weight=" + weight +
-                ", clusterName='" + clusterName + '\'' +
-                ", groupName='" + groupName + '\'' +
-                ", metadata=" + metadata +
-                ", enableRegister=" + enableRegister +
-                ", heartBeatInterval=" + heartBeatInterval +
-                ", heartBeatTimeout=" + heartBeatTimeout +
-                ", ephemeral=" + ephemeral +
-                '}';
     }
 }

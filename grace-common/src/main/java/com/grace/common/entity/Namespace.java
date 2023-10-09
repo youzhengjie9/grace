@@ -1,5 +1,10 @@
 package com.grace.common.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
 
 /**
@@ -8,23 +13,27 @@ import java.io.Serializable;
  * @author youzhengjie
  * @date 2023-10-07 09:25:39
  */
+@TableName("sys_name_space")
 public class Namespace implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 命令空间id
+     * 主键，命令空间id
      */
+    @TableId(value = "namespaceId",type = IdType.INPUT)
     private String namespaceId;
 
     /**
      * 命名空间名称
      */
+    @TableField("`namespace_name`")
     private String namespaceName;
 
     /**
      * 配额
      */
+    @TableField("quota")
     private int quota;
 
     /**
@@ -40,6 +49,7 @@ public class Namespace implements Serializable {
     /**
      * 命名空间描述
      */
+    @TableField("namespaceDesc")
     private String namespaceDesc;
 
 

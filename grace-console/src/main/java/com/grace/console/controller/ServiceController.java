@@ -3,24 +3,19 @@ package com.grace.console.controller;
 import com.grace.common.constant.Constants;
 import com.grace.common.constant.ParentMappingConstants;
 import com.grace.common.entity.Service;
-import com.grace.common.entity.builder.ServiceBuilder;
 import com.grace.common.utils.Result;
 import com.grace.console.core.GroupManager;
 import com.grace.console.dto.ServiceDTO;
-import com.grace.console.service.SvcService;
+import com.grace.console.vo.ServiceListItem;
 import com.grace.console.vo.ServiceListVO;
 import com.grace.console.vo.ServiceNameListVO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.stream.Collectors;
 
 /**
  * service控制器
@@ -31,9 +26,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(path = ParentMappingConstants.SERVICE_CONTROLLER)
 public class ServiceController {
-
-//    @Autowired
-//    private SvcService svcService;
 
     private final GroupManager groupManager = GroupManager.getInstance();
 
@@ -50,39 +42,21 @@ public class ServiceController {
         // 创建service并返回结果
         return Result.ok(groupManager.createServiceByServiceDTO(serviceDTO));
     }
-
-    /**
-     * 分页获取服务名称列表
-     */
-    @GetMapping("/getServiceNameList")
-    public Result<ServiceNameListVO> getServiceNameList(
-            @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
-            @RequestParam(value = "groupName", required = false, defaultValue = Constants.DEFAULT_GROUP_NAME) String groupName,
-            @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "8") Integer size) {
-        // 对size的大小进行限制,防止一次性获取太多的数据（下面的代码意思是一次“最多”获取500条记录,如果size的值小于500,则size还是原来的值不变）
-        size = Math.min(size,500);
-
-        return Result.ok();
-    }
-
     /**
      * 分页获取服务列表
      *
      * @param namespaceId namespaceId
-     * @param groupName groupName
+     * @param hideEmptyService 是否隐藏空服务（也就是说不统计没有instance的service）
      * @param page 当前页（最小页是: 1）
      * @param size 每一页的大小
-     * @param hideEmptyService 是否隐藏空服务（也就是说不统计没有instance的service）
      * @return {@link Result}<{@link ServiceNameListVO}>
      */
     @GetMapping("/getServiceList")
     public Result<ServiceListVO> getServiceList(
             @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
-            @RequestParam(value = "groupName", required = false, defaultValue = "") String groupName,
+            @RequestParam(value = "hideEmptyService", required = false, defaultValue = "true") boolean hideEmptyService,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "8") Integer size,
-            @RequestParam(value = "hideEmptyService", required = false, defaultValue = "true") boolean hideEmptyService) {
+            @RequestParam(value = "size", required = false, defaultValue = "8") Integer size) {
         // 如果 page < 1 ,则要把page恢复成 1 ,因为page的最小值就为 1
         if(page < 1){
             page = 1;
@@ -100,8 +74,43 @@ public class ServiceController {
         Set<Service> pagedServices = servicesPage(services, page, size);
         // 设置“分页之前”的service总记录数
         serviceListVO.setTotalCount(services.size());
-        serviceListVO.setPagedServices(pagedServices);
+        List<ServiceListItem> pagedServiceList = new CopyOnWriteArrayList<>();
+        // 将Set<Service>类型的pagedServices对象转成List<ServiceListItem>类型的对象
+        for (Service pagedService : pagedServices) {
+            ServiceListItem serviceListItem = new ServiceListItem();
+            serviceListItem.setServiceName(pagedService.getServiceName());
+            serviceListItem.setGroupName(pagedService.getGroupName());
+            // 实例数
+            serviceListItem.setInstanceCount(
+                    pagedService.getAllInstance().size()
+            );
+            // 健康实例数
+            serviceListItem.setHealthyInstanceCount(pagedService.getAllHealthyInstanceCount());
+            // service触发保护阈值标志（判断当前service是否触发了保护阈值）
+            serviceListItem.setTriggerProtectThresholdFlag(
+                    pagedService.getServiceTriggerProtectThresholdFlag()? "true" : "false"
+            );
+            pagedServiceList.add(serviceListItem);
+        }
+        serviceListVO.setPagedServiceList(pagedServiceList);
+
         return Result.ok(serviceListVO);
+    }
+
+
+    /**
+     * 分页获取服务名称列表
+     */
+    @GetMapping("/getServiceNameList")
+    public Result<ServiceNameListVO> getServiceNameList(
+            @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
+            @RequestParam(value = "groupName", required = false, defaultValue = Constants.DEFAULT_GROUP_NAME) String groupName,
+            @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "8") Integer size) {
+        // 对size的大小进行限制,防止一次性获取太多的数据（下面的代码意思是一次“最多”获取500条记录,如果size的值小于500,则size还是原来的值不变）
+        size = Math.min(size,500);
+
+        return Result.ok();
     }
 
     /**

@@ -45,7 +45,10 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
      */
     private static final String PROTECT_THRESHOLD_PARAM = "protectThreshold";
 
-    private final Long namespaceId;
+    /**
+     * 命名空间id
+     */
+    private final String namespaceId;
 
     private static final String PAGE = "page";
 
@@ -55,7 +58,7 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
 
     private int consolePort = DEFAULT_CONSOLE_PORT;
 
-    public RegistryHttpClientProxy(Long namespaceId, GraceConsoleAddressManager graceConsoleAddressManager,
+    public RegistryHttpClientProxy(String namespaceId, GraceConsoleAddressManager graceConsoleAddressManager,
                                    Properties properties) {
         this.graceConsoleAddressManager = graceConsoleAddressManager;
         this.setConsolePort(DEFAULT_CONSOLE_PORT);
@@ -66,7 +69,7 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
     public void registerInstance(String serviceName, String groupName, Instance instance) {
         log.info("namespaceId={}, serviceName={}, groupName={} , instance={}",
                 namespaceId, serviceName, groupName , instance.toString());
-        if (instance.isEphemeral()) {
+        if (instance.getEphemeral()) {
             throw new UnsupportedOperationException(
                     "不支持通过HTTP方式注册临时实例，请使用gRPC方式");
         }
@@ -77,8 +80,8 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
         requestBodyMap.put(Constants.IP_ADDR, instance.getIpAddr());
         requestBodyMap.put(Constants.PORT, String.valueOf(instance.getPort()));
         requestBodyMap.put(Constants.WEIGHT, String.valueOf(instance.getWeight()));
-        requestBodyMap.put(Constants.HEALTHY, String.valueOf(instance.isHealthy()));
-        requestBodyMap.put(Constants.EPHEMERAL, String.valueOf(instance.isEphemeral()));
+        requestBodyMap.put(Constants.HEALTHY, String.valueOf(instance.getHealthy()));
+        requestBodyMap.put(Constants.EPHEMERAL, String.valueOf(instance.getEphemeral()));
         requestBodyMap.put(Constants.META_DATA, JSON.toJSONString(instance.getMetadata()));
         requestApi(ParentMappingConstants.INSTANCE_CONTROLLER + "/registerInstance",
                 RequestMethodConstants.POST,
@@ -103,7 +106,7 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
 
         log.info("namespaceId={}, serviceName={}, groupName={} , instance={}",
                 namespaceId, serviceName, groupName , instance.toString());
-        if (instance.isEphemeral()) {
+        if (instance.getEphemeral()) {
             throw new UnsupportedOperationException(
                     "不支持通过HTTP方式注销临时实例，请使用gRPC方式");
         }
@@ -133,8 +136,8 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
         requestBodyMap.put(Constants.IP_ADDR, instance.getIpAddr());
         requestBodyMap.put(Constants.PORT, String.valueOf(instance.getPort()));
         requestBodyMap.put(Constants.WEIGHT, String.valueOf(instance.getWeight()));
-        requestBodyMap.put(Constants.HEALTHY, String.valueOf(instance.isHealthy()));
-        requestBodyMap.put(Constants.EPHEMERAL, String.valueOf(instance.isEphemeral()));
+        requestBodyMap.put(Constants.HEALTHY, String.valueOf(instance.getHealthy()));
+        requestBodyMap.put(Constants.EPHEMERAL, String.valueOf(instance.getEphemeral()));
         requestBodyMap.put(Constants.META_DATA, JSON.toJSONString(instance.getMetadata()));
         requestApi(ParentMappingConstants.INSTANCE_CONTROLLER + "/updateInstance",
                 RequestMethodConstants.PUT,
@@ -166,6 +169,8 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
                 requestParamMap,
                 null);
 
+        // TODO: 2023/10/9 没实现
+        return null;
     }
 
     @Override
@@ -254,9 +259,9 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
         PageData<String> pageData = new PageData<>();
         JSONObject jsonObject = JSONObject.parseObject(resultData);
         // 分页前数据的总记录数
-        pageData.setCount(Integer.parseInt(jsonObject.get("count").toString()));
+        pageData.setTotalCount(Integer.parseInt(jsonObject.get("count").toString()));
         // 分页后的数据
-        pageData.setData(JSON.parseArray(jsonObject.get("data").toString(), String.class));
+        pageData.setPagedList(JSON.parseArray(jsonObject.get("data").toString(), String.class));
         return pageData;
     }
 
@@ -349,7 +354,7 @@ public class RegistryHttpClientProxy implements RegistryClientProxy {
         }
     }
 
-    public Long getNamespaceId() {
+    public String getNamespaceId() {
         return namespaceId;
     }
 

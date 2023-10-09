@@ -16,6 +16,8 @@
 
 package com.grace.common.utils;
 
+import com.grace.common.constant.Constants;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.nio.channels.FileChannel;

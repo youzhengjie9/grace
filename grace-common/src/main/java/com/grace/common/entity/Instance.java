@@ -128,7 +128,7 @@ public class Instance implements Serializable {
         return this;
     }
 
-    public boolean isHealthy() {
+    public boolean getHealthy() {
         return healthy;
     }
 

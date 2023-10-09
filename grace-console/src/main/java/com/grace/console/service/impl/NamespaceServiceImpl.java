@@ -19,8 +19,6 @@ public class NamespaceServiceImpl implements NamespaceService {
 
     private static final Logger log = LoggerFactory.getLogger(NamespaceServiceImpl.class);
 
-    private static final String DEFAULT_NAMESPACE_ID = "public";
-
     private static final int DEFAULT_QUOTA = 200;
 
 

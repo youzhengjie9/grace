@@ -3,34 +3,46 @@ package com.grace.common.utils;
 import java.util.List;
 
 /**
- * 分页数据展示
+ * 封装分页数据,返回给前端
  */
 public class PageData<T> {
 
-    // 分页后的数据
-    private List<T> data;
+    // 分页后的列表
+    private List<T> pagedList;
 
     // 分页前数据的总记录数
-    private int count;
-    
-    public List<T> getData() {
-        return data;
+    private int totalCount;
+
+
+    public PageData() {
     }
-    
-    public void setData(List<T> data) {
-        this.data = data;
+
+    public PageData(List<T> pagedList, int totalCount) {
+        this.pagedList = pagedList;
+        this.totalCount = totalCount;
     }
-    
-    public int getCount() {
-        return count;
+
+    public List<T> getPagedList() {
+        return pagedList;
     }
-    
-    public void setCount(int count) {
-        this.count = count;
+
+    public void setPagedList(List<T> pagedList) {
+        this.pagedList = pagedList;
     }
-    
+
+    public int getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
+    }
+
     @Override
     public String toString() {
-        return "ListView{" + "data=" + data + ", count=" + count + '}';
+        return "PageData{" +
+                "pagedList=" + pagedList +
+                ", totalCount=" + totalCount +
+                '}';
     }
 }

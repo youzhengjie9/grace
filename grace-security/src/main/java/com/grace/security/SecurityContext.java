@@ -1,5 +1,6 @@
 package com.grace.security;
 
+import com.grace.security.entity.User;
 import com.grace.security.users.GraceUser;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -31,12 +32,12 @@ public class SecurityContext {
 
 
     /**
-     * 获得当前GraceUserDetails中的SysUser对象
+     * 获得当前GraceUserDetails中的User对象
      *
-     * @return {@link SysUser}
+     * @return {@link User}
      */
-    public static SysUser getCurrentSysUser(){
-        return SecurityContext.getCurrentUserDetails().getSysUser();
+    public static User getCurrentUser(){
+        return SecurityContext.getCurrentUserDetails().getUser();
     }
 
     /**
@@ -45,7 +46,7 @@ public class SecurityContext {
      * @return {@link Long}
      */
     public static Long getCurrentUserId(){
-        return SecurityContext.getCurrentSysUser().getId();
+        return SecurityContext.getCurrentUser().getId();
     }
 
     /**
@@ -54,7 +55,7 @@ public class SecurityContext {
      * @return {@link String}
      */
     public static String getCurrentUserName(){
-        return SecurityContext.getCurrentSysUser().getUserName();
+        return SecurityContext.getCurrentUser().getUserName();
     }
 
 }

@@ -29,7 +29,7 @@ public class RegistryClientProxyDelegate implements RegistryClientProxy {
     
     private ScheduledExecutorService executorService;
 
-    public RegistryClientProxyDelegate(Long namespaceId, Properties properties) {
+    public RegistryClientProxyDelegate(String namespaceId, Properties properties) {
         this.graceConsoleAddressManager = new GraceConsoleAddressManager(properties, namespaceId);
         this.httpClientProxy =
                 new RegistryHttpClientProxy(namespaceId, graceConsoleAddressManager, properties);

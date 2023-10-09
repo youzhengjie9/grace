@@ -5,6 +5,7 @@ import com.grace.client.registry.remote.RegistryClientProxyDelegate;
 import com.grace.common.constant.Constants;
 import com.grace.common.constant.PropertiesKeyConstants;
 import com.grace.common.entity.Instance;
+import com.grace.common.entity.builder.InstanceBuilder;
 import com.grace.common.utils.CollectionUtils;
 import com.grace.common.utils.PageData;
 import org.slf4j.Logger;
@@ -28,7 +29,7 @@ public class GraceRegistryService implements RegistryService {
      * 基本思想就是用户传命名空间名称到GraceRegistryService类中,
      * 在GraceRegistryService类中的初始化方法通过命名空间名称查询命名空间id并保存起来传给clientProxy类
      */
-    private Long namespaceId;
+    private String namespaceId;
 
     /**
      * 注册中心的客户端代理（作用是: 向注册中心发送api请求）
@@ -62,13 +63,13 @@ public class GraceRegistryService implements RegistryService {
     private void init(Properties properties) {
         String namespaceName = properties.getProperty(PropertiesKeyConstants.NAMESPACE_NAME);
         // 如果命名空间名称为public
-        if(namespaceName.equalsIgnoreCase(Constants.DEFAULT_NAMESPACE_NAME)){
+        if(namespaceName.equals(Constants.DEFAULT_NAMESPACE_NAME)){
             this.namespaceId = Constants.DEFAULT_NAMESPACE_ID;
         }
         // 如果命名空间名称不为public
         else {
             // TODO: 2023/9/28  根据命名空间名称去数据库中查询命名空间id
-            this.namespaceId = 666666666L;
+            this.namespaceId = "abc123456";
         }
         this.clientProxy = new RegistryClientProxyDelegate(this.namespaceId, properties);
     }
@@ -91,7 +92,7 @@ public class GraceRegistryService implements RegistryService {
 
     @Override
     public void registerInstance(String serviceName, String groupName, String ipAddr, int port, Map<String, String> metadata) {
-        Instance instance = Instance.builder()
+        Instance instance = InstanceBuilder.newBuilder()
                 .ipAddr(ipAddr)
                 .port(port)
                 .metadata(metadata)
@@ -147,7 +148,7 @@ public class GraceRegistryService implements RegistryService {
     @Override
     public void deregisterInstance(String serviceName, String groupName, String ipAddr, int port, Map<String, String> metadata) {
 
-        Instance instance = Instance.builder()
+        Instance instance = InstanceBuilder.newBuilder()
                 .ipAddr(ipAddr)
                 .port(port)
                 .metadata(metadata)
@@ -196,7 +197,7 @@ public class GraceRegistryService implements RegistryService {
         while (iterator.hasNext()){
             Instance instance = iterator.next();
             // 符合这些条件将会被挑选出来
-            if (healthy != instance.isHealthy() || instance.getWeight() <= 0) {
+            if (healthy != instance.getHealthy() || instance.getWeight() <= 0) {
                 iterator.remove();
             }
         }

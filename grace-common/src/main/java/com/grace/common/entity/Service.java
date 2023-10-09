@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * grace注册中心的服务表实体类
@@ -33,7 +35,11 @@ public class Service implements Serializable {
     private String serviceName;
 
     /**
-     * 保护阈值
+     * 保护阈值（其实就是最小的健康实例数占比,如果当前service的健康实例数占比<=最小的健康实例数占比,说明需要触发保护阈值）
+     * <p>
+     * protectThreshold的范围是,最小值为 0,最大值为 1
+     * <p>
+     * 比如protectThreshold=0.25,相当于protectThreshold（最小的健康实例数占比）为 25%,小于或者等于这个值就会触发保护阈值
      */
     private Float protectThreshold;
 
@@ -156,6 +162,57 @@ public class Service implements Serializable {
     public Service setLastUpdatedTime(LocalDateTime lastUpdatedTime) {
         this.lastUpdatedTime = lastUpdatedTime;
         return this;
+    }
+
+    /**
+     * 获取所有实例（包括临时实例、永久实例）
+     *
+     * @return {@link List}<{@link Instance}>
+     */
+    public List<Instance> getAllInstance(){
+        List<Instance> instanceList = new CopyOnWriteArrayList<>();
+        // 如果临时实例集合不为空并且大小>0,则将所有“临时实例”保存到集合中
+        if(ephemeralInstances != null && ephemeralInstances.size()>0) {
+            instanceList.addAll(ephemeralInstances);
+        }
+        // 如果永久 实例集合不为空并且大小>0,则将所有“永久实例”保存到集合中
+        if(persistentInstances != null && persistentInstances.size()>0) {
+            instanceList.addAll(persistentInstances);
+        }
+        return instanceList;
+    }
+
+    /**
+     * 获取所有健康实例的数量（包括临时实例、永久实例）
+     *
+     * @return int
+     */
+    public int getAllHealthyInstanceCount() {
+        AtomicInteger healthyInstanceCount = new AtomicInteger(0);
+        // 获取所有实例
+        List<Instance> instanceList = getAllInstance();
+        for (Instance instance : instanceList) {
+            // 如果该实例是健康的
+            if (instance.getHealthy()) {
+                // 计数器+1
+                healthyInstanceCount.incrementAndGet();
+            }
+        }
+        return healthyInstanceCount.get();
+    }
+
+    /**
+     * 获取service触发保护阈值的标志（判断当前service是否触发保护阈值）
+     * <p>
+     * 如果当前service的健康实例数占比<=最小的健康实例数占比,说明需要触发保护阈值）
+     *
+     * @return boolean
+     */
+    public boolean getServiceTriggerProtectThresholdFlag(){
+
+        // 当前service的健康实例数占比为(getAllHealthyInstanceCount() * 1.0 / getAllInstance().size())
+        // 保护阈值（最小的健康实例数占比）为 protectThreshold
+        return (getAllHealthyInstanceCount() * 1.0 / getAllInstance().size()) <= protectThreshold ;
     }
 
     @Override

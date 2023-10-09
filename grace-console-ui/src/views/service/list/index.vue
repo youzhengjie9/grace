@@ -243,6 +243,7 @@
 <script>
 // 引入vue2-ace-editor代码编辑器
 import Editor from "vue2-ace-editor";
+import {getServiceList} from '@/api/service'
 
 export default {
   name: "ServiceList",
@@ -366,45 +367,53 @@ export default {
       // 当前页
       let currentPage = this.currentPage;
       // 根据上面的属性从后端分页的获取tableData数据
-      let result = {
-        code: 200,
-        data: {
-          // 分页查询出来的数据
-          tableData: [
-            {
-              id: 10001,
-              // 服务名称
-              serviceName: "abc",
-              // 分组名称
-              groupName: "DEFAULT_GROUP",
-              // 实例数
-              instanceCount: 3,
-              // 健康实例数
-              healthInstanceCount: 3,
-              // 是否触发保护阈值
-              reachProtectionThreshold: "false",
-            },
-            {
-              id: 10002,
-              serviceName: "abc22",
-              groupName: "DEFAULT_GROUP",
-              instanceCount: 3,
-              healthInstanceCount: 3,
-              reachProtectionThreshold: "false",
-            },
-            {
-              id: 10003,
-              serviceName: "abc33",
-              groupName: "DEFAULT_GROUP",
-              instanceCount: 3,
-              healthInstanceCount: 3,
-              reachProtectionThreshold: "false",
-            },
-          ],
-          // 所有数据的总数（没有分页）
-          totalCount: 70,
-        },
-      };
+      // let result = {
+      //   code: 200,
+      //   data: {
+      //     // 分页查询出来的数据
+      //     tableData: [
+      //       {
+      //         id: 10001,
+      //         // 服务名称
+      //         serviceName: "abc",
+      //         // 分组名称
+      //         groupName: "DEFAULT_GROUP",
+      //         // 实例数
+      //         instanceCount: 3,
+      //         // 健康实例数
+      //         healthInstanceCount: 3,
+      //         // 是否触发保护阈值
+      //         reachProtectionThreshold: "false",
+      //       },
+      //       {
+      //         id: 10002,
+      //         serviceName: "abc22",
+      //         groupName: "DEFAULT_GROUP",
+      //         instanceCount: 3,
+      //         healthInstanceCount: 3,
+      //         reachProtectionThreshold: "false",
+      //       },
+      //       {
+      //         id: 10003,
+      //         serviceName: "abc33",
+      //         groupName: "DEFAULT_GROUP",
+      //         instanceCount: 3,
+      //         healthInstanceCount: 3,
+      //         reachProtectionThreshold: "false",
+      //       },
+      //     ],
+      //     // 所有数据的总数（没有分页）
+      //     totalCount: 70,
+      //   },
+      // };
+
+      getServiceList('',false,1,8).then(res=>{
+
+        console.log(res)
+
+      })
+
+
 
       // 将数据放到vue中
       this.tableData = result.data.tableData;

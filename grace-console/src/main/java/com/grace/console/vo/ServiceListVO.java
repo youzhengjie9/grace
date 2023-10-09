@@ -1,8 +1,7 @@
 package com.grace.console.vo;
 
-import com.grace.common.entity.Service;
-
-import java.util.Set;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * service列表vo
@@ -10,14 +9,14 @@ import java.util.Set;
  * @author youzhengjie
  * @date 2023-10-07 23:37:27
  */
-public class ServiceListVO {
+public class ServiceListVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * “分页之后/被分页后”的service集合
+     * “分页之后/被分页后”的service列表
      */
-    private Set<Service> pagedServices;
+    private List<ServiceListItem> pagedServiceList;
 
     /**
      * “分页之前”的service总记录数
@@ -27,17 +26,17 @@ public class ServiceListVO {
     public ServiceListVO() {
     }
 
-    public ServiceListVO(Set<Service> pagedServices, int totalCount) {
-        this.pagedServices = pagedServices;
+    public ServiceListVO(List<ServiceListItem> pagedServiceList, int totalCount) {
+        this.pagedServiceList = pagedServiceList;
         this.totalCount = totalCount;
     }
 
-    public Set<Service> getPagedServices() {
-        return pagedServices;
+    public List<ServiceListItem> getPagedServiceList() {
+        return pagedServiceList;
     }
 
-    public void setPagedServices(Set<Service> pagedServices) {
-        this.pagedServices = pagedServices;
+    public void setPagedServiceList(List<ServiceListItem> pagedServiceList) {
+        this.pagedServiceList = pagedServiceList;
     }
 
     public int getTotalCount() {
@@ -51,7 +50,7 @@ public class ServiceListVO {
     @Override
     public String toString() {
         return "ServiceListVO{" +
-                "pagedServices=" + pagedServices +
+                "pagedServiceList=" + pagedServiceList +
                 ", totalCount=" + totalCount +
                 '}';
     }

@@ -200,8 +200,10 @@ public class JwtTokenManager implements TokenManager {
                     .one();
             // 根据userId查询权限列表
             List<String> permissions = menuService.getAllPermissionsByUserId(userId);
+            // 给user对象设置userId
+            user.setId(userId);
             // 封装GraceUser对象
-            GraceUser graceUser = new GraceUser(userId,user.getUserName(),permissions,user.getStatus(),user.getDelFlag());
+            GraceUser graceUser = new GraceUser(user,permissions);
             // 获取用户的权限列表
             Collection<? extends GrantedAuthority> authorities = graceUser.getAuthorities();
             // 创建Authentication对象
@@ -220,8 +222,10 @@ public class JwtTokenManager implements TokenManager {
                     .one();
             // 根据userId查询权限列表
             List<String> permissions = menuService.getAllPermissionsByUserId(userId);
+            // 给user对象设置userId
+            user.setId(userId);
             // 封装GraceUser对象
-            GraceUser graceUser = new GraceUser(userId,user.getUserName(),permissions,user.getStatus(),user.getDelFlag());
+            GraceUser graceUser = new GraceUser(user,permissions);
             // 获取用户的权限列表
             Collection<? extends GrantedAuthority> authorities = graceUser.getAuthorities();
             // 创建Authentication对象

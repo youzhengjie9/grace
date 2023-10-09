@@ -19,7 +19,7 @@ public class GraceConsoleAddressManager implements ConsoleAddressManager {
 
     private final long refreshServerListInternal = TimeUnit.SECONDS.toMillis(30);
 
-    private final Long namespaceId;
+    private final String namespaceId;
 
     /**
      * 记录当前最新获取的控制台地址所在的consoleAddressList的下标
@@ -38,7 +38,7 @@ public class GraceConsoleAddressManager implements ConsoleAddressManager {
         this(properties,null);
     }
 
-    public GraceConsoleAddressManager(Properties properties , Long namespaceId) {
+    public GraceConsoleAddressManager(Properties properties , String namespaceId) {
         this.namespaceId = namespaceId;
         // 根据传过来的Properties对象对consoleAddressList属性进行初始化
         initConsoleAddressListByProperties(properties);
