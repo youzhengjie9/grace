@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -44,49 +45,306 @@ public class GroupManager {
 //        Set<Group> publicNamespaceGroups = new CopyOnWriteArraySet<>();
 //        groupMap.put(Constants.DEFAULT_NAMESPACE_ID,publicNamespaceGroups);
 
+        //初始化默认的public命名空间的数据
+        initPublicNamespace();
+        // 初始化dev命名空间的数据
+        initDevNamespace();
+        // 初始化test命名空间的数据
+        initTestNamespace();
+    }
+
+    /**
+     * 初始化默认的public命名空间的数据
+     */
+    private void initPublicNamespace(){
+        // abc分组名
+        String abcGroupName = "abc_group";
+        // defg分组名
+        String defgGroupName = "defg_group";
         // TODO: 2023/10/9 暂时的模拟数据，到时要该成从数据库查询数据
         // public命名空间的分组group集合
         Set<Group> publicNamespaceGroups = new CopyOnWriteArraySet<>();
         // 默认分组(DEFAULT_GROUP)的service集合
         Set<Service> defaultGroupService = new CopyOnWriteArraySet<>();
+        // abc组的service集合
+        Set<Service> abcGroupService = new CopyOnWriteArraySet<>();
+        // defg组的service集合
+        Set<Service> defgGroupService = new CopyOnWriteArraySet<>();
 
-        // userService
-        Service userService = ServiceBuilder.newBuilder()
-                .namespaceId(Constants.DEFAULT_NAMESPACE_ID)
-                .groupName(Constants.DEFAULT_GROUP_NAME)
-                .serviceName("userService")
-                .protectThreshold(0.5F)
-                .ephemeralInstances(new CopyOnWriteArraySet<>())
-                .persistentInstances(new CopyOnWriteArraySet<>())
-                // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
+        // 模拟生成默认分组(DEFAULT_GROUP)的service
+        for (int i = 0; i < 15; i++) {
+            // service
+            Service svc = ServiceBuilder.newBuilder()
+                    .namespaceId(Constants.DEFAULT_NAMESPACE_ID)
+                    .groupName(Constants.DEFAULT_GROUP_NAME)
+                    .serviceName(UUID.randomUUID().toString().replaceAll("-","").substring(0,17))
+                    .protectThreshold(0.3F)
+                    .ephemeralInstances(new CopyOnWriteArraySet<>())
+                    .persistentInstances(new CopyOnWriteArraySet<>())
+                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
 //                .metadata(serviceDTO.getMetadata())
-                .createTime(LocalDateTime.now())
-                .lastUpdatedTime(LocalDateTime.now())
-                .build();
+                    .createTime(LocalDateTime.now())
+                    .lastUpdatedTime(LocalDateTime.now())
+                    .build();
+            defaultGroupService.add(svc);
+        }
 
-        // systemService
-        Service systemService = ServiceBuilder.newBuilder()
-                .namespaceId(Constants.DEFAULT_NAMESPACE_ID)
-                .groupName(Constants.DEFAULT_GROUP_NAME)
-                .serviceName("systemService")
-                .protectThreshold(0.3F)
-                .ephemeralInstances(new CopyOnWriteArraySet<>())
-                .persistentInstances(new CopyOnWriteArraySet<>())
-                // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
+        // 模拟生成abc组的service
+        for (int i = 0; i < 8; i++) {
+            // service
+            Service svc = ServiceBuilder.newBuilder()
+                    .namespaceId(Constants.DEFAULT_NAMESPACE_ID)
+                    .groupName(abcGroupName)
+                    .serviceName(UUID.randomUUID().toString().replaceAll("-","").substring(0,17))
+                    .protectThreshold(0.8F)
+                    .ephemeralInstances(new CopyOnWriteArraySet<>())
+                    .persistentInstances(new CopyOnWriteArraySet<>())
+                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
 //                .metadata(serviceDTO.getMetadata())
-                .createTime(LocalDateTime.now())
-                .lastUpdatedTime(LocalDateTime.now())
-                .build();
-        defaultGroupService.add(userService);
-        defaultGroupService.add(systemService);
+                    .createTime(LocalDateTime.now())
+                    .lastUpdatedTime(LocalDateTime.now())
+                    .build();
+            abcGroupService.add(svc);
+        }
+
+        // 模拟生成defg组的service
+        for (int i = 0; i < 9; i++) {
+            // service
+            Service svc = ServiceBuilder.newBuilder()
+                    .namespaceId(Constants.DEFAULT_NAMESPACE_ID)
+                    .groupName(defgGroupName)
+                    .serviceName(UUID.randomUUID().toString().replaceAll("-","").substring(0,17))
+                    .protectThreshold(0.5F)
+                    .ephemeralInstances(new CopyOnWriteArraySet<>())
+                    .persistentInstances(new CopyOnWriteArraySet<>())
+                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
+//                .metadata(serviceDTO.getMetadata())
+                    .createTime(LocalDateTime.now())
+                    .lastUpdatedTime(LocalDateTime.now())
+                    .build();
+            defgGroupService.add(svc);
+        }
+
         // 默认分组(DEFAULT_GROUP)
         Group defaultGroup = new Group();
         defaultGroup.setGroupName(Constants.DEFAULT_GROUP_NAME);
         defaultGroup.setServices(defaultGroupService);
         publicNamespaceGroups.add(defaultGroup);
+
+        // abc分组
+        Group abcGroup = new Group();
+        abcGroup.setGroupName(abcGroupName);
+        abcGroup.setServices(abcGroupService);
+        publicNamespaceGroups.add(abcGroup);
+
+        // abc分组
+        Group defgGroup = new Group();
+        defgGroup.setGroupName(defgGroupName);
+        defgGroup.setServices(defgGroupService);
+        publicNamespaceGroups.add(defgGroup);
+
         groupMap.put(Constants.DEFAULT_NAMESPACE_ID,publicNamespaceGroups);
     }
 
+    /**
+     * 初始化dev命名空间数据
+     */
+    private void initDevNamespace(){
+        // dev命名空间id
+        String devNamespaceId = "dev-namespace";
+        // abc分组名
+        String abcGroupName = "abc_group";
+        // defg分组名
+        String defgGroupName = "defg_group";
+
+
+        // TODO: 2023/10/9 暂时的模拟数据，到时要该成从数据库查询数据
+        // dev命名空间的分组group集合
+        Set<Group> devNamespaceGroups = new CopyOnWriteArraySet<>();
+        // 默认分组(DEFAULT_GROUP)的service集合
+        Set<Service> defaultGroupService = new CopyOnWriteArraySet<>();
+        // abc组的service集合
+        Set<Service> abcGroupService = new CopyOnWriteArraySet<>();
+        // defg组的service集合
+        Set<Service> defgGroupService = new CopyOnWriteArraySet<>();
+
+        // 模拟生成默认分组(DEFAULT_GROUP)的service
+        for (int i = 0; i < 7; i++) {
+            // service
+            Service svc = ServiceBuilder.newBuilder()
+                    .namespaceId(devNamespaceId)
+                    .groupName(Constants.DEFAULT_GROUP_NAME)
+                    .serviceName(UUID.randomUUID().toString().replaceAll("-","").substring(0,17))
+                    .protectThreshold(0.3F)
+                    .ephemeralInstances(new CopyOnWriteArraySet<>())
+                    .persistentInstances(new CopyOnWriteArraySet<>())
+                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
+//                .metadata(serviceDTO.getMetadata())
+                    .createTime(LocalDateTime.now())
+                    .lastUpdatedTime(LocalDateTime.now())
+                    .build();
+            defaultGroupService.add(svc);
+        }
+
+        // 模拟生成abc组的service
+        for (int i = 0; i < 8; i++) {
+            // service
+            Service svc = ServiceBuilder.newBuilder()
+                    .namespaceId(devNamespaceId)
+                    .groupName(abcGroupName)
+                    .serviceName(UUID.randomUUID().toString().replaceAll("-","").substring(0,17))
+                    .protectThreshold(0.8F)
+                    .ephemeralInstances(new CopyOnWriteArraySet<>())
+                    .persistentInstances(new CopyOnWriteArraySet<>())
+                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
+//                .metadata(serviceDTO.getMetadata())
+                    .createTime(LocalDateTime.now())
+                    .lastUpdatedTime(LocalDateTime.now())
+                    .build();
+            abcGroupService.add(svc);
+        }
+
+        // 模拟生成defg组的service
+        for (int i = 0; i < 6; i++) {
+            // service
+            Service svc = ServiceBuilder.newBuilder()
+                    .namespaceId(devNamespaceId)
+                    .groupName(defgGroupName)
+                    .serviceName(UUID.randomUUID().toString().replaceAll("-","").substring(0,17))
+                    .protectThreshold(0.5F)
+                    .ephemeralInstances(new CopyOnWriteArraySet<>())
+                    .persistentInstances(new CopyOnWriteArraySet<>())
+                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
+//                .metadata(serviceDTO.getMetadata())
+                    .createTime(LocalDateTime.now())
+                    .lastUpdatedTime(LocalDateTime.now())
+                    .build();
+            defgGroupService.add(svc);
+        }
+
+        // 默认分组(DEFAULT_GROUP)
+        Group defaultGroup = new Group();
+        defaultGroup.setGroupName(Constants.DEFAULT_GROUP_NAME);
+        defaultGroup.setServices(defaultGroupService);
+        devNamespaceGroups.add(defaultGroup);
+
+        // abc分组
+        Group abcGroup = new Group();
+        abcGroup.setGroupName(abcGroupName);
+        abcGroup.setServices(abcGroupService);
+        devNamespaceGroups.add(abcGroup);
+
+        // abc分组
+        Group defgGroup = new Group();
+        defgGroup.setGroupName(defgGroupName);
+        defgGroup.setServices(defgGroupService);
+        devNamespaceGroups.add(defgGroup);
+
+        groupMap.put(devNamespaceId,devNamespaceGroups);
+    }
+
+    /**
+     * 初始化test命名空间数据
+     */
+    private void initTestNamespace(){
+        // test命名空间id
+        String testNamespaceId = "test-namespace";
+        // abc分组名
+        String abcGroupName = "abc_group";
+        // defg分组名
+        String defgGroupName = "defg_group";
+
+
+        // TODO: 2023/10/9 暂时的模拟数据，到时要该成从数据库查询数据
+        // test命名空间的分组group集合
+        Set<Group> testNamespaceGroups = new CopyOnWriteArraySet<>();
+        // 默认分组(DEFAULT_GROUP)的service集合
+        Set<Service> defaultGroupService = new CopyOnWriteArraySet<>();
+        // abc组的service集合
+        Set<Service> abcGroupService = new CopyOnWriteArraySet<>();
+        // defg组的service集合
+        Set<Service> defgGroupService = new CopyOnWriteArraySet<>();
+
+        // 模拟生成默认分组(DEFAULT_GROUP)的service
+        for (int i = 0; i < 21; i++) {
+            // service
+            Service svc = ServiceBuilder.newBuilder()
+                    .namespaceId(testNamespaceId)
+                    .groupName(Constants.DEFAULT_GROUP_NAME)
+                    .serviceName(UUID.randomUUID().toString().replaceAll("-","").substring(0,17))
+                    .protectThreshold(0.3F)
+                    .ephemeralInstances(new CopyOnWriteArraySet<>())
+                    .persistentInstances(new CopyOnWriteArraySet<>())
+                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
+//                .metadata(serviceDTO.getMetadata())
+                    .createTime(LocalDateTime.now())
+                    .lastUpdatedTime(LocalDateTime.now())
+                    .build();
+            defaultGroupService.add(svc);
+        }
+
+        // 模拟生成abc组的service
+        for (int i = 0; i < 17; i++) {
+            // service
+            Service svc = ServiceBuilder.newBuilder()
+                    .namespaceId(testNamespaceId)
+                    .groupName(abcGroupName)
+                    .serviceName(UUID.randomUUID().toString().replaceAll("-","").substring(0,17))
+                    .protectThreshold(0.8F)
+                    .ephemeralInstances(new CopyOnWriteArraySet<>())
+                    .persistentInstances(new CopyOnWriteArraySet<>())
+                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
+//                .metadata(serviceDTO.getMetadata())
+                    .createTime(LocalDateTime.now())
+                    .lastUpdatedTime(LocalDateTime.now())
+                    .build();
+            abcGroupService.add(svc);
+        }
+
+        // 模拟生成defg组的service
+        for (int i = 0; i < 32; i++) {
+            // service
+            Service svc = ServiceBuilder.newBuilder()
+                    .namespaceId(testNamespaceId)
+                    .groupName(defgGroupName)
+                    .serviceName(UUID.randomUUID().toString().replaceAll("-","").substring(0,17))
+                    .protectThreshold(0.5F)
+                    .ephemeralInstances(new CopyOnWriteArraySet<>())
+                    .persistentInstances(new CopyOnWriteArraySet<>())
+                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
+//                .metadata(serviceDTO.getMetadata())
+                    .createTime(LocalDateTime.now())
+                    .lastUpdatedTime(LocalDateTime.now())
+                    .build();
+            defgGroupService.add(svc);
+        }
+
+        // 默认分组(DEFAULT_GROUP)
+        Group defaultGroup = new Group();
+        defaultGroup.setGroupName(Constants.DEFAULT_GROUP_NAME);
+        defaultGroup.setServices(defaultGroupService);
+        testNamespaceGroups.add(defaultGroup);
+
+        // abc分组
+        Group abcGroup = new Group();
+        abcGroup.setGroupName(abcGroupName);
+        abcGroup.setServices(abcGroupService);
+        testNamespaceGroups.add(abcGroup);
+
+        // abc分组
+        Group defgGroup = new Group();
+        defgGroup.setGroupName(defgGroupName);
+        defgGroup.setServices(defgGroupService);
+        testNamespaceGroups.add(defgGroup);
+
+        groupMap.put(testNamespaceId,testNamespaceGroups);
+    }
+
+    /**
+     * GroupManager的单例对象
+     *
+     * @return {@link GroupManager}
+     */
     public static GroupManager getInstance() {
         return INSTANCE;
     }
@@ -107,12 +365,15 @@ public class GroupManager {
      * @return {@link Set}<{@link String}>
      */
     public Set<String> getAllGroupName(String namespaceId) {
-        Set<String> groupNames = new CopyOnWriteArraySet<>();
-        Set<Group> groups = groupMap.get(namespaceId);
-        for (Group group : groups) {
-            groupNames.add(group.getGroupName());
+        if(hasNamespace(namespaceId)){
+            Set<String> groupNames = new CopyOnWriteArraySet<>();
+            Set<Group> groups = groupMap.get(namespaceId);
+            for (Group group : groups) {
+                groupNames.add(group.getGroupName());
+            }
+            return groupNames;
         }
-        return groupNames;
+        return new CopyOnWriteArraySet<>();
     }
 
     /**
@@ -141,20 +402,23 @@ public class GroupManager {
      * @return {@link Set}<{@link String}>
      */
     public Set<String> getAllServiceName(String namespaceId) {
-        Set<String> serviceNames = new CopyOnWriteArraySet<>();
-        // 根据namespaceId获取该命名空间下面的所有分组
-        Set<Group> groups = groupMap.get(namespaceId);
-        // 遍历分组集合
-        for (Group group : groups) {
-            // 获取每一个分组下面的所有service
-            Set<Service> services = group.getServices();
-            for (Service service : services) {
-                String serviceName = service.getServiceName();
-                // 将service名称放到一个集合中存储起来
-                serviceNames.add(serviceName);
+        if(hasNamespace(namespaceId)){
+            Set<String> serviceNames = new CopyOnWriteArraySet<>();
+            // 根据namespaceId获取该命名空间下面的所有分组
+            Set<Group> groups = groupMap.get(namespaceId);
+            // 遍历分组集合
+            for (Group group : groups) {
+                // 获取每一个分组下面的所有service
+                Set<Service> services = group.getServices();
+                for (Service service : services) {
+                    String serviceName = service.getServiceName();
+                    // 将service名称放到一个集合中存储起来
+                    serviceNames.add(serviceName);
+                }
             }
+            return serviceNames;
         }
-        return serviceNames;
+        return new CopyOnWriteArraySet<>();
     }
 
     /**
@@ -165,33 +429,36 @@ public class GroupManager {
      * @return {@link Set}<{@link Service}>
      */
     public Set<Service> getAllService(String namespaceId,boolean hideEmptyService) {
-        // 最终需要返回的集合
-        Set<Service> services = new CopyOnWriteArraySet<>();
-        // 根据namespaceId获取该命名空间下面的所有分组
-        Set<Group> groups = groupMap.get(namespaceId);
-        // 遍历分组集合
-        for (Group group : groups) {
-            // 获取每一个分组下面的所有service
-            Set<Service> svc = group.getServices();
-            for (Service service : svc) {
-                // 如果隐藏空服务
-                if(hideEmptyService){
-                    // 获取该服务的临时实例数量
-                    int ephemeralInstanceCount = service.getEphemeralInstances().size();
-                    // 获取该服务的永久实例数量
-                    int persistentInstanceCount = service.getPersistentInstances().size();
-                    // 如果该服务的临时实例数量或者永久实例数量只要有一个大于0（说明该服务不是空服务,则可以将该服务统计进去）
-                    if(ephemeralInstanceCount > 0 || persistentInstanceCount > 0){
+        if(hasNamespace(namespaceId)){
+            // 最终需要返回的集合
+            Set<Service> services = new CopyOnWriteArraySet<>();
+            // 根据namespaceId获取该命名空间下面的所有分组
+            Set<Group> groups = groupMap.get(namespaceId);
+            // 遍历分组集合
+            for (Group group : groups) {
+                // 获取每一个分组下面的所有service
+                Set<Service> svc = group.getServices();
+                for (Service service : svc) {
+                    // 如果隐藏空服务
+                    if(hideEmptyService){
+                        // 获取该服务的临时实例数量
+                        int ephemeralInstanceCount = service.getEphemeralInstances().size();
+                        // 获取该服务的永久实例数量
+                        int persistentInstanceCount = service.getPersistentInstances().size();
+                        // 如果该服务的临时实例数量或者永久实例数量只要有一个大于0（说明该服务不是空服务,则可以将该服务统计进去）
+                        if(ephemeralInstanceCount > 0 || persistentInstanceCount > 0){
+                            services.add(service);
+                        }
+                    }
+                    // 如果没有隐藏空服务
+                    else {
                         services.add(service);
                     }
                 }
-                // 如果没有隐藏空服务
-                else {
-                    services.add(service);
-                }
             }
+            return services;
         }
-        return services;
+        return new CopyOnWriteArraySet<>();
     }
 
     /**
@@ -201,25 +468,28 @@ public class GroupManager {
      * @return {@link Set}<{@link String}>
      */
     public Set<String> getAllServiceName(String namespaceId,String groupName) {
-        Set<String> serviceNames = new CopyOnWriteArraySet<>();
-        // 根据namespaceId获取该命名空间下面的所有分组
-        Set<Group> groups = groupMap.get(namespaceId);
-        // 遍历分组集合
-        for (Group group : groups) {
-            // 找到指定的分组
-            if(group.getGroupName().equals(groupName)){
-                // 获取该分组下面的所有service
-                Set<Service> services = group.getServices();
-                for (Service service : services) {
-                    String serviceName = service.getServiceName();
-                    // 将service名称放到一个集合中存储起来
-                    serviceNames.add(serviceName);
+        if(hasNamespace(namespaceId)){
+            Set<String> serviceNames = new CopyOnWriteArraySet<>();
+            // 根据namespaceId获取该命名空间下面的所有分组
+            Set<Group> groups = groupMap.get(namespaceId);
+            // 遍历分组集合
+            for (Group group : groups) {
+                // 找到指定的分组
+                if(group.getGroupName().equals(groupName)){
+                    // 获取该分组下面的所有service
+                    Set<Service> services = group.getServices();
+                    for (Service service : services) {
+                        String serviceName = service.getServiceName();
+                        // 将service名称放到一个集合中存储起来
+                        serviceNames.add(serviceName);
+                    }
+                    break;
                 }
-                break;
-            }
 
+            }
+            return serviceNames;
         }
-        return serviceNames;
+        return new CopyOnWriteArraySet<>();
     }
 
     /**
@@ -393,19 +663,20 @@ public class GroupManager {
      * @return {@link Service}
      */
     public Service getService(String namespaceId, String groupName, String serviceName) {
-        Set<Group> groups = groupMap.get(namespaceId);
-        for (Group group : groups) {
-            if (group.getGroupName().equals(groupName)) {
-                Set<Service> services = group.getServices();
-                for (Service service : services) {
-                    // 找到service
-                    if (service.getServiceName().equals(serviceName)) {
-                        return service;
+        if(hasNamespace(namespaceId)){
+            Set<Group> groups = groupMap.get(namespaceId);
+            for (Group group : groups) {
+                if (group.getGroupName().equals(groupName)) {
+                    Set<Service> services = group.getServices();
+                    for (Service service : services) {
+                        // 找到service
+                        if (service.getServiceName().equals(serviceName)) {
+                            return service;
+                        }
                     }
                 }
             }
         }
-        // 没有找到就返回null
         return null;
     }
 
@@ -434,6 +705,19 @@ public class GroupManager {
     public int getAllNamespaceCount() {
 
         return getAllNamespaceId().size();
+    }
+
+    /**
+     * 该命名空间是否存在
+     *
+     * @param namespaceId namespaceId
+     * @return boolean
+     */
+    public boolean hasNamespace(String namespaceId){
+
+        boolean hasNamespace = groupMap.containsKey(namespaceId);
+        log.warn("namespaceId为{}的命名空间不存在",namespaceId);
+        return hasNamespace;
     }
 
 

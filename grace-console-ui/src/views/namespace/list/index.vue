@@ -294,26 +294,13 @@
   </div>
 </template>
   
-  <script>
+<script>
+import { getNamespaceList } from "@/api/namespace";
+
 export default {
   name: "NamespaceList",
   data() {
     return {
-      // 命名空间数据
-      namespaceData: [
-        {
-          id: 1,
-          namespaceName: "public",
-        },
-        {
-          id: 2,
-          namespaceName: "dev",
-        },
-        {
-          id: 3,
-          namespaceName: "test",
-        },
-      ],
       // 是否打开新建命名空间的对话框（dialog）
       openCreateNamespaceDialog: false,
       // 创建命名空间表单
@@ -392,48 +379,17 @@ export default {
       // 开启表格的加载动画
       this.tableLoading = true;
 
-      // 根据上面的属性从后端获取tableData数据
-      let result = {
-        code: 200,
-        data: {
-          // 数据
-          tableData: [
-            {
-              // 命名空间名称
-              namespaceName: "public",
-              // 命名空间ID
-              namespaceId: 10001,
-              // 描述
-              namespaceDesc: "ns",
-              // 服务数
-              serviceCount: 3,
-              // 配置数
-              configCount: 5,
-            },
-            {
-              // 命名空间名称
-              namespaceName: "abc",
-              // 命名空间ID
-              namespaceId: 10002,
-              // 描述
-              namespaceDesc: "ns1",
-              // 服务数
-              serviceCount: 30,
-              // 配置数
-              configCount: 23,
-            },
-          ],
-          // 所有数据的总数（没有分页）
-          totalCount: 70,
-        },
-      };
+      // 从后端获取tableData数据
 
-      // 将数据放到vue中
-      this.tableData = result.data.tableData;
-      this.totalCount = result.data.totalCount;
+      getNamespaceList().then((response) => {
 
-      // 关闭表格的加载动画
-      this.tableLoading = false;
+        let result = response.data;
+        this.tableData = result.data;
+
+        // 关闭表格的加载动画
+        this.tableLoading = false;
+      })
+      
     },
     // 跳转到创建配置路由
     createConfig() {

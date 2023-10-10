@@ -56,7 +56,7 @@ public class ServiceController {
             @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
             @RequestParam(value = "hideEmptyService", required = false, defaultValue = "true") boolean hideEmptyService,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "8") Integer size) {
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size) {
         // 如果 page < 1 ,则要把page恢复成 1 ,因为page的最小值就为 1
         if(page < 1){
             page = 1;
@@ -106,7 +106,7 @@ public class ServiceController {
             @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
             @RequestParam(value = "groupName", required = false, defaultValue = Constants.DEFAULT_GROUP_NAME) String groupName,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "8") Integer size) {
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size) {
         // 对size的大小进行限制,防止一次性获取太多的数据（下面的代码意思是一次“最多”获取500条记录,如果size的值小于500,则size还是原来的值不变）
         size = Math.min(size,500);
 

@@ -1,7 +1,7 @@
 package com.grace.console.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.grace.common.entity.Namespace;
+import com.grace.console.vo.NamespaceVO;
 
 import java.util.List;
 
@@ -16,9 +16,9 @@ public interface NamespaceService {
     /**
      * 获取命名空间列表
      *
-     * @return {@link List}<{@link Namespace}>
+     * @return {@link List}<{@link NamespaceVO}>
      */
-    List<Namespace> getNamespaceList();
+    List<NamespaceVO> getNamespaceList();
 
     /**
      * 根据namespaceId获取命名空间

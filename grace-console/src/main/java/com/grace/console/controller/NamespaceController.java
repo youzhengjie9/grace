@@ -5,6 +5,7 @@ import com.grace.common.entity.Namespace;
 import com.grace.common.utils.Result;
 import com.grace.console.dto.NamespaceDTO;
 import com.grace.console.service.NamespaceService;
+import com.grace.console.vo.NamespaceVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,7 @@ public class NamespaceController {
      * @return {@link Result}<{@link List}<{@link Namespace}>>
      */
     @GetMapping("/getNamespaceList")
-    public Result<List<Namespace>> getNamespaceList() {
+    public Result<List<NamespaceVO>> getNamespaceList() {
         return Result.ok(namespaceService.getNamespaceList());
     }
 

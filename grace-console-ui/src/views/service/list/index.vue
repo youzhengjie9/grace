@@ -179,7 +179,7 @@
             next-text="下一页"
             :page-sizes="[10, 20, 30, 50, 100]"
             :total="totalCount"
-            :current-page="page"
+            :current-page.sync="page"
             :page-size="size"
             @current-change="handlePageChange"
             @size-change="handleSizeChange"
@@ -243,6 +243,7 @@
 <script>
 // 引入vue2-ace-editor代码编辑器
 import Editor from "vue2-ace-editor";
+import { getNamespaceList } from "@/api/namespace";
 import { getServiceList } from "@/api/service";
 
 export default {
@@ -253,20 +254,7 @@ export default {
   data() {
     return {
       // 命名空间数据
-      namespaceData: [
-        {
-          namespaceId: "",
-          namespaceName: "public",
-        },
-        {
-          namespaceId: "abc66-dev",
-          namespaceName: "dev",
-        },
-        {
-          namespaceId: "ab123-test",
-          namespaceName: "test",
-        },
-      ],
+      namespaceData: [],
       // 当前选择的命名空间的id
       currentSelectedNamespaceId: "",
       // 查询条件
@@ -362,6 +350,14 @@ export default {
     loadData() {
       // 开启表格的加载动画
       this.tableLoading = true;
+
+      // 加载命名空间数据
+      getNamespaceList().then((response) => {
+        // 后端返回给前端的result对象
+        let result = response.data;
+        this.namespaceData = result.data;
+      });
+
       //当前选择的命名空间的id
       let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
       // 是否隐藏空服务
@@ -389,7 +385,30 @@ export default {
     },
     // 点击切换命名空间
     namespaceToggle(selectedNamespaceId) {
+      // 更新当前选择的命名空间id
       this.currentSelectedNamespaceId = selectedNamespaceId;
+      // 是否隐藏空服务
+      let hideEmptyService = this.queryCondition.hideEmptyService;
+      // 将当前页重置回第 1 页（分页标签上的current-page属性必须加上.sync,不然无法将当前页重置回第 1 页）
+      this.page = 1;
+      // 每页展示的数量
+      let size = this.size;
+      // 从后端分页的获取service列表的数据
+      getServiceList(
+        this.currentSelectedNamespaceId,
+        hideEmptyService,
+        this.page,
+        size
+      ).then((response) => {
+        // 后端返回给前端的result对象
+        let result = response.data;
+
+        // 将数据放到vue中
+        this.tableData = result.data.pagedServiceList;
+        this.totalCount = result.data.totalCount;
+        // 关闭表格的加载动画
+        this.tableLoading = false;
+      });
     },
     // 点击切换隐藏空服务
     changeHideEmptyService(hideEmptyService) {
@@ -439,11 +458,63 @@ export default {
     },
     // page（当前页）改变时触发
     handlePageChange(page) {
-      console.log("page=" + page);
+      
+      // 开启表格的加载动画
+      this.tableLoading = true;
+
+      //当前选择的命名空间的id
+      let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
+      // 是否隐藏空服务
+      let hideEmptyService = this.queryCondition.hideEmptyService;
+      // 每页展示的数量
+      let size = this.size;
+      // 从后端分页的获取service列表的数据
+      getServiceList(
+        currentSelectedNamespaceId,
+        hideEmptyService,
+        page,
+        size
+      ).then((response) => {
+        // 后端返回给前端的result对象
+        let result = response.data;
+
+        // 将数据放到vue中
+        this.tableData = result.data.pagedServiceList;
+        this.totalCount = result.data.totalCount;
+        // 关闭表格的加载动画
+        this.tableLoading = false;
+      });
+      
     },
     // size（每页展示的数量）改变时触发
     handleSizeChange(size) {
-      console.log("size=" + size);
+      
+      // 开启表格的加载动画
+      this.tableLoading = true;
+
+      //当前选择的命名空间的id
+      let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
+      // 是否隐藏空服务
+      let hideEmptyService = this.queryCondition.hideEmptyService;
+      // 当前页
+      let page = this.page;
+      // 从后端分页的获取service列表的数据
+      getServiceList(
+        currentSelectedNamespaceId,
+        hideEmptyService,
+        page,
+        size
+      ).then((response) => {
+        // 后端返回给前端的result对象
+        let result = response.data;
+
+        // 将数据放到vue中
+        this.tableData = result.data.pagedServiceList;
+        this.totalCount = result.data.totalCount;
+        // 关闭表格的加载动画
+        this.tableLoading = false;
+      });
+
     },
     // 创建服务
     createService() {},
