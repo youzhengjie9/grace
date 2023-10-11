@@ -36,7 +36,7 @@ public class ServiceController {
      * @return {@link Result}<{@link Boolean}>
      */
     @PostMapping(path = "/createService")
-    public Result<Boolean> createService(ServiceDTO serviceDTO){
+    public Result<Boolean> createService(@RequestBody ServiceDTO serviceDTO){
         // 校验必填属性
         serviceDTO.validateRequired();
         // 创建service并返回结果

@@ -12,3 +12,17 @@ export function getServiceList(namespaceId,hideEmptyService,page,size){
         }
     })
 }
+
+export function createService(serviceDTO){
+    return request({
+        method:'post',
+        url:'/grace/server/service/createService',
+        data:{
+            namespaceId: serviceDTO.namespaceId,
+            groupName: serviceDTO.groupName,
+            serviceName: serviceDTO.serviceName,
+            protectThreshold: serviceDTO.protectThreshold,
+            metadata: serviceDTO.metadata,
+        }
+    })
+}

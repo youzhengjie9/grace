@@ -194,6 +194,7 @@
     <el-dialog title="创建服务" :visible.sync="openCreateServiceDialog">
       <el-form
         :model="createServiceForm"
+        ref="createServiceForm"
         :rules="createServiceRules"
         label-width="150px"
       >
@@ -212,9 +213,9 @@
             style="width: 70%"
           ></el-input>
         </el-form-item>
-        <el-form-item label="保护阈值" prop="protectionThreshold">
+        <el-form-item label="保护阈值" prop="protectThreshold">
           <el-input
-            v-model="createServiceForm.protectionThreshold"
+            v-model="createServiceForm.protectThreshold"
             autocomplete="off"
             style="width: 70%"
           ></el-input>
@@ -233,7 +234,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="createService">确 定</el-button>
+        <el-button type="primary" @click="createService('createServiceForm')">确 定</el-button>
         <el-button @click="openCreateServiceDialog = false">取 消</el-button>
       </div>
     </el-dialog>
@@ -244,7 +245,7 @@
 // 引入vue2-ace-editor代码编辑器
 import Editor from "vue2-ace-editor";
 import { getNamespaceList } from "@/api/namespace";
-import { getServiceList } from "@/api/service";
+import { getServiceList, createService } from "@/api/service";
 
 export default {
   name: "ServiceList",
@@ -285,7 +286,7 @@ export default {
         // 分组名称
         groupName: "",
         // 保护阈值
-        protectionThreshold: "",
+        protectThreshold: "",
         // 元数据
         metadata: "",
       },
@@ -296,7 +297,7 @@ export default {
           { required: true, message: "请输入服务名称", trigger: "blur" },
         ],
         // 保护阈值（纯整数（123）和小数（567.6512））
-        protectionThreshold: [
+        protectThreshold: [
           {
             required: true,
             pattern: /^(\-|\+)?\d+(\.\d+)?$/,
@@ -458,7 +459,6 @@ export default {
     },
     // page（当前页）改变时触发
     handlePageChange(page) {
-      
       // 开启表格的加载动画
       this.tableLoading = true;
 
@@ -484,11 +484,9 @@ export default {
         // 关闭表格的加载动画
         this.tableLoading = false;
       });
-      
     },
     // size（每页展示的数量）改变时触发
     handleSizeChange(size) {
-      
       // 开启表格的加载动画
       this.tableLoading = true;
 
@@ -514,10 +512,31 @@ export default {
         // 关闭表格的加载动画
         this.tableLoading = false;
       });
-
     },
     // 创建服务
-    createService() {},
+    createService(formName) {
+      // 校验表单
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          // 设置namespaceId
+          this.createServiceForm.namespaceId = this.currentSelectedNamespaceId;
+          createService(this.createServiceForm).then((response) => {
+            let result = response.data;
+            if(result.data){
+              this.$message.success('创建服务成功');
+              // 重新加载数据
+              this.loadData();
+              // 关闭dialog
+              this.openCreateServiceDialog = false;
+            }else{
+              this.$message.error('创建服务失败');
+            }
+          });
+        } else {
+          return false;
+        }
+      });
+    },
   },
 };
 </script>

@@ -125,25 +125,43 @@
           <!-- 命名空间详情 -->
           <span
             class="operation"
-            @click="clickOpenNamespaceDetailDialog(scope.row.id)"
+            @click="clickOpenNamespaceDetailDialog(scope.row.namespaceId)"
             >详情</span
           >
           <span style="margin-right: 5px">|</span>
 
-          <!-- 修改命名空间 -->
+
+          <!-- 修改命名空间（可以进行点击操作）。除了默认的public命名空间之外,其他命名空间都会用这个 “编辑”  -->
           <span
             class="operation"
+            v-if="scope.row.namespaceId != ''"
             @click="clickOpenModifyNamespaceDialog(scope.row)"
             >编辑</span
           >
+
+          <!-- 修改命名空间（不能进行点击操作）。只有默认的public命名空间才会用这个 “编辑”  -->
+          <span
+            class="not-operation"
+            v-if="scope.row.namespaceId == ''"
+            >编辑</span
+          >
+
           <span style="margin-right: 5px">|</span>
 
-          <!-- 删除命名空间 -->
+          <!-- 删除命名空间（可以进行点击操作）。除了默认的public命名空间之外,其他命名空间都会用这个 “删除” -->
           <span
             class="operation"
+            v-if="scope.row.namespaceId != ''"
             @click="clickOpenDeleteNamespaceDialog(scope.row)"
             >删除</span
           >
+           <!-- 删除命名空间（不能进行点击操作）。只有默认的public命名空间才会用这个 “删除”  -->
+          <span
+            class="not-operation"
+            v-if="scope.row.namespaceId == ''"
+            >删除</span
+          >
+
         </template>
       </el-table-column>
     </el-table>
@@ -380,7 +398,6 @@ export default {
       this.tableLoading = true;
 
       // 从后端获取tableData数据
-
       getNamespaceList().then((response) => {
 
         let result = response.data;
@@ -480,14 +497,25 @@ export default {
 </script>
   
 <style scoped>
+/* span超链接（可以进行点击操作） */
 .operation {
   color: #06c;
   cursor: pointer;
   text-decoration: none;
   margin-right: 5px;
 }
-
 .operation:hover {
   text-decoration: underline;
 }
+
+/* span超链接（不能进行点击操作） */
+.not-operation {
+  color: rgb(153, 153, 153);
+  text-decoration: none;
+  margin-right: 5px;
+  /* 禁用点击操作 */
+  cursor: not-allowed;
+}
+
+
 </style>

@@ -45,12 +45,18 @@ public class GroupManager {
 //        Set<Group> publicNamespaceGroups = new CopyOnWriteArraySet<>();
 //        groupMap.put(Constants.DEFAULT_NAMESPACE_ID,publicNamespaceGroups);
 
-        //初始化默认的public命名空间的数据
-        initPublicNamespace();
-        // 初始化dev命名空间的数据
-        initDevNamespace();
-        // 初始化test命名空间的数据
-        initTestNamespace();
+        // TODO: 2023/10/11 暂时先不用
+//        //初始化默认的public命名空间的数据
+//        initPublicNamespace();
+//        // 初始化dev命名空间的数据
+//        initDevNamespace();
+//        // 初始化test命名空间的数据
+//        initTestNamespace();
+
+        createEmptyServiceIfAbsent(Constants.DEFAULT_NAMESPACE_ID,Constants.DEFAULT_GROUP_NAME,"service1");
+        createEmptyServiceIfAbsent("dev-namespace",Constants.DEFAULT_GROUP_NAME,"service2");
+        createEmptyServiceIfAbsent("test-namespace",Constants.DEFAULT_GROUP_NAME,"service3");
+
     }
 
     /**
@@ -502,16 +508,25 @@ public class GroupManager {
         String namespaceId = serviceDTO.getNamespaceId();
         String groupName = serviceDTO.getGroupName();
         String serviceName = serviceDTO.getServiceName();
+        Float protectThreshold = serviceDTO.getProtectThreshold();
+        String metadata = serviceDTO.getMetadata();
+
         // 获取指定service
         Service service = getService(namespaceId, groupName, serviceName);
         // 如果该service不存在
         if (service == null) {
+            // 如果namespace不存在
+            if(!hasNamespace(namespaceId)){
+                // 创建命名空间
+                groupMap.put(namespaceId,new CopyOnWriteArraySet<>());
+            }
+            // 需要创建的service
             // 将ServiceDTO对象转成Service对象
             service = ServiceBuilder.newBuilder()
-                    .namespaceId(serviceDTO.getNamespaceId())
-                    .groupName(serviceDTO.getGroupName())
-                    .serviceName(serviceDTO.getServiceName())
-                    .protectThreshold(serviceDTO.getProtectThreshold())
+                    .namespaceId(namespaceId)
+                    .groupName(groupName)
+                    .serviceName(serviceName)
+                    .protectThreshold(protectThreshold)
                     .ephemeralInstances(new CopyOnWriteArraySet<>())
                     .persistentInstances(new CopyOnWriteArraySet<>())
                     // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
@@ -519,15 +534,46 @@ public class GroupManager {
                     .createTime(LocalDateTime.now())
                     .lastUpdatedTime(LocalDateTime.now())
                     .build();
+            // 获取该namespace的分组集合(这个集合一定不为null,但是可能里面没有数据)
             Set<Group> groups = groupMap.get(namespaceId);
+            // 目标分组
+            Group targetGroup = null;
             for (Group group : groups) {
-                // 找到我们的目标分组
+                // 如果找到我们的目标分组
                 if (group.getGroupName().equals(groupName)) {
-                    Set<Service> services = group.getServices();
-                    // 将新创建的service放入分组对象的service列表中,并返回添加是否成功的信息
-                    return services.add(service);
+                    // 将找到的目标分组存到targetGroup对象中
+                    targetGroup = group;
+                    break;
                 }
             }
+            // 如果targetGroup为null,说明该分组（groupName）不存在,则需要创建该分组
+            if(targetGroup == null) {
+                // 创建新的group对象
+                targetGroup = new Group();
+                targetGroup.setGroupName(groupName);
+                // 创建service集合
+                Set<Service> services = new CopyOnWriteArraySet<>();
+                services.add(service);
+                // 将service集合放到该分组中
+                targetGroup.setServices(services);
+                // 将这个目标分组放到groups集合中
+                groups.add(targetGroup);
+                // 将groups集合放到groupMap中
+                groupMap.put(namespaceId,groups);
+            }
+            // 如果targetGroup不为null,说明找到了目标分组（该分组存在）
+            else {
+                // 拿到这个分组的所有service
+                Set<Service> services = targetGroup.getServices();
+                // 如果该service已存在,则不能重复创建
+                if(services.contains(service)){
+                    log.warn("service={} , 已存在,不能重复创建"+service.toString());
+                }else {
+                    // 如果该service不存在,则将新创建的service放入该分组的service列表中
+                    services.add(service);
+                }
+            }
+            return true;
         }
         return false;
     }
@@ -538,30 +584,74 @@ public class GroupManager {
      * @param namespaceId namespaceId
      * @param groupName   groupName
      * @param serviceName serviceName
+     * @return boolean
      */
-    public void createEmptyServiceIfAbsent(String namespaceId, String groupName, String serviceName) {
+    public boolean createEmptyServiceIfAbsent(String namespaceId, String groupName, String serviceName) {
         // 获取指定service
         Service service = getService(namespaceId, groupName, serviceName);
         // 如果该service不存在
         if (service == null) {
+            // 如果namespace不存在
+            if(!hasNamespace(namespaceId)){
+                // 创建命名空间
+                groupMap.put(namespaceId,new CopyOnWriteArraySet<>());
+            }
+            // 需要创建的service
+            // 将ServiceDTO对象转成Service对象
             service = ServiceBuilder.newBuilder()
                     .namespaceId(namespaceId)
                     .groupName(groupName)
                     .serviceName(serviceName)
+                    .protectThreshold(0.0F)
+                    .ephemeralInstances(new CopyOnWriteArraySet<>())
+                    .persistentInstances(new CopyOnWriteArraySet<>())
+                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
+//                .metadata(serviceDTO.getMetadata())
                     .createTime(LocalDateTime.now())
+                    .lastUpdatedTime(LocalDateTime.now())
                     .build();
-
+            // 获取该namespace的分组集合(这个集合一定不为null,但是可能里面没有数据)
             Set<Group> groups = groupMap.get(namespaceId);
+            // 目标分组
+            Group targetGroup = null;
             for (Group group : groups) {
-                // 找到我们的目标分组
+                // 如果找到我们的目标分组
                 if (group.getGroupName().equals(groupName)) {
-                    Set<Service> services = group.getServices();
-                    // 将新创建的service放入分组对象的service列表中
-                    services.add(service);
+                    // 将找到的目标分组存到targetGroup对象中
+                    targetGroup = group;
                     break;
                 }
             }
+            // 如果targetGroup为null,说明该分组（groupName）不存在,则需要创建该分组
+            if(targetGroup == null) {
+                // 创建新的group对象
+                targetGroup = new Group();
+                targetGroup.setGroupName(groupName);
+                // 创建service集合
+                Set<Service> services = new CopyOnWriteArraySet<>();
+                services.add(service);
+                // 将service集合放到该分组中
+                targetGroup.setServices(services);
+                // 将这个目标分组放到groups集合中
+                groups.add(targetGroup);
+                // 将groups集合放到groupMap中
+                groupMap.put(namespaceId,groups);
+            }
+            // 如果targetGroup不为null,说明找到了目标分组（该分组存在）
+            else {
+                // 拿到这个分组的所有service
+                Set<Service> services = targetGroup.getServices();
+                // 如果该service已存在,则不能重复创建
+                if(services.contains(service)){
+                    log.warn("service={} , 已存在,不能重复创建"+service.toString());
+                }else {
+                    // 如果该service不存在,则将新创建的service放入该分组的service列表中
+                    services.add(service);
+                }
+            }
+            return true;
         }
+        return false;
     }
 
     /**
@@ -716,7 +806,9 @@ public class GroupManager {
     public boolean hasNamespace(String namespaceId){
 
         boolean hasNamespace = groupMap.containsKey(namespaceId);
-        log.warn("namespaceId为{}的命名空间不存在",namespaceId);
+        if(!hasNamespace){
+            log.warn("namespaceId为 {} 的命名空间不存在",namespaceId);
+        }
         return hasNamespace;
     }
 
