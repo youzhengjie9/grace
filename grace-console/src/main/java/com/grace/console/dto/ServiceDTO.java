@@ -32,7 +32,7 @@ public class ServiceDTO implements Serializable {
     private Float protectThreshold;
 
     /**
-     * 元数据
+     * 元数据（必须为JSON字符串类型）
      */
     private String metadata;
 

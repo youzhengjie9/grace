@@ -526,6 +526,17 @@ export default {
               this.$message.success('创建服务成功');
               // 重新加载数据
               this.loadData();
+              // 重置createServiceForm
+              this.createServiceForm = {
+                // 服务名称
+                serviceName: "",
+                // 分组名称
+                groupName: "",
+                // 保护阈值
+                protectThreshold: "",
+                // 元数据
+                metadata: "",
+              };
               // 关闭dialog
               this.openCreateServiceDialog = false;
             }else{

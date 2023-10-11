@@ -1,19 +1,19 @@
 package com.grace.console.core;
 
+import com.alibaba.fastjson2.JSON;
 import com.grace.common.constant.Constants;
 import com.grace.common.entity.Group;
 import com.grace.common.entity.Instance;
 import com.grace.common.entity.Service;
 import com.grace.common.entity.builder.ServiceBuilder;
 import com.grace.console.dto.ServiceDTO;
+import com.grace.console.utils.JsonUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -87,8 +87,7 @@ public class GroupManager {
                     .protectThreshold(0.3F)
                     .ephemeralInstances(new CopyOnWriteArraySet<>())
                     .persistentInstances(new CopyOnWriteArraySet<>())
-                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
-//                .metadata(serviceDTO.getMetadata())
+                    .metadata(new HashMap<>())
                     .createTime(LocalDateTime.now())
                     .lastUpdatedTime(LocalDateTime.now())
                     .build();
@@ -105,8 +104,7 @@ public class GroupManager {
                     .protectThreshold(0.8F)
                     .ephemeralInstances(new CopyOnWriteArraySet<>())
                     .persistentInstances(new CopyOnWriteArraySet<>())
-                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
-//                .metadata(serviceDTO.getMetadata())
+                    .metadata(new HashMap<>())
                     .createTime(LocalDateTime.now())
                     .lastUpdatedTime(LocalDateTime.now())
                     .build();
@@ -123,8 +121,7 @@ public class GroupManager {
                     .protectThreshold(0.5F)
                     .ephemeralInstances(new CopyOnWriteArraySet<>())
                     .persistentInstances(new CopyOnWriteArraySet<>())
-                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
-//                .metadata(serviceDTO.getMetadata())
+                    .metadata(new HashMap<>())
                     .createTime(LocalDateTime.now())
                     .lastUpdatedTime(LocalDateTime.now())
                     .build();
@@ -184,8 +181,7 @@ public class GroupManager {
                     .protectThreshold(0.3F)
                     .ephemeralInstances(new CopyOnWriteArraySet<>())
                     .persistentInstances(new CopyOnWriteArraySet<>())
-                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
-//                .metadata(serviceDTO.getMetadata())
+                    .metadata(new HashMap<>())
                     .createTime(LocalDateTime.now())
                     .lastUpdatedTime(LocalDateTime.now())
                     .build();
@@ -202,8 +198,7 @@ public class GroupManager {
                     .protectThreshold(0.8F)
                     .ephemeralInstances(new CopyOnWriteArraySet<>())
                     .persistentInstances(new CopyOnWriteArraySet<>())
-                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
-//                .metadata(serviceDTO.getMetadata())
+                    .metadata(new HashMap<>())
                     .createTime(LocalDateTime.now())
                     .lastUpdatedTime(LocalDateTime.now())
                     .build();
@@ -220,8 +215,7 @@ public class GroupManager {
                     .protectThreshold(0.5F)
                     .ephemeralInstances(new CopyOnWriteArraySet<>())
                     .persistentInstances(new CopyOnWriteArraySet<>())
-                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
-//                .metadata(serviceDTO.getMetadata())
+                    .metadata(new HashMap<>())
                     .createTime(LocalDateTime.now())
                     .lastUpdatedTime(LocalDateTime.now())
                     .build();
@@ -281,8 +275,7 @@ public class GroupManager {
                     .protectThreshold(0.3F)
                     .ephemeralInstances(new CopyOnWriteArraySet<>())
                     .persistentInstances(new CopyOnWriteArraySet<>())
-                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
-//                .metadata(serviceDTO.getMetadata())
+                    .metadata(new HashMap<>())
                     .createTime(LocalDateTime.now())
                     .lastUpdatedTime(LocalDateTime.now())
                     .build();
@@ -299,8 +292,7 @@ public class GroupManager {
                     .protectThreshold(0.8F)
                     .ephemeralInstances(new CopyOnWriteArraySet<>())
                     .persistentInstances(new CopyOnWriteArraySet<>())
-                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
-//                .metadata(serviceDTO.getMetadata())
+                    .metadata(new HashMap<>())
                     .createTime(LocalDateTime.now())
                     .lastUpdatedTime(LocalDateTime.now())
                     .build();
@@ -317,8 +309,7 @@ public class GroupManager {
                     .protectThreshold(0.5F)
                     .ephemeralInstances(new CopyOnWriteArraySet<>())
                     .persistentInstances(new CopyOnWriteArraySet<>())
-                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
-//                .metadata(serviceDTO.getMetadata())
+                    .metadata(new HashMap<>())
                     .createTime(LocalDateTime.now())
                     .lastUpdatedTime(LocalDateTime.now())
                     .build();
@@ -498,6 +489,7 @@ public class GroupManager {
         return new CopyOnWriteArraySet<>();
     }
 
+
     /**
      * 根据ServiceDTO来创建Service
      *
@@ -510,6 +502,18 @@ public class GroupManager {
         String serviceName = serviceDTO.getServiceName();
         Float protectThreshold = serviceDTO.getProtectThreshold();
         String metadata = serviceDTO.getMetadata();
+        // 如果metadata不为空我们才进行校验,为空就不校验了（因为metadata不是必填项）
+        if(!StringUtils.isBlank(metadata)){
+            // 校验metadata是否为JSON格式的字符串
+            Boolean metadataIsJsonString = JsonUtils.isJsonString(metadata);
+            // 如果metadata不是JSON格式的字符串,则创建失败
+            if(!metadataIsJsonString){
+                log.error("metadata不是JSON字符串格式。创建失败");
+                return false;
+            }
+        }
+        // 将json字符串的metadata转成Map类型的metadata
+        Map<Object, Object> metadataMap = JsonUtils.jsonStr2Map(metadata);
 
         // 获取指定service
         Service service = getService(namespaceId, groupName, serviceName);
@@ -529,8 +533,8 @@ public class GroupManager {
                     .protectThreshold(protectThreshold)
                     .ephemeralInstances(new CopyOnWriteArraySet<>())
                     .persistentInstances(new CopyOnWriteArraySet<>())
-                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
-//                .metadata(serviceDTO.getMetadata())
+                    // 通过二次强制转换将 Map <Object, Object>转成 Map <String, String>
+                    .metadata((Map<String, String>)(Object)metadataMap)
                     .createTime(LocalDateTime.now())
                     .lastUpdatedTime(LocalDateTime.now())
                     .build();
@@ -605,8 +609,7 @@ public class GroupManager {
                     .protectThreshold(0.0F)
                     .ephemeralInstances(new CopyOnWriteArraySet<>())
                     .persistentInstances(new CopyOnWriteArraySet<>())
-                    // TODO: 2023/10/7 将String类型的metadata转成Map类型的metadata
-//                .metadata(serviceDTO.getMetadata())
+                    .metadata(new HashMap<>())
                     .createTime(LocalDateTime.now())
                     .lastUpdatedTime(LocalDateTime.now())
                     .build();
