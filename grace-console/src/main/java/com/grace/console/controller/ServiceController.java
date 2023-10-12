@@ -6,6 +6,7 @@ import com.grace.common.entity.Service;
 import com.grace.common.utils.Result;
 import com.grace.console.core.GroupManager;
 import com.grace.console.dto.ServiceDTO;
+import com.grace.console.vo.ServiceDetailVO;
 import com.grace.console.vo.ServiceListItem;
 import com.grace.console.vo.ServiceListVO;
 import com.grace.console.vo.ServiceNameListVO;
@@ -170,14 +171,13 @@ public class ServiceController {
         return Result.ok();
     }
 
-    @GetMapping("/getService")
-    public Result<Service> getService(
+    @GetMapping("/getServiceDetail")
+    public Result<ServiceDetailVO> getServiceDetail(
             @RequestParam(value = "namespaceId",required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
             @RequestParam(value = "groupName", required = false, defaultValue = Constants.DEFAULT_GROUP_NAME) String groupName,
             @RequestParam(value = "serviceName") String serviceName){
 
-
-        return Result.ok(groupManager.getService(namespaceId, groupName, serviceName));
+        return Result.ok(groupManager.getServiceDetail(namespaceId, groupName, serviceName));
     }
 
 

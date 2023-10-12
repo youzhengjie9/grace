@@ -51,6 +51,11 @@ public class InstanceBuilder {
     private boolean ephemeral = true;
 
     /**
+     * 是否在线
+     */
+    private boolean online = true;
+
+    /**
      * 该实例的元数据
      */
     private Map<String, String> metadata = new HashMap<>();
@@ -104,6 +109,11 @@ public class InstanceBuilder {
         return this;
     }
 
+    public InstanceBuilder online(boolean online) {
+        this.online = online;
+        return this;
+    }
+
     public InstanceBuilder metadata(Map<String, String> metadata) {
         this.metadata = metadata;
         return this;
@@ -118,7 +128,7 @@ public class InstanceBuilder {
      * 构建对象
      */
     public Instance build() {
-        return new Instance(instanceId, serviceName, ipAddr, port, weight, healthy, ephemeral, metadata, createTime);
+        return new Instance(instanceId, serviceName, ipAddr, port, weight, healthy, ephemeral, online, metadata, createTime);
     }
 
 }

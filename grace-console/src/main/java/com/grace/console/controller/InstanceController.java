@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * 操作实例的控制器
@@ -57,6 +58,7 @@ public class InstanceController {
      */
     private Instance buildInstance(InstanceDTO instanceDTO) {
         return InstanceBuilder.newBuilder()
+                .instanceId(UUID.randomUUID().toString())
                 .serviceName(instanceDTO.getServiceName())
                 .ipAddr(instanceDTO.getIpAddr())
                 .port(instanceDTO.getPort())

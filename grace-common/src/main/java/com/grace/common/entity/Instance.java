@@ -53,6 +53,11 @@ public class Instance implements Serializable {
     private boolean ephemeral = true;
 
     /**
+     * 是否在线
+     */
+    private boolean online = true;
+
+    /**
      * 该实例的元数据
      */
     private Map<String, String> metadata = new HashMap<>();
@@ -66,7 +71,7 @@ public class Instance implements Serializable {
 
     }
 
-    public Instance(String instanceId, String serviceName, String ipAddr, int port, double weight, boolean healthy, boolean ephemeral, Map<String, String> metadata, LocalDateTime createTime) {
+    public Instance(String instanceId, String serviceName, String ipAddr, int port, double weight, boolean healthy, boolean ephemeral, boolean online, Map<String, String> metadata, LocalDateTime createTime) {
         this.instanceId = instanceId;
         this.serviceName = serviceName;
         this.ipAddr = ipAddr;
@@ -74,6 +79,7 @@ public class Instance implements Serializable {
         this.weight = weight;
         this.healthy = healthy;
         this.ephemeral = ephemeral;
+        this.online = online;
         this.metadata = metadata;
         this.createTime = createTime;
     }
@@ -153,11 +159,20 @@ public class Instance implements Serializable {
         return ephemeral;
     }
 
+    public Instance setOnline(boolean online) {
+        this.online = online;
+        return this;
+    }
+
+    public boolean getOnline() {
+        return online;
+    }
+
+
     public Instance setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
         return this;
     }
-
 
 
     @Override
@@ -170,6 +185,7 @@ public class Instance implements Serializable {
                 ", weight=" + weight +
                 ", healthy=" + healthy +
                 ", ephemeral=" + ephemeral +
+                ", online=" + online +
                 ", metadata=" + metadata +
                 ", createTime=" + createTime +
                 '}';

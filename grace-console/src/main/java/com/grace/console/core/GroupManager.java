@@ -5,9 +5,11 @@ import com.grace.common.constant.Constants;
 import com.grace.common.entity.Group;
 import com.grace.common.entity.Instance;
 import com.grace.common.entity.Service;
+import com.grace.common.entity.builder.InstanceBuilder;
 import com.grace.common.entity.builder.ServiceBuilder;
 import com.grace.console.dto.ServiceDTO;
 import com.grace.console.utils.JsonUtils;
+import com.grace.console.vo.ServiceDetailVO;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +59,47 @@ public class GroupManager {
         createEmptyServiceIfAbsent("dev-namespace",Constants.DEFAULT_GROUP_NAME,"service2");
         createEmptyServiceIfAbsent("test-namespace",Constants.DEFAULT_GROUP_NAME,"service3");
 
+//        Service service1 = new Service();
+//        service1.setNamespaceId(Constants.DEFAULT_NAMESPACE_ID);
+//        service1.setGroupName(Constants.DEFAULT_GROUP_NAME);
+//        service1.setServiceName("service1");
+
+        Map<String,String> instance1MetadataMap = new HashMap<>();
+        instance1MetadataMap.put("version","v1.0.0");
+        instance1MetadataMap.put("env","test");
+
+        Map<String,String> instance2MetadataMap = new HashMap<>();
+//        instance1MetadataMap.put("version","v1.0.0");
+//        instance1MetadataMap.put("env","test");
+
+        Instance instance1 = InstanceBuilder.newBuilder()
+                .instanceId(UUID.randomUUID().toString())
+                .serviceName("service1")
+                .ipAddr("192.168.123.8")
+                .port(8001)
+                .weight(1)
+                .healthy(true)
+                .ephemeral(true)
+                .online(true)
+                .metadata(instance1MetadataMap)
+                .createTime(LocalDateTime.now())
+                .build();
+
+        Instance instance2 = InstanceBuilder.newBuilder()
+                .instanceId(UUID.randomUUID().toString())
+                .serviceName("service1")
+                .ipAddr("127.0.0.3")
+                .port(7788)
+                .weight(1)
+                .healthy(false)
+                .ephemeral(true)
+                .online(false)
+                .metadata(instance2MetadataMap)
+                .createTime(LocalDateTime.now())
+                .build();
+
+        registerInstance(Constants.DEFAULT_NAMESPACE_ID,Constants.DEFAULT_GROUP_NAME,instance1);
+        registerInstance(Constants.DEFAULT_NAMESPACE_ID,Constants.DEFAULT_GROUP_NAME,instance2);
     }
 
     /**
@@ -774,13 +817,60 @@ public class GroupManager {
     }
 
     /**
+     * 获取service详情
+     *
+     * @param namespaceId namespaceId
+     * @param groupName   groupName
+     * @param serviceName serviceName
+     * @return {@link ServiceDetailVO}
+     */
+    public ServiceDetailVO getServiceDetail(String namespaceId, String groupName, String serviceName) {
+        if(hasNamespace(namespaceId)){
+            Set<Group> groups = groupMap.get(namespaceId);
+            // 目标分组
+            Group targetGroup = null;
+            for (Group group : groups) {
+                // 如果找到目标分组
+                if (group.getGroupName().equals(groupName)) {
+                    targetGroup = group;
+                    break;
+                }
+            }
+            // 如果找到了目标分组，则继续找目标service
+            if(targetGroup != null){
+                Set<Service> services = targetGroup.getServices();
+                for (Service service : services) {
+                    // 如果找到目标service
+                    if (service.getServiceName().equals(serviceName)) {
+                        // 将Service转成ServiceDetailVO,并返回
+                        ServiceDetailVO serviceDetailVO = new ServiceDetailVO();
+                        serviceDetailVO.setNamespaceId(service.getNamespaceId());
+                        serviceDetailVO.setGroupName(service.getGroupName());
+                        serviceDetailVO.setServiceName(service.getServiceName());
+                        serviceDetailVO.setProtectThreshold(service.getProtectThreshold());
+                        serviceDetailVO.setAllInstances(service.getAllInstance());
+                        serviceDetailVO.setMetadata(
+                                (service.getMetadata() == null || service.getMetadata().size() == 0)
+                                ? ""
+                                : JsonUtils.map2FormatedJsonStr((Map<Object, Object>)(Object)service.getMetadata())
+                        );
+                        return serviceDetailVO;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+
+    /**
      * 获取指定的instance
      *
-     * @param namespaceId
-     * @param groupName
-     * @param serviceName
-     * @param ipAddr
-     * @param port
+     * @param namespaceId namespaceId
+     * @param groupName   groupName
+     * @param serviceName serviceName
+     * @param ipAddr ipAddr
+     * @param port port
      * @return {@link Instance}
      */
     public Instance getInstance(String namespaceId, String groupName, String serviceName, String ipAddr, int port) {
@@ -814,6 +904,7 @@ public class GroupManager {
         }
         return hasNamespace;
     }
+
 
 
 }

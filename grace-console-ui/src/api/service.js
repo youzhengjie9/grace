@@ -26,3 +26,15 @@ export function createService(serviceDTO){
         }
     })
 }
+
+export function getServiceDetail(namespaceId,groupName,serviceName){
+    return request({
+        method:'get',
+        url:'/grace/server/service/getServiceDetail',
+        params:{
+            namespaceId:namespaceId,
+            groupName:groupName,
+            serviceName:serviceName
+        }
+    })
+}

@@ -157,11 +157,11 @@
       </el-table-column>
       <el-table-column label="操作" min-width="180">
         <template slot-scope="scope">
-          <span class="operation" @click="serviceDetail(scope.row.id)"
+          <span class="operation" @click="serviceDetail(currentSelectedNamespaceId,scope.row.groupName,scope.row.serviceName)"
             >服务详情</span
           >
           <span style="margin-right: 5px">|</span>
-          <span class="operation" href="#" @click="deleteService(scope.row.id)"
+          <span class="operation" href="#" @click="deleteService(currentSelectedNamespaceId,scope.row.groupName,scope.row.serviceName)"
             >删除服务</span
           >
         </template>
@@ -445,17 +445,20 @@ export default {
       this.openCreateServiceDialog = true;
     },
     // 服务详情
-    serviceDetail(id) {
+    serviceDetail(namespaceId,groupName,serviceName) {
       this.$router.push({
         path: "/service/detail",
         query: {
-          id: id,
-        },
-      });
-    },
+          namespaceId: namespaceId,
+          groupName: groupName,
+          serviceName: serviceName
+        }
+    })
+  },
+
     // 删除服务
-    deleteService(id) {
-      console.log(id);
+    deleteService(namespaceId,groupName,serviceName) {
+      
     },
     // page（当前页）改变时触发
     handlePageChange(page) {

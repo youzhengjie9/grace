@@ -21,10 +21,10 @@
     </el-row>
 
     <!-- 服务详情展示(不能进行编辑)  -->
-    <el-form :model="serviceForm" label-width="150px">
+    <el-form :model="serviceDetail" label-width="150px">
       <el-form-item label="服务名称">
         <el-input
-          v-model="serviceForm.serviceName"
+          v-model="serviceDetail.serviceName"
           autocomplete="off"
           style="width: 70%"
           :disabled="true"
@@ -32,7 +32,7 @@
       </el-form-item>
       <el-form-item label="分组名称">
         <el-input
-          v-model="serviceForm.groupName"
+          v-model="serviceDetail.groupName"
           autocomplete="off"
           placeholder="DEFAULT_GROUP"
           style="width: 70%"
@@ -41,7 +41,7 @@
       </el-form-item>
       <el-form-item label="保护阈值">
         <el-input
-          v-model="serviceForm.protectionThreshold"
+          v-model="serviceDetail.protectThreshold"
           autocomplete="off"
           style="width: 70%"
           :disabled="true"
@@ -50,7 +50,7 @@
       <el-form-item label="元数据">
         <!-- 代码编辑器 -->
         <editor
-          v-model="serviceForm.metadata"
+          v-model="serviceDetail.metadata"
           lang="json"
           theme="tomorrow_night"
           width="70%"
@@ -104,7 +104,7 @@
           </span>
           <el-col :span="20">
             <el-input
-              v-model="modifyServiceForm.protectionThreshold"
+              v-model="modifyServiceForm.protectThreshold"
               autocomplete="off"
             ></el-input>
           </el-col>
@@ -131,7 +131,7 @@
         <el-button @click="handleCloseModifyServiceDialog">取消</el-button>
       </div>
     </el-dialog>
-    s
+
     <!-- 集群 -->
     <el-row :gutter="24">
       <el-col :span="24">
@@ -203,7 +203,11 @@
     </div>
 
     <!-- 展示实例的表格 -->
-    <el-table :data="tableData" border style="width: 100%; margin-bottom: 20%">
+    <el-table
+      :data="instanceTableData"
+      border
+      style="width: 100%; margin-bottom: 20%"
+    >
       <el-table-column prop="ipAddr" label="IP" width="138"> </el-table-column>
       <el-table-column prop="port" label="端口" width="80"> </el-table-column>
       <el-table-column
@@ -240,8 +244,8 @@
 
       <el-table-column label="元数据" width="470">
         <template slot-scope="scope">
-          <!-- metadata渲染成html -->
-          <div v-html="formatMetadata(scope.row)"></div>
+          <!-- 将“展示实例的表格”中的metadata属性（Map类型）格式化成 html 字符串 -->
+          <div v-html="formatTableInstanceMetadata(scope.row.metadata)"></div>
         </template>
       </el-table-column>
 
@@ -366,21 +370,11 @@ export default {
   components: {
     Editor,
   },
+  props: {
+    serviceDetail: {},
+  },
   data() {
     return {
-      // 服务详情展示表单
-      serviceForm: {
-        // 服务id
-        id: -1,
-        // 服务名称
-        serviceName: "",
-        // 分组名称
-        groupName: "",
-        // 保护阈值
-        protectionThreshold: "",
-        // 元数据
-        metadata: "",
-      },
       // 只读的（不能进行编辑的）代码编辑器配置
       readOnlyEditorOptions: {
         // 是否只读
@@ -401,18 +395,7 @@ export default {
       // 是否打开修改/编辑服务dialog
       openModifyServiceDialog: false,
       // 修改服务表单
-      modifyServiceForm: {
-        // 服务id
-        id: -1,
-        // 服务名称
-        serviceName: "",
-        // 分组名称
-        groupName: "",
-        // 保护阈值
-        protectionThreshold: "",
-        // 元数据
-        metadata: "",
-      },
+      modifyServiceForm: {},
       // 修改服务表单规则
       modifyServiceRules: {
         // 服务名称
@@ -472,33 +455,8 @@ export default {
           value: "value2",
         },
       ],
-      // 表格数据
-      tableData: [
-        {
-          id: 10001,
-          ipAddr: "192.168.184.101",
-          port: 8081,
-          ephemeral: true,
-          weight: 1.0,
-          healthy: true,
-          // 是否在线
-          online: true,
-          metadata:
-            '{"preserved.register.source": "SPRING_CLOUD","gray": false}',
-        },
-        {
-          id: 10002,
-          ipAddr: "192.168.184.101",
-          port: 8082,
-          ephemeral: true,
-          weight: 1.0,
-          healthy: true,
-          // 是否在线
-          online: false,
-          metadata:
-            '{"preserved.register.source": "SPRING_CLOUD","gray": false}',
-        },
-      ],
+      // 展示实例的表格数据
+      instanceTableData:[],
       // 是否打开修改/编辑实例dialog
       openModifyInstanceDialog: false,
       // 修改/编辑实例的表单内容
@@ -516,36 +474,27 @@ export default {
     };
   },
   mounted() {
-    let serviceId = this.$route.query.id;
-    // 根据服务id调用后端接口从数据库查询该服务的数据
-    let serviceData = {
-      // 服务id
-      id: serviceId,
-      // 服务名称
-      serviceName: "abc",
-      // 分组名称
-      groupName: "DEFAULT_GROUP",
-      // 保护阈值
-      protectionThreshold: "1",
-      // 元数据
-      metadata: '{"preserved.register.source": "SPRING_CLOUD","gray": false}'
-    };
-    // 格式化metadata的json字符串
-    let metadataJSON = this.formatJsonStr(serviceData.metadata);
-    // 将serviceData对象赋值给serviceForm对象(metadata要进行格式化再赋值)
-    this.serviceForm = {
-      // 服务id
-      id: serviceData.id,
-      // 服务名称
-      serviceName: serviceData.serviceName,
-      // 分组名称
-      groupName: serviceData.groupName,
-      // 保护阈值
-      protectionThreshold: serviceData.protectionThreshold,
-      // 元数据
-      metadata: metadataJSON
-    };
+    this.loadData();
+  },
+  watch:{
+    // 当组件被加载后,自动获取props中的serviceDetail属性（ 注意: 在这里this.serviceDetail和newValue的值是一样的,使用哪个都可以 ）
+    // 为什么使用watch监听props中的serviceDetail对象 ? 为了解决:在mounted等这些生命周期函数中获取不到props的值的问题
+    serviceDetail(newValue,oldValue){
+      // 将服务详情表单（serviceDetail）内容复制到一个新的对象中
+      let allInstances = this.serviceDetail.allInstances;
+      
+      for(let i = 0 ; i <allInstances.length; i++){
 
+        let instance = allInstances[i];
+        // 深拷贝实例对象
+        let newInstance = this.deepCopy(instance);
+
+        // 将深拷贝出来的新对象放到instanceTableData集合中
+        this.instanceTableData.push(newInstance);
+
+      }
+
+    }
   },
   methods: {
     // vue2-ace-editor代码编辑器初始化(下面的额外配置（例如主题、语言等）可以在node_modules\brace文件夹找 ,然后导入即可)
@@ -562,22 +511,29 @@ export default {
       // 编译器代码段（html、java、javascript、golang、json、mysql、python、properties、sql、xml、yaml 等）
       require("brace/snippets/json");
     },
+    loadData() {
+
+
+
+
+    },
     // 点击打开修改/编辑服务的dialog
     clickOpenModifyServiceDialog() {
+      // console.log(this.serviceDetail.metadata)
       // 打开修改/编辑服务的dialog
       this.openModifyServiceDialog = true;
-      // 将服务详情表单（serviceForm）内容复制到一个新的修改/编辑服务的表单（modifyServiceForm）对象中
+      // 将服务详情表单（serviceDetail）内容复制到一个新的修改/编辑服务的表单（modifyServiceForm）对象中
       this.modifyServiceForm = {
-        // 服务id
-        id: this.serviceForm.id,
-        // 服务名称
-        serviceName: this.serviceForm.serviceName,
+        // namespaceId
+        namespaceId: this.serviceDetail.namespaceId,
         // 分组名称
-        groupName: this.serviceForm.groupName,
+        groupName: this.serviceDetail.groupName,
+        // 服务名称
+        serviceName: this.serviceDetail.serviceName,
         // 保护阈值
-        protectionThreshold: this.serviceForm.protectionThreshold,
+        protectThreshold: this.serviceDetail.protectThreshold,
         // 元数据
-        metadata: this.serviceForm.metadata,
+        metadata: this.serviceDetail.metadata,
       };
     },
     // 当关闭修改服务dialog的回调
@@ -585,9 +541,7 @@ export default {
       this.openModifyServiceDialog = false;
     },
     // 提交修改服务表单
-    modifyService() {
-
-    },
+    modifyService() {},
     // JSON字符串转成Map对象
     jsonStrToMap(jsonStr) {
       const jsonObj = JSON.parse(jsonStr);
@@ -596,6 +550,10 @@ export default {
         map.set(k, jsonObj[k]);
       }
       return map;
+    },
+    // 将Map转成JSON字符串
+    Map2JsonStr(map){
+      return JSON.stringify(Object.fromEntries(map));
     },
     // 将JSON字符串格式化成用户容易看懂的格式
     formatJsonStr(jsonStr) {
@@ -679,17 +637,22 @@ export default {
         return "false";
       }
     },
-    // 将metadata的JSON字符串转成 Map然后再转成 Html字符串
-    formatMetadata(row) {
-      // 将JSON字符串转成Map对象
-      let metadataMap = this.jsonStrToMap(row.metadata);
-      // 将Map对象转成String字符串
-      var metadataStr = "";
-      metadataMap.forEach((value, key) => {
-        metadataStr += "<p>" + key + "=" + value + "</p>";
-      });
+    // 将“展示实例的表格”中的metadata属性（Object类型）格式化成 html 字符串
+    formatTableInstanceMetadata(metadataObject) {
 
-      return metadataStr;
+      // 将Object转成Map类型
+      let metadataMap = new Map(Object.entries(metadataObject));
+
+      // 将Map对象转成 html字符串
+      var metadataHtmlStr = "";
+      // 如果metadataMap有数据
+      if (metadataMap.size > 0) {
+        // 格式化成 html字符串
+        metadataMap.forEach((value, key) => {
+          metadataHtmlStr += "<p>" + key + "=" + value + "</p>";
+        });
+      }
+      return metadataHtmlStr;
     },
     // 添加元数据过滤条件
     addMetadataFilterCondition() {
@@ -727,10 +690,24 @@ export default {
     },
     // 点击打开修改/编辑实例的dialog
     clickOpenModifyInstanceDialog(row) {
+
+      // metadata对象
+      let metadataObject = row.metadata;
+      // 将Object转成Map类型
+      let metadataMap = new Map(Object.entries(metadataObject));
+      // metadataJson对象
+      let metadataJSON = '';
+      // 如果metadataMap不为空,则格式化成JSON
+      if(metadataMap.size > 0){
+        // 将Map转成JSON
+        metadataJSON= this.Map2JsonStr(metadataMap);
+        // 为了让JSON更好看,所以进行格式化JSON
+        metadataJSON = this.formatJsonStr(metadataJSON);
+      }
+
       // 打开修改/编辑实例的dialog
       this.openModifyInstanceDialog = true;
-      // 格式化metadata的JSON字符串
-      let metadataJSON = this.formatJsonStr(row.metadata);
+      
       // 将需要修改的实例对象保存到modifyInstanceForm（修改实例表单内容）,后面我们修改完实例提交这个表单内容即可
       this.modifyInstanceForm = {
         id: row.id,
@@ -769,9 +746,25 @@ export default {
       row.online = true;
     },
     // 返回上一个页面
-    back(){
+    back() {
       this.$router.go(-1);
-    }
+    },
+    // 深拷贝(将obj对象进行深拷贝,返回值就是深拷贝出来的对象)
+    deepCopy(obj) {
+      // 判断是否是对象
+      if (typeof obj !== "object") return;
+      // 判断obj类型，根据类型新建一个对象或者数组
+      var newObj = obj instanceof Array ? [] : {};
+      // 遍历对象，进行赋值
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          let val = obj[key];
+          // 判断属性值的类型，如果是对象，递归调用deepCopy
+          newObj[key] = typeof val === "object" ? this.deepCopy(val) : val;
+        }
+      }
+      return newObj;
+    },
   },
 };
 </script>
