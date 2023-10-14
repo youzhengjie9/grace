@@ -29,6 +29,20 @@ export function createService(serviceDTO){
     })
 }
 
+export function modifyService(serviceDTO){
+    return request({
+        method:'put',
+        url:'/grace/server/service/modifyService',
+        data:{
+            namespaceId: serviceDTO.namespaceId,
+            groupName: serviceDTO.groupName,
+            serviceName: serviceDTO.serviceName,
+            protectThreshold: serviceDTO.protectThreshold,
+            metadata: serviceDTO.metadata,
+        }
+    })
+}
+
 export function getServiceDetail(namespaceId,groupName,serviceName){
     return request({
         method:'get',

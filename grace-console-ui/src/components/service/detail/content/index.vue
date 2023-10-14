@@ -81,6 +81,7 @@
             <el-input
               v-model="modifyServiceForm.serviceName"
               autocomplete="off"
+              :readonly="true"
             ></el-input>
           </el-col>
         </el-form-item>
@@ -94,6 +95,7 @@
               v-model="modifyServiceForm.groupName"
               autocomplete="off"
               placeholder="DEFAULT_GROUP"
+              :readonly="true"
             ></el-input>
           </el-col>
         </el-form-item>
@@ -371,7 +373,12 @@ export default {
     Editor,
   },
   props: {
-    serviceDetail: {},
+    serviceDetail: Object,
+    openModifyServiceDialog: Boolean,
+    modifyServiceForm: Object,
+    modifyServiceRules:Object,
+    openModifyInstanceDialog: Boolean,
+    modifyInstanceForm: Object,
   },
   data() {
     return {
@@ -391,26 +398,6 @@ export default {
         showPrintMargin: false,
         // 超出内容的滚动范围
         scrollPastEnd: 0.1,
-      },
-      // 是否打开修改/编辑服务dialog
-      openModifyServiceDialog: false,
-      // 修改服务表单
-      modifyServiceForm: {},
-      // 修改服务表单规则
-      modifyServiceRules: {
-        // 服务名称
-        serviceName: [
-          { required: true, message: "请输入服务名称", trigger: "blur" },
-        ],
-        // 保护阈值（纯整数（123）和小数（567.6512））
-        protectionThreshold: [
-          {
-            required: true,
-            pattern: /^(\-|\+)?\d+(\.\d+)?$/,
-            message: "请输入保护阈值",
-            trigger: "blur",
-          },
-        ],
       },
       // 可写的（可以进行编辑的）代码编辑器配置
       writableEditorOptions: {
@@ -444,20 +431,6 @@ export default {
       metadataFilterTags: [],
       // 展示实例的表格数据
       instanceTableData: [],
-      // 是否打开修改/编辑实例dialog
-      openModifyInstanceDialog: false,
-      // 修改/编辑实例的表单内容
-      modifyInstanceForm: {
-        id: -1,
-        ipAddr: "",
-        port: -1,
-        ephemeral: true,
-        weight: -1,
-        healthy: false,
-        // 是否在线
-        online: false,
-        metadata: "",
-      },
     };
   },
   mounted() {
@@ -498,29 +471,16 @@ export default {
     loadData() {},
     // 点击打开修改/编辑服务的dialog
     clickOpenModifyServiceDialog() {
-      // console.log(this.serviceDetail.metadata)
-      // 打开修改/编辑服务的dialog
-      this.openModifyServiceDialog = true;
-      // 将服务详情表单（serviceDetail）内容复制到一个新的修改/编辑服务的表单（modifyServiceForm）对象中
-      this.modifyServiceForm = {
-        // namespaceId
-        namespaceId: this.serviceDetail.namespaceId,
-        // 分组名称
-        groupName: this.serviceDetail.groupName,
-        // 服务名称
-        serviceName: this.serviceDetail.serviceName,
-        // 保护阈值
-        protectThreshold: this.serviceDetail.protectThreshold,
-        // 元数据
-        metadata: this.serviceDetail.metadata,
-      };
+      this.$emit('clickOpenModifyServiceDialog')
     },
     // 当关闭修改服务dialog的回调
     handleCloseModifyServiceDialog() {
-      this.openModifyServiceDialog = false;
+      this.$emit('handleCloseModifyServiceDialog')
     },
     // 提交修改服务表单
-    modifyService() {},
+    modifyService() {
+      this.$emit('modifyService',this.modifyServiceForm);
+    },
     // JSON字符串转成Map对象
     jsonStrToMap(jsonStr) {
       const jsonObj = JSON.parse(jsonStr);
@@ -804,52 +764,16 @@ export default {
     },
     // 点击打开修改/编辑实例的dialog
     clickOpenModifyInstanceDialog(row) {
-      // metadata对象
-      let metadataObject = row.metadata;
-      // 将Object转成Map类型
-      let metadataMap = new Map(Object.entries(metadataObject));
-      // metadataJson对象
-      let metadataJSON = "";
-      // 如果metadataMap不为空,则格式化成JSON
-      if (metadataMap.size > 0) {
-        // 将Map转成JSON
-        metadataJSON = this.Map2JsonStr(metadataMap);
-        // 为了让JSON更好看,所以进行格式化JSON
-        metadataJSON = this.formatJsonStr(metadataJSON);
-      }
-
-      // 打开修改/编辑实例的dialog
-      this.openModifyInstanceDialog = true;
-
-      // 将需要修改的实例对象保存到modifyInstanceForm（修改实例表单内容）,后面我们修改完实例提交这个表单内容即可
-      this.modifyInstanceForm = {
-        id: row.id,
-        ipAddr: row.ipAddr,
-        port: row.port,
-        ephemeral: row.ephemeral,
-        weight: row.weight,
-        healthy: row.healthy,
-        online: row.online,
-        metadata: metadataJSON,
-      };
+      this.$emit('clickOpenModifyInstanceDialog',row);
     },
     // 当关闭修改实例dialog的回调
     handleCloseModifyInstanceDialog() {
-      this.modifyInstanceForm = {
-        id: -1,
-        ipAddr: "",
-        port: -1,
-        ephemeral: true,
-        weight: -1,
-        healthy: false,
-        // 是否在线
-        online: false,
-        metadata: "",
-      };
-      this.openModifyInstanceDialog = false;
+      this.$emit('handleCloseModifyInstanceDialog')
     },
     // 提交修改实例表单
-    modifyInstance() {},
+    modifyInstance() {
+
+    },
     // 下线
     offline(row) {
       row.online = false;

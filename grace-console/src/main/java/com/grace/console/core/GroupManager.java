@@ -986,5 +986,45 @@ public class GroupManager {
     }
 
 
-
+    /**
+     * 根据serviceDTO修改service
+     *
+     * @param serviceDTO serviceDTO
+     * @return {@link Boolean}
+     */
+    public Boolean modifyServiceByServiceDTO(ServiceDTO serviceDTO) {
+        String namespaceId = serviceDTO.getNamespaceId();
+        String groupName = serviceDTO.getGroupName();
+        String serviceName = serviceDTO.getServiceName();
+        // 获取service对象
+        Service service = getService(namespaceId, groupName, serviceName);
+        // 如果service不为空
+        if(service != null){
+            try {
+                String metadata = serviceDTO.getMetadata();
+                // 如果metadata不为空我们才进行校验,为空就不校验了（因为metadata不是必填项）
+                if(!StringUtils.isBlank(metadata)){
+                    // 校验metadata是否为JSON格式的字符串
+                    Boolean metadataIsJsonString = JsonUtils.isJsonString(metadata);
+                    // 如果metadata不是JSON格式的字符串,则修改失败
+                    if(!metadataIsJsonString){
+                        log.error("metadata不是JSON字符串格式。修改失败");
+                        return false;
+                    }
+                }
+                // 将json字符串的metadata转成Map类型的metadata
+                Map<String, String> metadataMap = (Map<String, String>) (Object)JsonUtils.jsonStr2Map(metadata);
+                // 修改service
+                service.setProtectThreshold(serviceDTO.getProtectThreshold());
+                service.setMetadata(metadataMap);
+                service.setLastUpdatedTime(LocalDateTime.now());
+                return true;
+            }catch (Exception e){
+                e.printStackTrace();
+                log.error("修改失败");
+                return false;
+            }
+        }
+        return false;
+    }
 }

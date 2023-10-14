@@ -20,17 +20,17 @@ public class Service implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 命名空间id
+     * 命名空间id（一旦创建就不能修改）
      */
     private String namespaceId;
 
     /**
-     * 分组名称
+     * 分组名称（一旦创建就不能修改）
      */
     private String groupName;
 
     /**
-     * 服务名称
+     * 服务名称（一旦创建就不能修改）
      */
     private String serviceName;
 
@@ -83,11 +83,6 @@ public class Service implements Serializable {
         this.lastUpdatedTime = lastUpdatedTime;
     }
 
-    public Service setNamespaceId(String namespaceId) {
-        this.namespaceId = namespaceId;
-        return this;
-    }
-
     public String getNamespaceId() {
         return namespaceId;
     }
@@ -96,18 +91,8 @@ public class Service implements Serializable {
         return serviceName;
     }
 
-    public Service setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-        return this;
-    }
-
     public String getGroupName() {
         return groupName;
-    }
-
-    public Service setGroupName(String groupName) {
-        this.groupName = groupName;
-        return this;
     }
 
     public Float getProtectThreshold() {

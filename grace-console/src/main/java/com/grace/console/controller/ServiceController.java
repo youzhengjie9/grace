@@ -43,6 +43,29 @@ public class ServiceController {
         // 创建service并返回结果
         return Result.ok(groupManager.createServiceByServiceDTO(serviceDTO));
     }
+
+    @DeleteMapping("/deleteService")
+    public Result<String> deleteService(
+            @RequestParam(value = "namespaceId",required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
+            @RequestParam(value = "groupName", required = false, defaultValue = Constants.DEFAULT_GROUP_NAME) String groupName,
+            @RequestParam(value = "serviceName") String serviceName){
+
+        return Result.ok();
+    }
+
+    /**
+     * 修改service
+     *
+     * @param serviceDTO serviceDTO
+     * @return {@link Result}<{@link Boolean}>
+     */
+    @PutMapping(path = "/modifyService")
+    public Result<Boolean> modifyService(@RequestBody ServiceDTO serviceDTO){
+        // 校验必填属性
+        serviceDTO.validateRequired();
+        // 修改service并返回结果
+        return Result.ok(groupManager.modifyServiceByServiceDTO(serviceDTO));
+    }
     /**
      * 分页获取服务列表
      *
@@ -161,18 +184,6 @@ public class ServiceController {
         }
         return pagedServices;
     }
-
-
-    @DeleteMapping("/deleteService")
-    public Result<String> deleteService(
-            @RequestParam(value = "namespaceId",required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
-            @RequestParam(value = "groupName", required = false, defaultValue = Constants.DEFAULT_GROUP_NAME) String groupName,
-            @RequestParam(value = "serviceName") String serviceName){
-
-
-        return Result.ok();
-    }
-
     @GetMapping("/getServiceDetail")
     public Result<ServiceDetailVO> getServiceDetail(
             @RequestParam(value = "namespaceId",required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
