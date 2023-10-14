@@ -441,22 +441,9 @@ export default {
         value: "",
       },
       // 元数据过滤条件标签数组
-      metadataFilterTags: [
-        {
-          key: "preserved.register.source",
-          value: "SPRING_CLOUD",
-        },
-        {
-          key: "aaa",
-          value: "value1",
-        },
-        {
-          key: "bbb",
-          value: "value2",
-        },
-      ],
+      metadataFilterTags: [],
       // 展示实例的表格数据
-      instanceTableData:[],
+      instanceTableData: [],
       // 是否打开修改/编辑实例dialog
       openModifyInstanceDialog: false,
       // 修改/编辑实例的表单内容
@@ -476,25 +463,22 @@ export default {
   mounted() {
     this.loadData();
   },
-  watch:{
+  watch: {
     // 当组件被加载后,自动获取props中的serviceDetail属性（ 注意: 在这里this.serviceDetail和newValue的值是一样的,使用哪个都可以 ）
     // 为什么使用watch监听props中的serviceDetail对象 ? 为了解决:在mounted等这些生命周期函数中获取不到props的值的问题
-    serviceDetail(newValue,oldValue){
+    serviceDetail(newValue, oldValue) {
       // 将服务详情表单（serviceDetail）内容复制到一个新的对象中
       let allInstances = this.serviceDetail.allInstances;
-      
-      for(let i = 0 ; i <allInstances.length; i++){
 
+      for (let i = 0; i < allInstances.length; i++) {
         let instance = allInstances[i];
         // 深拷贝实例对象
         let newInstance = this.deepCopy(instance);
 
         // 将深拷贝出来的新对象放到instanceTableData集合中
         this.instanceTableData.push(newInstance);
-
       }
-
-    }
+    },
   },
   methods: {
     // vue2-ace-editor代码编辑器初始化(下面的额外配置（例如主题、语言等）可以在node_modules\brace文件夹找 ,然后导入即可)
@@ -511,12 +495,7 @@ export default {
       // 编译器代码段（html、java、javascript、golang、json、mysql、python、properties、sql、xml、yaml 等）
       require("brace/snippets/json");
     },
-    loadData() {
-
-
-
-
-    },
+    loadData() {},
     // 点击打开修改/编辑服务的dialog
     clickOpenModifyServiceDialog() {
       // console.log(this.serviceDetail.metadata)
@@ -552,7 +531,7 @@ export default {
       return map;
     },
     // 将Map转成JSON字符串
-    Map2JsonStr(map){
+    Map2JsonStr(map) {
       return JSON.stringify(Object.fromEntries(map));
     },
     // 将JSON字符串格式化成用户容易看懂的格式
@@ -639,7 +618,6 @@ export default {
     },
     // 将“展示实例的表格”中的metadata属性（Object类型）格式化成 html 字符串
     formatTableInstanceMetadata(metadataObject) {
-
       // 将Object转成Map类型
       let metadataMap = new Map(Object.entries(metadataObject));
 
@@ -656,26 +634,104 @@ export default {
     },
     // 添加元数据过滤条件
     addMetadataFilterCondition() {
-      // 将元数据过滤输入框的内容放到元数据过滤条件标签数组中
-      this.metadataFilterTags.push(this.metadataFilterInput);
-      // 清空元数据过滤输入框的内容
-      this.metadataFilterInput = {
-        // 元数据过滤输入框的key
-        key: "",
-        // 元数据过滤输入框的value
-        value: "",
-      };
+      // 元数据过滤输入框内容
+      let metadataFilterInput = this.metadataFilterInput;
+      // 是否允许添加该元数据过滤条件
+      let allowAddMetadataFilterCondition = true;
+      // 判断元数据过滤条件标签数组是否已经存在元数据过滤输入框内容的key
+      for (let i = 0; i < this.metadataFilterTags.length; i++) {
+        let metadataFilterTag = this.metadataFilterTags[i];
+        // 如果元数据过滤条件标签数组是否已经存在元数据过滤输入框内容的key
+        if (metadataFilterTag.key == metadataFilterInput.key) {
+          // 标记为不允许添加该元数据过滤条件
+          allowAddMetadataFilterCondition = false;
+          break;
+        }
+      }
+
+      // 如果不允许添加该元数据过滤条件
+      if (allowAddMetadataFilterCondition == false) {
+        this.$message({
+          message: "该过滤条件的key已存在,不允许重复添加",
+          type: "warning",
+        });
+      }
+      // 如果允许添加该元数据过滤条件
+      else {
+        // 将元数据过滤输入框的内容放到元数据过滤条件标签数组中
+        this.metadataFilterTags.push(this.metadataFilterInput);
+        // 清空元数据过滤输入框的内容
+        this.metadataFilterInput = {
+          // 元数据过滤输入框的key
+          key: "",
+          // 元数据过滤输入框的value
+          value: "",
+        };
+        let len = this.instanceTableData.length;
+        // 根据过滤条件筛选数据并更新instanceTableData
+        for (let i = 0; i < len; i++) {
+          let instance = this.instanceTableData[i];
+          // 取出metadata对象
+          let metadataObject = instance.metadata;
+          // 将Object转成Map
+          let metadataMap = new Map(Object.entries(metadataObject));
+          // 如果metadataMap没有数据则break，说明该条实例instance不会被展示
+          if (metadataMap.size == 0) {
+            // 移除当前instance（此时this.instanceTableData的length会 -1）
+            this.instanceTableData.splice(i, 1);
+            // 由于此时调用了splice方法,所以len-1（数组长度-1）,i(索引 - 1),否则会报错
+            len--;
+            i--;
+          }
+          // 如果metadataMap有数据则进行条件过滤
+          else {
+            // metadata过滤条件标签key
+            let metadataFilterTagKey = metadataFilterInput.key;
+            // metadata过滤条件标签value
+            let metadataFilterTagValue = metadataFilterInput.value;
+            // 如果metadataMap不存在该metadata过滤条件标签key则break
+            if (!metadataMap.has(metadataFilterTagKey)) {
+              // 移除当前instance
+              this.instanceTableData.splice(i, 1);
+              // 由于此时调用了splice方法,所以len-1（数组长度-1）,i(索引 - 1),否则会报错
+              len--;
+              i--;
+            } else {
+              // 通过该metadata过滤条件标签key获取metadataMap中对应的value
+              let value = metadataMap.get(metadataFilterTagKey);
+              // 将value和metadataFilterTagValue进行对比,如果不一样则break
+              if (value != metadataFilterTagValue) {
+                // 移除当前instance
+                this.instanceTableData.splice(i, 1);
+                // 由于此时调用了splice方法,所以len-1（数组长度-1）, i-1 (索引 - 1),否则会报错
+                len--;
+                i--;
+              }
+            }
+          }
+        }
+      }
     },
     // 清空所有元数据过滤条件
     clearMetadataFilterCondition() {
-      // 如果元数据过滤条件标签数组不为空,则可以清空
-      if (this.metadataFilterTags.length > 0) {
-        // 将元数据过滤条件标签数组中的所有元素清空
-        this.metadataFilterTags = [];
+      // 将元数据过滤条件标签数组中的所有元素清空
+      this.metadataFilterTags = [];
+      // 还原展示实例表格数据
+      // 将服务详情表单（serviceDetail）内容复制到一个新的对象中
+      let allInstances = this.serviceDetail.allInstances;
+
+      for (let i = 0; i < allInstances.length; i++) {
+        let instance = allInstances[i];
+        // 深拷贝实例对象
+        let newInstance = this.deepCopy(instance);
+
+        // 将深拷贝出来的新对象放到instanceTableData集合中
+        this.instanceTableData.push(newInstance);
       }
     },
     // 根据元数据的key删除元数据过滤条件标签
     deleteMetadataFilterTagByKey(deleteMetedataKey) {
+      // 1: 删除指定的元数据过滤条件标签
       let len = this.metadataFilterTags.length;
       for (let i = 0; i < len; i++) {
         let tag = this.metadataFilterTags[i];
@@ -687,27 +743,84 @@ export default {
           break;
         }
       }
+      // 2: 将剩下的所有元数据过滤条件标签再进行过滤数据
+
+      // 获取该service下面的所有实例,并深拷贝出来
+      let instances = this.deepCopy(this.serviceDetail.allInstances);
+      // 元数据过滤条件标签的数组
+      let metadataFilterTags = this.metadataFilterTags;
+      // 遍历当前最新的元数据过滤条件标签的数组(原理是: 将元数据过滤条件一个个取出来然后进行筛选)
+      for(let i = 0 ; i < metadataFilterTags.length; i++){
+        // 取出每一个元数据过滤条件标签
+        let metadataFilterTag = metadataFilterTags[i];
+        // 该service下面的所有实例的总数
+        let instancesLength = instances.length;
+        // 根据过滤条件筛选数据并更新instanceTableData
+        for (let j = 0; j < instancesLength; j++) {
+          let instance = instances[j];
+          // 取出metadata对象
+          let metadataObject = instance.metadata;
+          // 将Object转成Map
+          let metadataMap = new Map(Object.entries(metadataObject));
+          // 如果metadataMap没有数据则break，说明该条实例instance不会被展示
+          if (metadataMap.size == 0) {
+            // 移除当前instance（此时instances的length会 -1）
+            instances.splice(j, 1);
+            // 由于此时调用了splice方法,所以instancesLength-1（数组长度-1）, j-1(索引 - 1),否则会报错
+            instancesLength--;
+            j--;
+          }
+          // 如果metadataMap有数据则进行条件过滤
+          else {
+            // metadata过滤条件标签key
+            let metadataFilterTagKey = metadataFilterTag.key;
+            // metadata过滤条件标签value
+            let metadataFilterTagValue = metadataFilterTag.value;
+            // 如果metadataMap不存在该metadata过滤条件标签key则break
+            if (!metadataMap.has(metadataFilterTagKey)) {
+              // 移除当前instance（此时instances的length会 -1）
+              instances.splice(j, 1);
+              // 由于此时调用了splice方法,所以instancesLength-1（数组长度-1）, j-1(索引 - 1),否则会报错
+              instancesLength--;
+              j--;
+            } else {
+              // 通过该metadata过滤条件标签key获取metadataMap中对应的value
+              let value = metadataMap.get(metadataFilterTagKey);
+              // 将value和metadataFilterTagValue进行对比,如果不一样则break
+              if (value != metadataFilterTagValue) {
+                // 移除当前instance（此时instances的length会 -1）
+                instances.splice(j, 1);
+                // 由于此时调用了splice方法,所以instancesLength-1（数组长度-1）, j-1(索引 - 1),否则会报错
+                instancesLength--;
+                j--;
+              }
+            }
+          }
+        }
+      }
+      // 将筛选好的实例表格数据赋值给this.instanceTableData对象进行展示
+      this.instanceTableData = instances;
+      
     },
     // 点击打开修改/编辑实例的dialog
     clickOpenModifyInstanceDialog(row) {
-
       // metadata对象
       let metadataObject = row.metadata;
       // 将Object转成Map类型
       let metadataMap = new Map(Object.entries(metadataObject));
       // metadataJson对象
-      let metadataJSON = '';
+      let metadataJSON = "";
       // 如果metadataMap不为空,则格式化成JSON
-      if(metadataMap.size > 0){
+      if (metadataMap.size > 0) {
         // 将Map转成JSON
-        metadataJSON= this.Map2JsonStr(metadataMap);
+        metadataJSON = this.Map2JsonStr(metadataMap);
         // 为了让JSON更好看,所以进行格式化JSON
         metadataJSON = this.formatJsonStr(metadataJSON);
       }
 
       // 打开修改/编辑实例的dialog
       this.openModifyInstanceDialog = true;
-      
+
       // 将需要修改的实例对象保存到modifyInstanceForm（修改实例表单内容）,后面我们修改完实例提交这个表单内容即可
       this.modifyInstanceForm = {
         id: row.id,

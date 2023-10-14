@@ -56,8 +56,9 @@ public class GroupManager {
 //        initTestNamespace();
 
         createEmptyServiceIfAbsent(Constants.DEFAULT_NAMESPACE_ID,Constants.DEFAULT_GROUP_NAME,"service1");
-        createEmptyServiceIfAbsent("dev-namespace",Constants.DEFAULT_GROUP_NAME,"service2");
-        createEmptyServiceIfAbsent("test-namespace",Constants.DEFAULT_GROUP_NAME,"service3");
+        createEmptyServiceIfAbsent(Constants.DEFAULT_NAMESPACE_ID,Constants.DEFAULT_GROUP_NAME,"service2");
+        createEmptyServiceIfAbsent("dev-namespace",Constants.DEFAULT_GROUP_NAME,"service3");
+        createEmptyServiceIfAbsent("test-namespace",Constants.DEFAULT_GROUP_NAME,"service4");
 
 //        Service service1 = new Service();
 //        service1.setNamespaceId(Constants.DEFAULT_NAMESPACE_ID);
@@ -464,11 +465,18 @@ public class GroupManager {
     /**
      * 获取所有符合条件的service(不进行分页)
      *
-     * @param namespaceId      namespaceId
+     * @param namespaceId      命名空间id
      * @param hideEmptyService 是否隐藏空服务（也就是说不统计没有instance的service）
+     * @param groupName 分组名称（如果为null或者""则默认不指定分组名）
+     * @param serviceName 服务名称（如果为null或者""则默认不指定服务名）
      * @return {@link Set}<{@link Service}>
      */
-    public Set<Service> getAllService(String namespaceId,boolean hideEmptyService) {
+    public Set<Service> getAllService(String namespaceId,String groupName,String serviceName,boolean hideEmptyService) {
+        // 如果groupName不为空,则说明指定了groupName
+        boolean assignGroupName = groupName != null && !groupName.equals("");
+        // 如果serviceName不为空,则说明指定了serviceName
+        boolean assignServiceName = serviceName != null && !serviceName.equals("");
+
         if(hasNamespace(namespaceId)){
             // 最终需要返回的集合
             Set<Service> services = new CopyOnWriteArraySet<>();
@@ -476,23 +484,95 @@ public class GroupManager {
             Set<Group> groups = groupMap.get(namespaceId);
             // 遍历分组集合
             for (Group group : groups) {
-                // 获取每一个分组下面的所有service
-                Set<Service> svc = group.getServices();
-                for (Service service : svc) {
-                    // 如果隐藏空服务
-                    if(hideEmptyService){
-                        // 获取该服务的临时实例数量
-                        int ephemeralInstanceCount = service.getEphemeralInstances().size();
-                        // 获取该服务的永久实例数量
-                        int persistentInstanceCount = service.getPersistentInstances().size();
-                        // 如果该服务的临时实例数量或者永久实例数量只要有一个大于0（说明该服务不是空服务,则可以将该服务统计进去）
-                        if(ephemeralInstanceCount > 0 || persistentInstanceCount > 0){
-                            services.add(service);
+                // 如果指定groupName了
+                if(assignGroupName){
+                    // 如果当前遍历到的分组的名称包含指定的groupName（也就是模糊匹配）
+                    if(group.getGroupName().contains(groupName)){
+                        // 获取每一个分组下面的所有service
+                        Set<Service> svc = group.getServices();
+                        for (Service service : svc) {
+                            // 如果指定serviceName了
+                            if(assignServiceName) {
+                                // 如果当前遍历到的service的名称包含指定的serviceName（也就是模糊匹配）
+                                if (service.getServiceName().contains(serviceName)) {
+                                    // 如果隐藏空服务
+                                    if(hideEmptyService){
+                                        // 获取该服务的临时实例数量
+                                        int ephemeralInstanceCount = service.getEphemeralInstances().size();
+                                        // 获取该服务的永久实例数量
+                                        int persistentInstanceCount = service.getPersistentInstances().size();
+                                        // 如果该服务的临时实例数量或者永久实例数量只要有一个大于0（说明该服务不是空服务,则可以将该服务统计进去）
+                                        if(ephemeralInstanceCount > 0 || persistentInstanceCount > 0){
+                                            services.add(service);
+                                        }
+                                    }
+                                    // 如果没有隐藏空服务
+                                    else {
+                                        services.add(service);
+                                    }
+                                }
+                            }else {
+                                // 如果隐藏空服务
+                                if(hideEmptyService){
+                                    // 获取该服务的临时实例数量
+                                    int ephemeralInstanceCount = service.getEphemeralInstances().size();
+                                    // 获取该服务的永久实例数量
+                                    int persistentInstanceCount = service.getPersistentInstances().size();
+                                    // 如果该服务的临时实例数量或者永久实例数量只要有一个大于0（说明该服务不是空服务,则可以将该服务统计进去）
+                                    if(ephemeralInstanceCount > 0 || persistentInstanceCount > 0){
+                                        services.add(service);
+                                    }
+                                }
+                                // 如果没有隐藏空服务
+                                else {
+                                    services.add(service);
+                                }
+                            }
                         }
                     }
-                    // 如果没有隐藏空服务
-                    else {
-                        services.add(service);
+                }
+                // 如果没有指定groupName
+                else{
+                    // 获取每一个分组下面的所有service
+                    Set<Service> svc = group.getServices();
+                    for (Service service : svc) {
+                        // 如果指定serviceName了
+                        if(assignServiceName) {
+                            // 如果当前遍历到的service的名称包含指定的serviceName（也就是模糊匹配）
+                            if (service.getServiceName().contains(serviceName)) {
+                                // 如果隐藏空服务
+                                if(hideEmptyService){
+                                    // 获取该服务的临时实例数量
+                                    int ephemeralInstanceCount = service.getEphemeralInstances().size();
+                                    // 获取该服务的永久实例数量
+                                    int persistentInstanceCount = service.getPersistentInstances().size();
+                                    // 如果该服务的临时实例数量或者永久实例数量只要有一个大于0（说明该服务不是空服务,则可以将该服务统计进去）
+                                    if(ephemeralInstanceCount > 0 || persistentInstanceCount > 0){
+                                        services.add(service);
+                                    }
+                                }
+                                // 如果没有隐藏空服务
+                                else {
+                                    services.add(service);
+                                }
+                            }
+                        }else {
+                            // 如果隐藏空服务
+                            if(hideEmptyService){
+                                // 获取该服务的临时实例数量
+                                int ephemeralInstanceCount = service.getEphemeralInstances().size();
+                                // 获取该服务的永久实例数量
+                                int persistentInstanceCount = service.getPersistentInstances().size();
+                                // 如果该服务的临时实例数量或者永久实例数量只要有一个大于0（说明该服务不是空服务,则可以将该服务统计进去）
+                                if(ephemeralInstanceCount > 0 || persistentInstanceCount > 0){
+                                    services.add(service);
+                                }
+                            }
+                            // 如果没有隐藏空服务
+                            else {
+                                services.add(service);
+                            }
+                        }
                     }
                 }
             }

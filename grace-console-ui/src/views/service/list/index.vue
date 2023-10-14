@@ -133,7 +133,7 @@
       :header-cell-style="{ background: '#eef1f6', color: '#606266' }"
       v-loading="tableLoading"
       element-loading-background="rgba(255, 255, 255, .5)"
-      element-loading-text="加载中，请稍后..."
+      element-loading-text="拼命加载中"
       element-loading-spinner="el-icon-loading"
       style="width: 100%"
     >
@@ -157,11 +157,28 @@
       </el-table-column>
       <el-table-column label="操作" min-width="180">
         <template slot-scope="scope">
-          <span class="operation" @click="serviceDetail(currentSelectedNamespaceId,scope.row.groupName,scope.row.serviceName)"
+          <span
+            class="operation"
+            @click="
+              serviceDetail(
+                currentSelectedNamespaceId,
+                scope.row.groupName,
+                scope.row.serviceName
+              )
+            "
             >服务详情</span
           >
           <span style="margin-right: 5px">|</span>
-          <span class="operation" href="#" @click="deleteService(currentSelectedNamespaceId,scope.row.groupName,scope.row.serviceName)"
+          <span
+            class="operation"
+            href="#"
+            @click="
+              deleteService(
+                currentSelectedNamespaceId,
+                scope.row.groupName,
+                scope.row.serviceName
+              )
+            "
             >删除服务</span
           >
         </template>
@@ -234,7 +251,9 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="createService('createServiceForm')">确 定</el-button>
+        <el-button type="primary" @click="createService('createServiceForm')"
+          >确 定</el-button
+        >
         <el-button @click="openCreateServiceDialog = false">取 消</el-button>
       </div>
     </el-dialog>
@@ -349,172 +368,250 @@ export default {
     },
     // 加载数据
     loadData() {
-      // 开启表格的加载动画
-      this.tableLoading = true;
-
       // 加载命名空间数据
       getNamespaceList().then((response) => {
         // 后端返回给前端的result对象
         let result = response.data;
         this.namespaceData = result.data;
       });
+      // 开启表格的加载动画
+      this.tableLoading = true;
 
-      //当前选择的命名空间的id
-      let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
-      // 是否隐藏空服务
-      let hideEmptyService = this.queryCondition.hideEmptyService;
-      // 当前页
-      let page = this.page;
-      // 每页展示的数量
-      let size = this.size;
-      // 从后端分页的获取service列表的数据
-      getServiceList(
-        currentSelectedNamespaceId,
-        hideEmptyService,
-        page,
-        size
-      ).then((response) => {
-        // 后端返回给前端的result对象
-        let result = response.data;
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        //当前选择的命名空间的id
+        let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
+        // 指定分组名
+        let groupName = this.queryCondition.groupName;
+        // 指定服务名
+        let serviceName = this.queryCondition.serviceName;
+        // 是否隐藏空服务
+        let hideEmptyService = this.queryCondition.hideEmptyService;
+        // 当前页
+        let page = this.page;
+        // 每页展示的数量
+        let size = this.size;
+        // 从后端分页的获取service列表的数据
+        getServiceList(
+          currentSelectedNamespaceId,
+          groupName,
+          serviceName,
+          hideEmptyService,
+          page,
+          size
+        ).then((response) => {
+          // 后端返回给前端的result对象
+          let result = response.data;
 
-        // 将数据放到vue中
-        this.tableData = result.data.pagedServiceList;
-        this.totalCount = result.data.totalCount;
-        // 关闭表格的加载动画
-        this.tableLoading = false;
-      });
+          // 将数据放到vue中
+          this.tableData = result.data.pagedServiceList;
+          this.totalCount = result.data.totalCount;
+          // 关闭表格的加载动画
+          this.tableLoading = false;
+        });
+      }, 500);
     },
     // 点击切换命名空间
     namespaceToggle(selectedNamespaceId) {
       // 更新当前选择的命名空间id
       this.currentSelectedNamespaceId = selectedNamespaceId;
-      // 是否隐藏空服务
-      let hideEmptyService = this.queryCondition.hideEmptyService;
-      // 将当前页重置回第 1 页（分页标签上的current-page属性必须加上.sync,不然无法将当前页重置回第 1 页）
-      this.page = 1;
-      // 每页展示的数量
-      let size = this.size;
-      // 从后端分页的获取service列表的数据
-      getServiceList(
-        this.currentSelectedNamespaceId,
-        hideEmptyService,
-        this.page,
-        size
-      ).then((response) => {
-        // 后端返回给前端的result对象
-        let result = response.data;
-
-        // 将数据放到vue中
-        this.tableData = result.data.pagedServiceList;
-        this.totalCount = result.data.totalCount;
-        // 关闭表格的加载动画
-        this.tableLoading = false;
-      });
+      // 开启表格的加载动画
+      this.tableLoading = true;
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        // 指定分组名
+        let groupName = this.queryCondition.groupName;
+        // 指定服务名
+        let serviceName = this.queryCondition.serviceName;
+        // 是否隐藏空服务
+        let hideEmptyService = this.queryCondition.hideEmptyService;
+        // 将当前页重置回第 1 页（分页标签上的current-page属性必须加上.sync,不然无法将当前页重置回第 1 页）
+        this.page = 1;
+        // 每页展示的数量
+        let size = this.size;
+        // 从后端分页的获取service列表的数据
+        getServiceList(
+          this.currentSelectedNamespaceId,
+          groupName,
+          serviceName,
+          hideEmptyService,
+          this.page,
+          size
+        ).then((response) => {
+          // 后端返回给前端的result对象
+          let result = response.data;
+          // 将数据放到vue中
+          this.tableData = result.data.pagedServiceList;
+          this.totalCount = result.data.totalCount;
+          // 关闭表格的加载动画
+          this.tableLoading = false;
+        });
+      }, 500);
     },
     // 点击切换隐藏空服务
     changeHideEmptyService(hideEmptyService) {
-      //当前选择的命名空间的id
-      let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
-      // 当前页
-      let page = this.page;
-      // 每页展示的数量
-      let size = this.size;
-      // 从后端分页的获取service列表的数据
-      getServiceList(
-        currentSelectedNamespaceId,
-        hideEmptyService,
-        page,
-        size
-      ).then((response) => {
-        // 后端返回给前端的result对象
-        let result = response.data;
-
-        // 将数据放到vue中
-        this.tableData = result.data.pagedServiceList;
-        this.totalCount = result.data.totalCount;
-        // 关闭表格的加载动画
-        this.tableLoading = false;
-      });
+      // 开启表格的加载动画
+      this.tableLoading = true;
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        //当前选择的命名空间的id
+        let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
+        // 指定分组名
+        let groupName = this.queryCondition.groupName;
+        // 指定服务名
+        let serviceName = this.queryCondition.serviceName;
+        // 当前页
+        let page = this.page;
+        // 每页展示的数量
+        let size = this.size;
+        // 从后端分页的获取service列表的数据
+        getServiceList(
+          currentSelectedNamespaceId,
+          groupName,
+          serviceName,
+          hideEmptyService,
+          page,
+          size
+        ).then((response) => {
+          // 后端返回给前端的result对象
+          let result = response.data;
+          // 将数据放到vue中
+          this.tableData = result.data.pagedServiceList;
+          this.totalCount = result.data.totalCount;
+          // 关闭表格的加载动画
+          this.tableLoading = false;
+        });
+      }, 500);
     },
     // 点击查询
     query() {
-      console.log(this.queryCondition);
+      // 开启表格的加载动画
+      this.tableLoading = true;
+
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        // 当前选择的命名空间的id
+        let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
+        // 指定分组名
+        let groupName = this.queryCondition.groupName;
+        // 指定服务名
+        let serviceName = this.queryCondition.serviceName;
+        // 是否隐藏空服务
+        let hideEmptyService = this.queryCondition.hideEmptyService;
+        // 当前页
+        let page = this.page;
+        // 每页展示的数量
+        let size = this.size;
+        // 从后端分页的获取service列表的数据
+        getServiceList(
+          currentSelectedNamespaceId,
+          groupName,
+          serviceName,
+          hideEmptyService,
+          page,
+          size
+        ).then((response) => {
+          // 后端返回给前端的result对象
+          let result = response.data;
+
+          // 将数据放到vue中
+          this.tableData = result.data.pagedServiceList;
+          this.totalCount = result.data.totalCount;
+          // 关闭表格的加载动画
+          this.tableLoading = false;
+        });
+      }, 500);
     },
     // 点击打开创建服务dialog
     clickOpenCreateServiceDialog() {
       this.openCreateServiceDialog = true;
     },
     // 服务详情
-    serviceDetail(namespaceId,groupName,serviceName) {
+    serviceDetail(namespaceId, groupName, serviceName) {
       this.$router.push({
         path: "/service/detail",
         query: {
           namespaceId: namespaceId,
           groupName: groupName,
-          serviceName: serviceName
-        }
-    })
-  },
+          serviceName: serviceName,
+        },
+      });
+    },
 
     // 删除服务
-    deleteService(namespaceId,groupName,serviceName) {
-      
-    },
+    deleteService(namespaceId, groupName, serviceName) {},
     // page（当前页）改变时触发
     handlePageChange(page) {
       // 开启表格的加载动画
       this.tableLoading = true;
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        //当前选择的命名空间的id
+        let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
+        // 指定分组名
+        let groupName = this.queryCondition.groupName;
+        // 指定服务名
+        let serviceName = this.queryCondition.serviceName;
+        // 是否隐藏空服务
+        let hideEmptyService = this.queryCondition.hideEmptyService;
+        // 每页展示的数量
+        let size = this.size;
+        // 从后端分页的获取service列表的数据
+        getServiceList(
+          currentSelectedNamespaceId,
+          groupName,
+          serviceName,
+          hideEmptyService,
+          page,
+          size
+        ).then((response) => {
+          // 后端返回给前端的result对象
+          let result = response.data;
 
-      //当前选择的命名空间的id
-      let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
-      // 是否隐藏空服务
-      let hideEmptyService = this.queryCondition.hideEmptyService;
-      // 每页展示的数量
-      let size = this.size;
-      // 从后端分页的获取service列表的数据
-      getServiceList(
-        currentSelectedNamespaceId,
-        hideEmptyService,
-        page,
-        size
-      ).then((response) => {
-        // 后端返回给前端的result对象
-        let result = response.data;
-
-        // 将数据放到vue中
-        this.tableData = result.data.pagedServiceList;
-        this.totalCount = result.data.totalCount;
-        // 关闭表格的加载动画
-        this.tableLoading = false;
-      });
+          // 将数据放到vue中
+          this.tableData = result.data.pagedServiceList;
+          this.totalCount = result.data.totalCount;
+          // 关闭表格的加载动画
+          this.tableLoading = false;
+        });
+      }, 500);
     },
     // size（每页展示的数量）改变时触发
     handleSizeChange(size) {
       // 开启表格的加载动画
       this.tableLoading = true;
 
-      //当前选择的命名空间的id
-      let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
-      // 是否隐藏空服务
-      let hideEmptyService = this.queryCondition.hideEmptyService;
-      // 当前页
-      let page = this.page;
-      // 从后端分页的获取service列表的数据
-      getServiceList(
-        currentSelectedNamespaceId,
-        hideEmptyService,
-        page,
-        size
-      ).then((response) => {
-        // 后端返回给前端的result对象
-        let result = response.data;
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        //当前选择的命名空间的id
+        let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
+        // 指定分组名
+        let groupName = this.queryCondition.groupName;
+        // 指定服务名
+        let serviceName = this.queryCondition.serviceName;
+        // 是否隐藏空服务
+        let hideEmptyService = this.queryCondition.hideEmptyService;
+        // 当前页
+        let page = this.page;
+        // 从后端分页的获取service列表的数据
+        getServiceList(
+          currentSelectedNamespaceId,
+          groupName,
+          serviceName,
+          hideEmptyService,
+          page,
+          size
+        ).then((response) => {
+          // 后端返回给前端的result对象
+          let result = response.data;
 
-        // 将数据放到vue中
-        this.tableData = result.data.pagedServiceList;
-        this.totalCount = result.data.totalCount;
-        // 关闭表格的加载动画
-        this.tableLoading = false;
-      });
+          // 将数据放到vue中
+          this.tableData = result.data.pagedServiceList;
+          this.totalCount = result.data.totalCount;
+          // 关闭表格的加载动画
+          this.tableLoading = false;
+        });
+      }, 500);
     },
     // 创建服务
     createService(formName) {
@@ -525,8 +622,8 @@ export default {
           this.createServiceForm.namespaceId = this.currentSelectedNamespaceId;
           createService(this.createServiceForm).then((response) => {
             let result = response.data;
-            if(result.data){
-              this.$message.success('创建服务成功');
+            if (result.data) {
+              this.$message.success("创建服务成功");
               // 重新加载数据
               this.loadData();
               // 重置createServiceForm
@@ -542,8 +639,8 @@ export default {
               };
               // 关闭dialog
               this.openCreateServiceDialog = false;
-            }else{
-              this.$message.error('创建服务失败');
+            } else {
+              this.$message.error("创建服务失败");
             }
           });
         } else {

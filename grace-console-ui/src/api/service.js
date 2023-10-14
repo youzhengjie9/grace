@@ -1,11 +1,13 @@
 import request from '@/utils/request'
 
-export function getServiceList(namespaceId,hideEmptyService,page,size){
+export function getServiceList(namespaceId,groupName,serviceName,hideEmptyService,page,size){
     return request({
         method:'get',
         url:'/grace/server/service/getServiceList',
         params:{
             namespaceId:namespaceId,
+            groupName:groupName,
+            serviceName:serviceName,
             hideEmptyService:hideEmptyService,
             page:page,
             size:size

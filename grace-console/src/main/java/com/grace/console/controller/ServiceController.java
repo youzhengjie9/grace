@@ -55,6 +55,8 @@ public class ServiceController {
     @GetMapping("/getServiceList")
     public Result<ServiceListVO> getServiceList(
             @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
+            @RequestParam(name = "groupName",required = false, defaultValue = "") String groupName,
+            @RequestParam(name = "serviceName",required = false, defaultValue = "") String serviceName,
             @RequestParam(value = "hideEmptyService", required = false, defaultValue = "true") boolean hideEmptyService,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size) {
@@ -70,7 +72,7 @@ public class ServiceController {
         size = Math.min(size,500);
         ServiceListVO serviceListVO = new ServiceListVO();
         // 获取所有符合条件的service(不进行分页)
-        Set<Service> services = groupManager.getAllService(namespaceId, hideEmptyService);
+        Set<Service> services = groupManager.getAllService(namespaceId,groupName,serviceName, hideEmptyService);
         // 把Service集合进行分页
         Set<Service> pagedServices = servicesPage(services, page, size);
         // 设置“分页之前”的service总记录数
