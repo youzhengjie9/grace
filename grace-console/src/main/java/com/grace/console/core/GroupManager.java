@@ -634,8 +634,16 @@ public class GroupManager {
                 return false;
             }
         }
-        // 将json字符串的metadata转成Map类型的metadata
-        Map<Object, Object> metadataMap = JsonUtils.jsonStr2Map(metadata);
+        // 将Map<Object, Object>类型的metadata转成Map<String,String>类型
+        final Map<Object, Object> oldMetadataMap = JsonUtils.jsonStr2Map(metadata);
+        final Map<String,String> newMetadataMap = new ConcurrentHashMap<>();
+        if(oldMetadataMap != null){
+            oldMetadataMap.forEach((key,value) -> {
+                String k = String.valueOf(key);
+                String v = String.valueOf(value);
+                newMetadataMap.put(k,v);
+            });
+        }
 
         // 获取指定service
         Service service = getService(namespaceId, groupName, serviceName);
@@ -655,8 +663,7 @@ public class GroupManager {
                     .protectThreshold(protectThreshold)
                     .ephemeralInstances(new CopyOnWriteArraySet<>())
                     .persistentInstances(new CopyOnWriteArraySet<>())
-                    // 通过二次强制转换将 Map <Object, Object>转成 Map <String, String>
-                    .metadata((Map<String, String>)(Object)metadataMap)
+                    .metadata(newMetadataMap)
                     .createTime(LocalDateTime.now())
                     .lastUpdatedTime(LocalDateTime.now())
                     .build();
@@ -1054,11 +1061,19 @@ public class GroupManager {
                         return false;
                     }
                 }
-                // 将json字符串的metadata转成Map类型的metadata
-                Map<String, String> metadataMap = (Map<String, String>) (Object)JsonUtils.jsonStr2Map(metadata);
+                // 将Map<Object, Object>类型的metadata转成Map<String,String>类型
+                final Map<Object, Object> oldMetadataMap = JsonUtils.jsonStr2Map(metadata);
+                final Map<String,String> newMetadataMap = new ConcurrentHashMap<>();
+                if(oldMetadataMap != null){
+                    oldMetadataMap.forEach((key,value) -> {
+                        String k = String.valueOf(key);
+                        String v = String.valueOf(value);
+                        newMetadataMap.put(k,v);
+                    });
+                }
                 // 修改service
                 service.setProtectThreshold(serviceDTO.getProtectThreshold());
-                service.setMetadata(metadataMap);
+                service.setMetadata(newMetadataMap);
                 service.setLastUpdatedTime(LocalDateTime.now());
                 return true;
             }catch (Exception e){

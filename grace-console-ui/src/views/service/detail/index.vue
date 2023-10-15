@@ -273,6 +273,9 @@ export default {
     clearMetadataFilterCondition() {
       // 将元数据过滤条件标签数组中的所有元素清空
       this.metadataFilterTags = [];
+      // 注意: 将展示实例的表格数据清空,以免其他方法调用loadData()时
+      // 由于“this.instanceTableData.push(newInstance);”方法导致数据变多的bug
+      this.instanceTableData = [];
       // 还原展示实例表格数据
       // 将服务详情表单（serviceDetail）内容复制到一个新的对象中
       let allInstances = this.serviceDetail.allInstances;
@@ -430,11 +433,82 @@ export default {
     },
     // 下线
     offline(row) {
-      row.online = false;
+
+      // 这里的metadata是Object类型的数据，将其转成Map类型的数据
+      let metadataMap = new Map(Object.entries(row.metadata));
+      // metadata的Json字符串类型的数据
+      let metadataJson;
+      // 如果metadataMap没有数据
+      if(metadataMap.size == 0){
+        metadataJson = '';
+      }
+      // 如果metadataMap有数据
+      else{
+        // 转成JSON
+        metadataJson = this.Map2JsonStr(metadataMap);
+        // 将JSON字符串格式化成用户容易看懂的格式
+        metadataJson = this.formatJsonStr(metadataJson)
+      }
+
+      let modifyInstanceDTO = {
+        namespaceId: this.serviceDetail.namespaceId,
+        groupName: this.serviceDetail.groupName,
+        serviceName: this.serviceDetail.serviceName,
+        instanceId: row.instanceId,
+        weight: row.weight,
+        healthy: row.healthy,
+        online: false,
+        metadata: metadataJson,
+      };
+      // 调用接口
+      modifyInstance(modifyInstanceDTO).then((response) => {
+        let result = response.data;
+        if (result.data == true) {
+          this.$message.success("下线成功");
+          row.online = false;
+        } else {
+          this.$message.error("下线失败");
+        }
+      });
     },
     // 上线
     online(row) {
-      row.online = true;
+      // 这里的metadata是Object类型的数据，将其转成Map类型的数据
+      let metadataMap = new Map(Object.entries(row.metadata));
+      // metadata的Json字符串类型的数据
+      let metadataJson;
+      // 如果metadataMap没有数据
+      if(metadataMap.size == 0){
+        metadataJson = '';
+      }
+      // 如果metadataMap有数据
+      else{
+        // 转成JSON
+        metadataJson = this.Map2JsonStr(metadataMap);
+        // 将JSON字符串格式化成用户容易看懂的格式
+        metadataJson = this.formatJsonStr(metadataJson)
+      }
+
+      let modifyInstanceDTO = {
+        namespaceId: this.serviceDetail.namespaceId,
+        groupName: this.serviceDetail.groupName,
+        serviceName: this.serviceDetail.serviceName,
+        instanceId: row.instanceId,
+        weight: row.weight,
+        healthy: row.healthy,
+        online: true,
+        metadata: metadataJson,
+      };
+      // 调用接口
+      modifyInstance(modifyInstanceDTO).then((response) => {
+        let result = response.data;
+        if (result.data == true) {
+          this.$message.success("上线成功");
+          row.online = true;
+        } else {
+          this.$message.error("上线失败");
+        }
+      });
     },
     back() {
       this.$router.go(-1);

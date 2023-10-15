@@ -302,7 +302,7 @@
             <el-input
               v-model="modifyInstanceForm.ipAddr"
               autocomplete="off"
-              :disabled="true"
+              :readonly="true"
             ></el-input>
           </el-col>
         </el-form-item>
@@ -315,7 +315,7 @@
             <el-input
               v-model="modifyInstanceForm.port"
               autocomplete="off"
-              :disabled="true"
+              :readonly="true"
             ></el-input>
           </el-col>
         </el-form-item>

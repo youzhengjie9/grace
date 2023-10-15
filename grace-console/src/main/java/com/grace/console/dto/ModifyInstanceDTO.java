@@ -108,9 +108,15 @@ public class ModifyInstanceDTO implements Serializable {
      * @return {@link Instance}
      */
     public Instance buildInstanceByModifyInstanceDTO() {
-        Map<Object, Object> metadataMap = JsonUtils.jsonStr2Map(metadata);
-        if(metadataMap == null){
-            metadataMap = new ConcurrentHashMap<>();
+        // 将Map<Object, Object>类型的metadata转成Map<String,String>类型
+        final Map<Object, Object> oldMetadataMap = JsonUtils.jsonStr2Map(metadata);
+        final Map<String,String> newMetadataMap = new ConcurrentHashMap<>();
+        if(oldMetadataMap != null){
+            oldMetadataMap.forEach((key,value) -> {
+                String k = String.valueOf(key);
+                String v = String.valueOf(value);
+                newMetadataMap.put(k,v);
+            });
         }
         return InstanceBuilder.newBuilder()
                 .instanceId(instanceId)
@@ -118,7 +124,7 @@ public class ModifyInstanceDTO implements Serializable {
                 .weight(weight)
                 .healthy(healthy)
                 .online(online)
-                .metadata((Map<String, String>) (Object)metadataMap)
+                .metadata(newMetadataMap)
                 .build();
     }
 
