@@ -28,7 +28,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @RequestMapping(path = ParentMappingConstants.SERVICE_CONTROLLER)
 public class ServiceController {
 
-    private final GroupManager groupManager = GroupManager.getInstance();
+    private final GroupManager groupManager = GroupManager.getGroupManagerSingleton();
 
     /**
      * 创建service

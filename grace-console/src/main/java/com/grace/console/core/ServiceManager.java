@@ -65,7 +65,7 @@
 //        scheduledCleanEmptyServicePeriod=20000;
 //    }
 //
-//    public static ServiceManager getInstance() {
+//    public static ServiceManager getGroupManagerSingleton() {
 //        return INSTANCE;
 //    }
 //

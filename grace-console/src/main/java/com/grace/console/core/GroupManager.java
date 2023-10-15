@@ -1,6 +1,5 @@
 package com.grace.console.core;
 
-import com.alibaba.fastjson2.JSON;
 import com.grace.common.constant.Constants;
 import com.grace.common.entity.Group;
 import com.grace.common.entity.Instance;
@@ -386,7 +385,7 @@ public class GroupManager {
      *
      * @return {@link GroupManager}
      */
-    public static GroupManager getInstance() {
+    public static GroupManager getGroupManagerSingleton() {
         return INSTANCE;
     }
 
@@ -944,7 +943,36 @@ public class GroupManager {
 
 
     /**
-     * 获取指定的instance
+     * 根据instanceId获取指定的instance
+     *
+     * @param namespaceId namespaceId
+     * @param groupName   groupName
+     * @param serviceName serviceName
+     * @return {@link Instance}
+     */
+    public Instance getInstance(String namespaceId, String groupName, String serviceName, String instanceId) {
+        // 先获取service
+        Service service = getService(namespaceId, groupName, serviceName);
+        // 如果service不为空
+        if(service != null){
+            // 获取service所有instance
+            List<Instance> allInstance = service.getAllInstance();
+            // 如果该service存有instance
+            if(allInstance != null && allInstance.size() > 0){
+                // 遍历实例列表
+                for (Instance instance : allInstance) {
+                    // 如果找到指定的instance
+                    if(instance.getInstanceId().equals(instanceId)){
+                        return instance;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 根据ipAddr和Port获取指定的instance
      *
      * @param namespaceId namespaceId
      * @param groupName   groupName
@@ -953,10 +981,24 @@ public class GroupManager {
      * @param port port
      * @return {@link Instance}
      */
-    public Instance getInstance(String namespaceId, String groupName, String serviceName, String ipAddr, int port) {
-
-        // TODO: 2023/10/7
-
+    public Instance getInstance(String namespaceId, String groupName, String serviceName, String ipAddr,int port) {
+        // 先获取service
+        Service service = getService(namespaceId, groupName, serviceName);
+        // 如果service不为空
+        if(service != null){
+            // 获取service所有instance
+            List<Instance> allInstance = service.getAllInstance();
+            // 如果该service存有instance
+            if(allInstance != null && allInstance.size() > 0){
+                // 遍历实例列表
+                for (Instance instance : allInstance) {
+                    // 如果找到指定的instance
+                    if(instance.getIpAddr().equals(ipAddr) && instance.getPort() == port){
+                        return instance;
+                    }
+                }
+            }
+        }
         return null;
     }
 

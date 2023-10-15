@@ -18,22 +18,22 @@ public class Instance implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 服务实例id
+     * 服务实例id（一旦创建就不能修改）
      */
     private String instanceId;
 
     /**
-     * 该实例所属的服务名
+     * 该实例所属的服务名（一旦创建就不能修改）
      */
     private String serviceName;
 
     /**
-     * 该实例的ip地址
+     * 该实例的ip地址（一旦创建就不能修改）
      */
     private String ipAddr;
 
     /**
-     * 该实例的端口号
+     * 该实例的端口号（一旦创建就不能修改）
      */
     private int port;
 
@@ -48,7 +48,7 @@ public class Instance implements Serializable {
     private boolean healthy = true;
 
     /**
-     * 是否为临时实例
+     * 是否为临时实例（一旦创建就不能修改）
      */
     private boolean ephemeral = true;
 
@@ -63,7 +63,7 @@ public class Instance implements Serializable {
     private Map<String, String> metadata = new HashMap<>();
 
     /**
-     * 创建时间
+     * 创建时间（一旦创建就不能修改）
      */
     private LocalDateTime createTime;
 
@@ -84,10 +84,6 @@ public class Instance implements Serializable {
         this.createTime = createTime;
     }
 
-    public void setInstanceId(String instanceId) {
-        this.instanceId = instanceId;
-    }
-
     public String getInstanceId() {
         return instanceId;
     }
@@ -96,27 +92,12 @@ public class Instance implements Serializable {
         return serviceName;
     }
 
-    public Instance setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-        return this;
-    }
-
     public String getIpAddr() {
         return ipAddr;
     }
 
-    public Instance setIpAddr(String ipAddr) {
-        this.ipAddr = ipAddr;
-        return this;
-    }
-
     public int getPort() {
         return port;
-    }
-
-    public Instance setPort(int port) {
-        this.port = port;
-        return this;
     }
 
     public double getWeight() {
@@ -141,11 +122,6 @@ public class Instance implements Serializable {
         return createTime;
     }
 
-    public Instance setEphemeral(boolean ephemeral) {
-        this.ephemeral = ephemeral;
-        return this;
-    }
-
     public boolean getHealthy() {
         return healthy;
     }
@@ -167,13 +143,6 @@ public class Instance implements Serializable {
     public boolean getOnline() {
         return online;
     }
-
-
-    public Instance setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-        return this;
-    }
-
 
     @Override
     public String toString() {

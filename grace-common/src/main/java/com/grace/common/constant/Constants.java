@@ -48,9 +48,24 @@ public class Constants {
     public static final Boolean DEFAULT_HEALTHY = true;
 
     /**
+     * 默认是否在线
+     */
+    public static final Boolean DEFAULT_ONLINE = true;
+
+    /**
      * 默认权重
      */
-    public static final Double DEFAULT_WEIGHT = 1.0;
+    public static final double DEFAULT_WEIGHT = 1.0;
+
+    /**
+     * 最小权重
+     */
+    public static final double MIN_WEIGHT_VALUE = 0.00D;
+
+    /**
+     * 最大权重
+     */
+    public static final double MAX_WEIGHT_VALUE = 10000.0D;
 
     /**
      * 默认是否为临时实例

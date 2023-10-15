@@ -13,7 +13,7 @@ public class SvcServiceImpl implements SvcService {
 
     private static final Logger log = LoggerFactory.getLogger(SvcServiceImpl.class);
 
-    private final GroupManager groupManager = GroupManager.getInstance();
+    private final GroupManager groupManager = GroupManager.getGroupManagerSingleton();
 
     @Override
     public Boolean createService(Service service) {

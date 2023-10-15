@@ -1,18 +1,26 @@
 package com.grace.console.dto;
 
 import com.grace.common.constant.Constants;
+import com.grace.common.entity.Instance;
+import com.grace.common.entity.builder.InstanceBuilder;
+import com.grace.console.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Instance DTO
+ * 注册Instance DTO
  *
  * @author youzhengjie
  * @date 2023/10/05 15:17:46
  */
-public class InstanceDTO implements Serializable {
+public class RegisterInstanceDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -20,6 +28,11 @@ public class InstanceDTO implements Serializable {
      * 该实例所在的命名空间id
      */
     private String namespaceId;
+
+    /**
+     * 该实例所在的分组名
+     */
+    private String groupName;
 
     /**
      * 该实例所属的服务名
@@ -47,6 +60,11 @@ public class InstanceDTO implements Serializable {
     private Boolean healthy;
 
     /**
+     * 是否在线(可修改)
+     */
+    private Boolean online;
+
+    /**
      * 是否为临时实例
      */
     private Boolean ephemeral;
@@ -57,9 +75,8 @@ public class InstanceDTO implements Serializable {
     private String metadata;
 
 
-    public InstanceDTO() {
+    public RegisterInstanceDTO() {
     }
-
 
     /**
      * 校验InstanceDTO对象的必填属性是否为空,为空则抛出异常
@@ -86,19 +103,47 @@ public class InstanceDTO implements Serializable {
         if (namespaceId == null) {
             namespaceId = Constants.DEFAULT_NAMESPACE_ID;
         }
-//        if (StringUtils.isBlank(groupName)) {
-//            groupName = Constants.DEFAULT_GROUP_NAME;
-//        }
+        if (StringUtils.isBlank(groupName)) {
+            groupName = Constants.DEFAULT_GROUP_NAME;
+        }
         if (healthy == null) {
             healthy = Constants.DEFAULT_HEALTHY;
         }
         if (weight == null) {
             weight = Constants.DEFAULT_WEIGHT;
         }
+        if (online == null) {
+            online = Constants.DEFAULT_ONLINE;
+        }
         if(ephemeral == null){
             ephemeral = Constants.DEFAULT_EPHEMERAL;
         }
     }
+
+    /**
+     * 通过RegisterInstanceDTO对象构建实例（Instance）
+     *
+     * @return {@link Instance}
+     */
+    public Instance buildInstanceByRegisterInstanceDTO() {
+        Map<Object, Object> metadataMap = JsonUtils.jsonStr2Map(metadata);
+        if(metadataMap == null){
+            metadataMap = new ConcurrentHashMap<>();
+        }
+        return InstanceBuilder.newBuilder()
+                .instanceId(UUID.randomUUID().toString())
+                .serviceName(serviceName)
+                .ipAddr(ipAddr)
+                .port(port)
+                .weight(weight)
+                .healthy(healthy)
+                .online(online)
+                .ephemeral(ephemeral)
+                .metadata((Map<String, String>) (Object)metadataMap)
+                .createTime(LocalDateTime.now())
+                .build();
+    }
+
 
     public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
@@ -114,6 +159,10 @@ public class InstanceDTO implements Serializable {
 
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
+    }
+
+    public String getGroupName() {
+        return groupName;
     }
 
     public String getIpAddr() {
@@ -148,6 +197,14 @@ public class InstanceDTO implements Serializable {
         this.healthy = healthy;
     }
 
+    public Boolean getOnline() {
+        return online;
+    }
+
+    public void setOnline(Boolean online) {
+        this.online = online;
+    }
+
     public Boolean getEphemeral() {
         return ephemeral;
     }
@@ -173,8 +230,9 @@ public class InstanceDTO implements Serializable {
         if (o == null || getClass() != o.getClass()){
             return false;
         }
-        InstanceDTO that = (InstanceDTO) o;
+        RegisterInstanceDTO that = (RegisterInstanceDTO) o;
         return Objects.equals(namespaceId, that.namespaceId)
+                && Objects.equals(groupName, that.groupName)
                 && Objects.equals(serviceName, that.serviceName)
                 && Objects.equals(ipAddr, that.ipAddr)
                 && Objects.equals(port, that.port)
@@ -186,18 +244,20 @@ public class InstanceDTO implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(namespaceId, serviceName, ipAddr, port, weight, healthy, ephemeral, metadata);
+        return Objects.hash(namespaceId, groupName, serviceName, ipAddr, port, weight, healthy, ephemeral, metadata);
     }
 
     @Override
     public String toString() {
-        return "InstanceDTO{" +
-                "namespaceId=" + namespaceId +
+        return "RegisterInstanceDTO{" +
+                "namespaceId='" + namespaceId + '\'' +
+                ", groupName='" + groupName + '\'' +
                 ", serviceName='" + serviceName + '\'' +
                 ", ipAddr='" + ipAddr + '\'' +
                 ", port=" + port +
                 ", weight=" + weight +
                 ", healthy=" + healthy +
+                ", online=" + online +
                 ", ephemeral=" + ephemeral +
                 ", metadata='" + metadata + '\'' +
                 '}';

@@ -21,7 +21,7 @@ public class JsonUtils {
 //    private static final Logger log = LoggerFactory.getLogger(JsonUtils.class);
 
     /**
-     * 判断字符串是否为JSON格式的字符串
+     * 判断字符串是否为JSON格式的字符串（空字符串""也属于JSON格式）
      *
      * @param str 字符串
      * @return {@link Boolean}
@@ -71,22 +71,22 @@ public class JsonUtils {
 
     public static void main(String[] args) {
 
-        String str = "{'preserved.register.source': 'SPRING_CLOUD','gray': false}";
-        // 判断字符串是否为JSON格式的字符串
-        Boolean isJsonString = isJsonString(str);
-        System.out.println("=======isJsonString========");
-        System.out.println(isJsonString);
-        System.out.println("===============");
-        System.out.println("=======jsonStr2Map========");
-        Map<Object, Object> map = jsonStr2Map(str);
-        map.forEach((k,v) -> {
-            System.out.println(k+"<==>"+v);
-        });
-        System.out.println("===============");
-        System.out.println("=======map2FormatedJsonStr========");
-        String jsonStr = map2FormatedJsonStr(map);
-        System.out.println(jsonStr);
-        System.out.println("===============");
+//        String str = "{'preserved.register.source': 'SPRING_CLOUD','gray': false}";
+//        // 判断字符串是否为JSON格式的字符串
+//        Boolean isJsonString = isJsonString(str);
+//        System.out.println("=======isJsonString========");
+//        System.out.println(isJsonString);
+//        System.out.println("===============");
+//        System.out.println("=======jsonStr2Map========");
+//        Map<Object, Object> map = jsonStr2Map(str);
+//        map.forEach((k,v) -> {
+//            System.out.println(k+"<==>"+v);
+//        });
+//        System.out.println("===============");
+//        System.out.println("=======map2FormatedJsonStr========");
+//        String jsonStr = map2FormatedJsonStr(map);
+//        System.out.println(jsonStr);
+//        System.out.println("===============");
 
     }
 
