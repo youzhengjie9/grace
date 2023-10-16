@@ -36,7 +36,7 @@ public class NamespaceController {
     }
 
     @PostMapping("/createNamespace")
-    public Result<Boolean> createNamespace(CreateNamespaceDTO createNamespaceDTO){
+    public Result<Boolean> createNamespace(@RequestBody CreateNamespaceDTO createNamespaceDTO){
         // 校验必填项
         createNamespaceDTO.validateRequired();
         // 填充默认值
@@ -47,19 +47,19 @@ public class NamespaceController {
     }
 
     @PutMapping("/modifyNamespace")
-    public Result<Boolean> modifyNamespace(ModifyNamespaceDTO modifyNamespaceDTO){
+    public Result<Boolean> modifyNamespace(@RequestBody ModifyNamespaceDTO modifyNamespaceDTO){
         // 校验必填项
         modifyNamespaceDTO.validateRequired();
         // 填充默认值
         modifyNamespaceDTO.fillDefaultValue();
         // 构建Namespace对象
         Namespace namespace = modifyNamespaceDTO.buildNamespaceByModifyNamespaceDTO();
-        return null;
+        return Result.ok(namespaceService.modifyNamespace(namespace));
     }
     @DeleteMapping("/deleteNamespace")
     public Result<Boolean> deleteNamespace(@RequestParam("namespaceId") String namespaceId){
 
-        return null;
+        return Result.ok(namespaceService.deleteNamespace(namespaceId));
     }
 
 

@@ -41,10 +41,10 @@ public interface NamespaceService extends IService<Namespace> {
     /**
      * 修改namespace
      *
-     * @param modifyNamespaceDTO modifyNamespaceDTO
+     * @param namespace namespace
      * @return {@link Boolean}
      */
-    Boolean modifyNamespace(ModifyNamespaceDTO modifyNamespaceDTO);
+    Boolean modifyNamespace(Namespace namespace);
 
     /**
      * 删除namespace

@@ -190,10 +190,10 @@ export default {
           (this.serviceDetail.protectThreshold =
             modifyServiceForm.protectThreshold),
             (this.serviceDetail.metadata = modifyServiceForm.metadata),
-            this.$message.success("修改service成功");
+            this.$message.success("修改服务成功");
           this.openModifyServiceDialog = false;
         } else {
-          this.$message.error("修改service失败");
+          this.$message.error("修改服务失败");
         }
       });
     },

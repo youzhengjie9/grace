@@ -105,18 +105,18 @@
       <el-table-column prop="namespaceName" label="命名空间名称" width="235">
       </el-table-column>
       <!-- 命名空间ID -->
-      <el-table-column prop="namespaceId" label="命名空间ID" width="290">
+      <el-table-column prop="namespaceId" label="命名空间ID" width="410">
       </el-table-column>
       <!-- 描述 -->
       <el-table-column prop="namespaceDesc" label="描述" width="230">
       </el-table-column>
 
       <!-- 服务数 -->
-      <el-table-column prop="serviceCount" label="服务数" width="130">
+      <el-table-column prop="serviceCount" label="服务数" width="90">
       </el-table-column>
 
       <!-- 配置数 -->
-      <el-table-column prop="configCount" label="配置数" width="130">
+      <el-table-column prop="configCount" label="配置数" width="90">
       </el-table-column>
 
       <!-- 操作 -->
@@ -200,7 +200,8 @@
         <el-col :span="24" style="margin-bottom: 10px">
           <span style="font-size: 16px">配置数: </span>
           <span style="color: rgb(199, 37, 78); font-size: 16px">
-            {{ namespaceDetailDialogData.configCount }} / {{namespaceDetailDialogData.maxConfigCount}}
+            {{ namespaceDetailDialogData.configCount }} /
+            {{ namespaceDetailDialogData.maxConfigCount }}
           </span>
         </el-col>
 
@@ -307,7 +308,12 @@
 </template>
   
 <script>
-import { getNamespaceList } from "@/api/namespace";
+import {
+  getNamespaceList,
+  createNamespace,
+  modifyNamespace,
+  deleteNamespace,
+} from "@/api/namespace";
 
 export default {
   name: "NamespaceList",
@@ -396,17 +402,10 @@ export default {
         getNamespaceList().then((response) => {
           let result = response.data;
           this.tableData = result.data;
-
           // 关闭命名空间表格表格的加载动画
           this.namespaceTableLoading = false;
         });
       }, 500);
-    },
-    // 跳转到创建配置路由
-    createConfig() {
-      this.$router.push({
-        path: "/config/create",
-      });
     },
     //刷新
     refresh() {
@@ -417,11 +416,24 @@ export default {
       this.openCreateNamespaceDialog = true;
     },
     // 创建命名空间
-    createNamespace() {},
+    createNamespace() {
+      // 调用接口
+      createNamespace(this.createNamespaceForm).then((response) => {
+        let result = response.data;
+        // 如果创建成功
+        if (result.data == true) {
+          this.$message.success("创建命名空间成功");
+          this.openCreateNamespaceDialog = false;
+          this.loadData();
+        } else {
+          this.$message.error("创建命名空间失败");
+        }
+      });
+    },
     // 点击打开命名空间详情dialog
     clickOpenNamespaceDetailDialog(namespace) {
       // 根据namespaceId从后端获取当前点击namespace详情的dialog所需要的数据
-      this.namespaceDetailDialogData = {
+      (this.namespaceDetailDialogData = {
         // 命名空间名称
         namespaceName: namespace.namespaceName,
         // 命名空间ID
@@ -434,8 +446,8 @@ export default {
         maxConfigCount: namespace.maxConfigCount,
         // 描述
         namespaceDesc: namespace.namespaceDesc,
-      },
-      this.openNamespaceDetailDialog = true;
+      }),
+        (this.openNamespaceDetailDialog = true);
     },
     // 点击打开修改命名空间dialog
     clickOpenModifyNamespaceDialog(namespace) {
@@ -443,20 +455,28 @@ export default {
       let ns = this.deepCopy(namespace);
 
       this.modifyNamespaceForm = {
+        namespaceId: ns.namespaceId,
         namespaceName: ns.namespaceName,
         namespaceDesc: ns.namespaceDesc,
       };
 
       this.openModifyNamespaceDialog = true;
+
     },
     // 修改命名空间
     modifyNamespace() {
-      // 开启命名空间表格表格的加载动画
-      this.namespaceTableLoading = true;
-      // 模拟延迟,让加载动画更明显
-      setTimeout(() => {
-        
-      }, 500);
+      // 调用接口
+      modifyNamespace(this.modifyNamespaceForm).then((response) => {
+        let result = response.data;
+        // 如果修改成功
+        if (result.data == true) {
+          this.$message.success("修改命名空间成功");
+          this.openModifyNamespaceDialog = false;
+          this.loadData();
+        } else {
+          this.$message.error("修改命名空间失败");
+        }
+      });
     },
     // 点击打开删除命名空间
     clickOpenDeleteNamespaceDialog(namespace) {
@@ -470,15 +490,20 @@ export default {
     },
     // 删除命名空间
     deleteNamespace() {
-      
-      // 删除的命名空间id
+      // 删除命名空间的id
       let namespaceId = this.deleteNamespaceDialogData.namespaceId;
-      // 请求后端进行删除
-
-      // 重新加载tableData数据
-      this.loadData();
-      // 关闭删除命名空间dialog
-      this.openDeleteNamespaceDialog = false;
+      // 调用接口
+      deleteNamespace(namespaceId).then((response) => {
+        let result = response.data;
+        // 如果删除成功
+        if (result.data == true) {
+          this.$message.success("删除命名空间成功");
+          this.openDeleteNamespaceDialog = false;
+          this.loadData();
+        } else {
+          this.$message.error("删除命名空间失败");
+        }
+      });
     },
     // 深拷贝(将obj对象进行深拷贝,返回值就是深拷贝出来的对象)
     deepCopy(obj) {

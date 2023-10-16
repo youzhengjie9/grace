@@ -1,6 +1,7 @@
 package com.grace.console.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.grace.common.constant.Constants;
 import com.grace.common.entity.Namespace;
@@ -103,21 +104,46 @@ public class NamespaceServiceImpl extends ServiceImpl<NamespaceMapper,Namespace>
     }
 
     @Override
-    public Boolean modifyNamespace(ModifyNamespaceDTO modifyNamespaceDTO) {
-        String namespaceId = modifyNamespaceDTO.getNamespaceId();
-        String namespaceName = modifyNamespaceDTO.getNamespaceName();
-        String namespaceDesc = modifyNamespaceDTO.getNamespaceDesc();
-        // 如果命名空间存在
-        if (groupManager.hasNamespace(namespaceId)) {
-
-
+    public Boolean modifyNamespace(Namespace namespace) {
+        String namespaceId = namespace.getNamespaceId();
+        String namespaceName = namespace.getNamespaceName();
+        String namespaceDesc = namespace.getNamespaceDesc();
+        // 防止用户把命名空间名称修改成“public”
+        if(namespaceName.equals(Constants.DEFAULT_NAMESPACE_NAME)){
+            log.error("修改命名空间失败。不能把命名空间的名称修改成public");
+            return false;
         }
-        // 如果命名空间不存在,则修改失败
-        return false;
+        // 根据namespaceId从数据库中查询命名空间
+        LambdaQueryWrapper<Namespace> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Namespace::getNamespaceId,namespaceId);
+        Namespace ns = namespaceMapper.selectOne(lambdaQueryWrapper);
+        if(ns == null){
+            log.error("命名空间:{}不存在,修改命名空间失败。",namespaceId);
+            return false;
+        }else {
+            // 构造修改条件
+            LambdaUpdateWrapper<Namespace> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            lambdaUpdateWrapper
+                    .set(Namespace::getNamespaceName,namespaceName)
+                    .set(Namespace::getNamespaceDesc,namespaceDesc)
+                    .eq(Namespace::getNamespaceId,namespaceId);
+            // 根据条件进行修改对应的数据（update第一个参数设置为null即可）
+            int updateResult = namespaceMapper.update(null, lambdaUpdateWrapper);
+            return updateResult > 0;
+        }
     }
 
     @Override
     public Boolean deleteNamespace(String namespaceId) {
-        return null;
+
+        LambdaQueryWrapper<Namespace> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Namespace::getNamespaceId,namespaceId);
+        int deleteResult = namespaceMapper.delete(lambdaQueryWrapper);
+        // 如果成功删除数据库中的指定的数据
+        if(deleteResult > 0){
+            // 根据namespaceId去删除GroupManager类中的groupMap对应的key,这样才算真正的把命名空间给删除了
+            return groupManager.deleteNamespace(namespaceId);
+        }
+        return false;
     }
 }

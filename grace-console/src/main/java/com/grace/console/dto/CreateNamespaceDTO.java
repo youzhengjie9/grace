@@ -83,7 +83,8 @@ public class CreateNamespaceDTO implements Serializable {
     public void fillDefaultValue() {
         // 如果命名空间id为空则使用UUID进行自动生成
         if (StringUtils.isBlank(namespaceId)) {
-            namespaceId = UUID.randomUUID().toString();
+            // 随机生成的命名空间的id长度为36位
+            namespaceId = UUID.randomUUID().toString().substring(0,36);
         }
         if (StringUtils.isBlank(namespaceDesc)) {
             namespaceDesc = "";

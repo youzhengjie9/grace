@@ -407,8 +407,13 @@ public class GroupManager {
      * @return {@link Boolean}
      */
     public Boolean createNamespaceIfAbsent(String namespaceId){
-
         groupMap.putIfAbsent(namespaceId,Collections.synchronizedSet(new HashSet<>()));
+        return true;
+    }
+
+    public Boolean deleteNamespace(String namespaceId) {
+        // 删除命名空间
+        groupMap.remove(namespaceId);
         return true;
     }
 
@@ -1152,4 +1157,5 @@ public class GroupManager {
         // service不存在,删除失败
         return false;
     }
+
 }
