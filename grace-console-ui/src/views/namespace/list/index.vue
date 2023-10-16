@@ -96,7 +96,7 @@
       border
       style="width: 100%; margin-top: 20px"
       :header-cell-style="{ background: '#eef1f6', color: '#606266' }"
-      v-loading="tableLoading"
+      v-loading="namespaceTableLoading"
       element-loading-background="rgba(255, 255, 255, .5)"
       element-loading-text="加载中，请稍后..."
       element-loading-spinner="el-icon-loading"
@@ -125,11 +125,10 @@
           <!-- 命名空间详情 -->
           <span
             class="operation"
-            @click="clickOpenNamespaceDetailDialog(scope.row.namespaceId)"
+            @click="clickOpenNamespaceDetailDialog(scope.row)"
             >详情</span
           >
           <span style="margin-right: 5px">|</span>
-
 
           <!-- 修改命名空间（可以进行点击操作）。除了默认的public命名空间之外,其他命名空间都会用这个 “编辑”  -->
           <span
@@ -140,9 +139,7 @@
           >
 
           <!-- 修改命名空间（不能进行点击操作）。只有默认的public命名空间才会用这个 “编辑”  -->
-          <span
-            class="not-operation"
-            v-if="scope.row.namespaceId == ''"
+          <span class="not-operation" v-if="scope.row.namespaceId == ''"
             >编辑</span
           >
 
@@ -155,13 +152,10 @@
             @click="clickOpenDeleteNamespaceDialog(scope.row)"
             >删除</span
           >
-           <!-- 删除命名空间（不能进行点击操作）。只有默认的public命名空间才会用这个 “删除”  -->
-          <span
-            class="not-operation"
-            v-if="scope.row.namespaceId == ''"
+          <!-- 删除命名空间（不能进行点击操作）。只有默认的public命名空间才会用这个 “删除”  -->
+          <span class="not-operation" v-if="scope.row.namespaceId == ''"
             >删除</span
           >
-
         </template>
       </el-table-column>
     </el-table>
@@ -206,7 +200,7 @@
         <el-col :span="24" style="margin-bottom: 10px">
           <span style="font-size: 16px">配置数: </span>
           <span style="color: rgb(199, 37, 78); font-size: 16px">
-            {{ namespaceDetailDialogData.configCount }} / 200
+            {{ namespaceDetailDialogData.configCount }} / {{namespaceDetailDialogData.maxConfigCount}}
           </span>
         </el-col>
 
@@ -339,6 +333,8 @@ export default {
       },
       // 请求头
       requestHeaders: { accessToken: "123456789" },
+      // 是否开启命名空间表格的加载动画
+      namespaceTableLoading: false,
       // 命名空间列表数据
       tableData: [],
       // 表格是否加载中（ true说明表格正在加载中,则会显示加载动画。反之false则关闭加载动画）
@@ -383,8 +379,6 @@ export default {
         // 命名空间ID
         namespaceId: "",
       },
-      // 当前点击删除配置的dialog所需要的数据（这个不是批量删除,而是删除）
-      deleteConfigDialogData: "",
     };
   },
   created() {
@@ -394,19 +388,19 @@ export default {
   methods: {
     // 加载数据
     loadData() {
-      // 开启表格的加载动画
-      this.tableLoading = true;
+      // 开启命名空间表格表格的加载动画
+      this.namespaceTableLoading = true;
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        // 从后端获取tableData数据
+        getNamespaceList().then((response) => {
+          let result = response.data;
+          this.tableData = result.data;
 
-      // 从后端获取tableData数据
-      getNamespaceList().then((response) => {
-
-        let result = response.data;
-        this.tableData = result.data;
-
-        // 关闭表格的加载动画
-        this.tableLoading = false;
-      })
-      
+          // 关闭命名空间表格表格的加载动画
+          this.namespaceTableLoading = false;
+        });
+      }, 500);
     },
     // 跳转到创建配置路由
     createConfig() {
@@ -425,21 +419,23 @@ export default {
     // 创建命名空间
     createNamespace() {},
     // 点击打开命名空间详情dialog
-    clickOpenNamespaceDetailDialog(namespaceId) {
+    clickOpenNamespaceDetailDialog(namespace) {
       // 根据namespaceId从后端获取当前点击namespace详情的dialog所需要的数据
-      (this.namespaceDetailDialogData = {
+      this.namespaceDetailDialogData = {
         // 命名空间名称
-        namespaceName: "abc",
+        namespaceName: namespace.namespaceName,
         // 命名空间ID
-        namespaceId: "123",
+        namespaceId: namespace.namespaceId,
         // 服务数
-        serviceCount: 10,
+        serviceCount: namespace.serviceCount,
         // 配置数
-        configCount: 20,
+        configCount: namespace.configCount,
+        // 最大配置数
+        maxConfigCount: namespace.maxConfigCount,
         // 描述
-        namespaceDesc: "666",
-      }),
-        (this.openNamespaceDetailDialog = true);
+        namespaceDesc: namespace.namespaceDesc,
+      },
+      this.openNamespaceDetailDialog = true;
     },
     // 点击打开修改命名空间dialog
     clickOpenModifyNamespaceDialog(namespace) {
@@ -454,7 +450,14 @@ export default {
       this.openModifyNamespaceDialog = true;
     },
     // 修改命名空间
-    modifyNamespace() {},
+    modifyNamespace() {
+      // 开启命名空间表格表格的加载动画
+      this.namespaceTableLoading = true;
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        
+      }, 500);
+    },
     // 点击打开删除命名空间
     clickOpenDeleteNamespaceDialog(namespace) {
       // 记录当前点击删除namespace的dialog所需要的数据
@@ -467,6 +470,7 @@ export default {
     },
     // 删除命名空间
     deleteNamespace() {
+      
       // 删除的命名空间id
       let namespaceId = this.deleteNamespaceDialogData.namespaceId;
       // 请求后端进行删除
@@ -516,6 +520,4 @@ export default {
   /* 禁用点击操作 */
   cursor: not-allowed;
 }
-
-
 </style>

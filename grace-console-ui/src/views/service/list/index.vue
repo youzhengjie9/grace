@@ -173,8 +173,7 @@
             class="operation"
             href="#"
             @click="
-              deleteService(
-                currentSelectedNamespaceId,
+              clickOpenDeleteServiceDialog(
                 scope.row.groupName,
                 scope.row.serviceName
               )
@@ -185,29 +184,7 @@
       </el-table-column>
     </el-table>
 
-    <!-- 分页 -->
-    <el-row :gutter="24" style="margin-top: 30px">
-      <el-col :span="12" :offset="12">
-        <div class="grid-content bg-purple">
-          <el-pagination
-            background
-            layout="total, sizes, prev, pager, next"
-            prev-text="上一页"
-            next-text="下一页"
-            :page-sizes="[10, 20, 30, 50, 100]"
-            :total="totalCount"
-            :current-page.sync="page"
-            :page-size="size"
-            @current-change="handlePageChange"
-            @size-change="handleSizeChange"
-          >
-          </el-pagination>
-        </div>
-      </el-col>
-    </el-row>
-
     <!-- 创建服务对话框（dialog） -->
-
     <el-dialog title="创建服务" :visible.sync="openCreateServiceDialog">
       <el-form
         :model="createServiceForm"
@@ -257,6 +234,66 @@
         <el-button @click="openCreateServiceDialog = false">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 删除服务的dialog  -->
+    <el-dialog :visible.sync="openDeleteServiceDialog" top="15vh" width="30%">
+      <!-- 标题插槽 -->
+      <div slot="title">
+        <i
+          class="el-icon-circle-check"
+          style="color: #f1c826; font-size: 23px; margin-right: 5px"
+        ></i>
+        <span style="font-size: 20px">删除服务</span>
+      </div>
+      <!-- 内容 -->
+      <el-row :gutter="24" style="margin-left: 30px">
+        <el-col :span="24" style="margin-bottom: 10px">
+          <span style="font-size: 16px"
+            >确定要删除当前命名空间的以下服务吗？</span
+          >
+        </el-col>
+        <!-- 服务名称 -->
+        <el-col :span="24" style="margin-bottom: 10px">
+          <span style="font-size: 16px">服务名称: </span>
+          <span style="color: rgb(199, 37, 78); font-size: 16px">
+            {{ deleteServiceDialogData.serviceName }}
+          </span>
+        </el-col>
+        <!-- 分组名称 -->
+        <el-col :span="24" style="margin-bottom: 10px">
+          <span style="font-size: 16px">分组名称: </span>
+          <span style="color: rgb(199, 37, 78); font-size: 16px">
+            {{ deleteServiceDialogData.groupName }}
+          </span>
+        </el-col>
+      </el-row>
+      <!-- 底部插槽 -->
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="deleteService">确定</el-button>
+        <el-button @click="openDeleteServiceDialog = false">取消</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 分页 -->
+    <el-row :gutter="24" style="margin-top: 30px">
+      <el-col :span="12" :offset="12">
+        <div class="grid-content bg-purple">
+          <el-pagination
+            background
+            layout="total, sizes, prev, pager, next"
+            prev-text="上一页"
+            next-text="下一页"
+            :page-sizes="[10, 20, 30, 50, 100]"
+            :total="totalCount"
+            :current-page.sync="page"
+            :page-size="size"
+            @current-change="handlePageChange"
+            @size-change="handleSizeChange"
+          >
+          </el-pagination>
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -264,7 +301,7 @@
 // 引入vue2-ace-editor代码编辑器
 import Editor from "vue2-ace-editor";
 import { getNamespaceList } from "@/api/namespace";
-import { getServiceList, createService } from "@/api/service";
+import { getServiceList, createService, deleteService } from "@/api/service";
 
 export default {
   name: "ServiceList",
@@ -324,6 +361,15 @@ export default {
             trigger: "blur",
           },
         ],
+      },
+      // 是否打开删除服务dialog
+      openDeleteServiceDialog: false,
+      // 删除服务的dialog所需要的数据
+      deleteServiceDialogData: {
+        // 服务名称
+        serviceName: "",
+        // 分组名称
+        groupName: "",
       },
       // 可写的（可以进行编辑的）代码编辑器配置
       writableEditorOptions: {
@@ -537,9 +583,71 @@ export default {
         },
       });
     },
-
+    // 点击打开删除服务dialog
+    clickOpenDeleteServiceDialog(groupName, serviceName) {
+      // 记录当前点击删除服务的dialog所需要的数据
+      this.deleteServiceDialogData = {
+        serviceName: serviceName,
+        groupName: groupName,
+      };
+      // 打开dialog
+      this.openDeleteServiceDialog = true;
+    },
     // 删除服务
-    deleteService(namespaceId, groupName, serviceName) {},
+    deleteService() {
+      let namespaceId = this.currentSelectedNamespaceId;
+      let groupName = this.deleteServiceDialogData.groupName;
+      let serviceName = this.deleteServiceDialogData.serviceName;
+
+      // 调用接口
+      deleteService(namespaceId, groupName, serviceName).then((response) => {
+        let result = response.data;
+        if (result.data == true) {
+          this.$message.success("删除服务成功");
+          // 关闭dialog
+          this.openDeleteServiceDialog = false;
+
+          // 开启表格的加载动画
+          this.tableLoading = true;
+
+          // 模拟延迟,让加载动画更明显
+          setTimeout(() => {
+            //当前选择的命名空间的id
+            let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
+            // 指定分组名
+            let groupName = this.queryCondition.groupName;
+            // 指定服务名
+            let serviceName = this.queryCondition.serviceName;
+            // 是否隐藏空服务
+            let hideEmptyService = this.queryCondition.hideEmptyService;
+            // 当前页
+            let page = this.page;
+            // 每页展示的数量
+            let size = this.size;
+            // 从后端分页的获取service列表的数据
+            getServiceList(
+              currentSelectedNamespaceId,
+              groupName,
+              serviceName,
+              hideEmptyService,
+              page,
+              size
+            ).then((response) => {
+              // 后端返回给前端的result对象
+              let result = response.data;
+
+              // 将数据放到vue中
+              this.tableData = result.data.pagedServiceList;
+              this.totalCount = result.data.totalCount;
+              // 关闭表格的加载动画
+              this.tableLoading = false;
+            });
+          }, 500);
+        } else {
+          this.$message.error("删除服务失败");
+        }
+      });
+    },
     // page（当前页）改变时触发
     handlePageChange(page) {
       // 开启表格的加载动画

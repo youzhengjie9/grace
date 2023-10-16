@@ -1,11 +1,19 @@
 package com.grace.console.dto;
 
+import com.grace.common.entity.Namespace;
+import com.grace.common.entity.builder.NamespaceBuilder;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-public class NamespaceDTO implements Serializable {
+/**
+ * 修改namespace dto
+ *
+ * @author youzhengjie
+ * @date 2023/10/16 11:52:25
+ */
+public class ModifyNamespaceDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -25,10 +33,10 @@ public class NamespaceDTO implements Serializable {
      */
     private String namespaceDesc;
 
-    public NamespaceDTO() {
+    public ModifyNamespaceDTO() {
     }
 
-    public NamespaceDTO(String namespaceId, String namespaceName, String namespaceDesc) {
+    public ModifyNamespaceDTO(String namespaceId, String namespaceName, String namespaceDesc) {
         this.namespaceId = namespaceId;
         this.namespaceName = namespaceName;
         this.namespaceDesc = namespaceDesc;
@@ -59,14 +67,13 @@ public class NamespaceDTO implements Serializable {
     }
 
     /**
-     * 校验NamespaceDTO对象的必填属性是否为空,为空则抛出异常
+     * 校验当前对象的必填属性是否为空,为空则抛出异常
      */
     public void validateRequired(){
-        fillDefaultValue();
-        if (namespaceId == null) {
+        if (StringUtils.isBlank(namespaceId)) {
             throw new RuntimeException("namespaceId不能为空");
         }
-        if(namespaceName == null){
+        if(StringUtils.isBlank(namespaceName)){
             throw new RuntimeException("namespaceName不能为空");
         }
     }
@@ -76,15 +83,29 @@ public class NamespaceDTO implements Serializable {
      */
     public void fillDefaultValue() {
         if(StringUtils.isBlank(namespaceDesc)){
-            namespaceDesc=StringUtils.EMPTY;
+            namespaceDesc="";
         }
+    }
+
+    /**
+     * 通过ModifyNamespaceDTO对象构建Namespace
+     *
+     * @return {@link Namespace}
+     */
+    public Namespace buildNamespaceByModifyNamespaceDTO() {
+
+        return NamespaceBuilder.newBuilder()
+                .namespaceId(namespaceId)
+                .namespaceName(namespaceName)
+                .namespaceDesc(namespaceDesc)
+                .build();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        NamespaceDTO that = (NamespaceDTO) o;
+        ModifyNamespaceDTO that = (ModifyNamespaceDTO) o;
         return Objects.equals(namespaceId, that.namespaceId) && Objects.equals(namespaceName, that.namespaceName) && Objects.equals(namespaceDesc, that.namespaceDesc);
     }
 
@@ -95,11 +116,10 @@ public class NamespaceDTO implements Serializable {
 
     @Override
     public String toString() {
-        return "NamespaceDTO{" +
+        return "ModifyNamespaceDTO{" +
                 "namespaceId='" + namespaceId + '\'' +
                 ", namespaceName='" + namespaceName + '\'' +
                 ", namespaceDesc='" + namespaceDesc + '\'' +
                 '}';
     }
-
 }

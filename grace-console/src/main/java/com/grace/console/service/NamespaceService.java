@@ -1,6 +1,8 @@
 package com.grace.console.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.grace.common.entity.Namespace;
+import com.grace.console.dto.ModifyNamespaceDTO;
 import com.grace.console.vo.NamespaceVO;
 
 import java.util.List;
@@ -11,7 +13,7 @@ import java.util.List;
  * @author youzhengjie
  * @date 2023-06-19 22:42:58
  */
-public interface NamespaceService {
+public interface NamespaceService extends IService<Namespace> {
 
     /**
      * 获取命名空间列表
@@ -39,10 +41,10 @@ public interface NamespaceService {
     /**
      * 修改namespace
      *
-     * @param namespace 新的namespace
+     * @param modifyNamespaceDTO modifyNamespaceDTO
      * @return {@link Boolean}
      */
-    Boolean modifyNamespace(Namespace namespace);
+    Boolean modifyNamespace(ModifyNamespaceDTO modifyNamespaceDTO);
 
     /**
      * 删除namespace

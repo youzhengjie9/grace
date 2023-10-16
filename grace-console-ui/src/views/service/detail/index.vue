@@ -125,6 +125,7 @@ export default {
   methods: {
     // 加载数据
     loadData() {
+      
       let namespaceId = this.$route.query.namespaceId;
       let groupName = this.$route.query.groupName;
       let serviceName = this.$route.query.serviceName;
@@ -132,23 +133,30 @@ export default {
       // 注意: 将展示实例的表格数据清空,以免其他方法调用loadData()时
       // 由于“this.instanceTableData.push(newInstance);”方法导致数据变多的bug
       this.instanceTableData = [];
+      // 开启展示实例的表格的加载动画
+      this.instanceTableLoading = true;
 
       // 调用后端接口从数据库查询该服务详情的数据
       getServiceDetail(namespaceId, groupName, serviceName).then((response) => {
         let result = response.data;
 
         this.serviceDetail = result.data;
-        // 将服务详情表单（serviceDetail）内容复制到一个新的对象中
-        let allInstances = this.serviceDetail.allInstances;
 
-        for (let i = 0; i < allInstances.length; i++) {
-          let instance = allInstances[i];
-          // 深拷贝实例对象
-          let newInstance = this.deepCopy(instance);
+        // 模拟延迟,让加载动画更明显
+        setTimeout(() => {
+          // 将服务详情表单（serviceDetail）内容复制到一个新的对象中
+          let allInstances = this.serviceDetail.allInstances;
 
-          // 将深拷贝出来的新对象放到instanceTableData集合中
-          this.instanceTableData.push(newInstance);
-        }
+          for (let i = 0; i < allInstances.length; i++) {
+            let instance = allInstances[i];
+            // 深拷贝实例对象
+            let newInstance = this.deepCopy(instance);
+            // 将深拷贝出来的新对象放到instanceTableData集合中
+            this.instanceTableData.push(newInstance);
+          }
+          //
+          this.instanceTableLoading = false;
+        }, 500);
       });
     },
     // 点击打开修改/编辑服务的dialog
@@ -276,18 +284,25 @@ export default {
       // 注意: 将展示实例的表格数据清空,以免其他方法调用loadData()时
       // 由于“this.instanceTableData.push(newInstance);”方法导致数据变多的bug
       this.instanceTableData = [];
-      // 还原展示实例表格数据
-      // 将服务详情表单（serviceDetail）内容复制到一个新的对象中
-      let allInstances = this.serviceDetail.allInstances;
+      //
+      this.instanceTableLoading = true;
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        // 还原展示实例表格数据
+        // 将服务详情表单（serviceDetail）内容复制到一个新的对象中
+        let allInstances = this.serviceDetail.allInstances;
 
-      for (let i = 0; i < allInstances.length; i++) {
-        let instance = allInstances[i];
-        // 深拷贝实例对象
-        let newInstance = this.deepCopy(instance);
+        for (let i = 0; i < allInstances.length; i++) {
+          let instance = allInstances[i];
+          // 深拷贝实例对象
+          let newInstance = this.deepCopy(instance);
 
-        // 将深拷贝出来的新对象放到instanceTableData集合中
-        this.instanceTableData.push(newInstance);
-      }
+          // 将深拷贝出来的新对象放到instanceTableData集合中
+          this.instanceTableData.push(newInstance);
+        }
+        //
+        this.instanceTableLoading = false;
+      }, 500);
     },
     // 根据元数据的key删除元数据过滤条件标签
     deleteMetadataFilterTagByKey(deleteMetedataKey) {
@@ -433,21 +448,23 @@ export default {
     },
     // 下线
     offline(row) {
+      //
+      this.instanceTableLoading = true;
 
       // 这里的metadata是Object类型的数据，将其转成Map类型的数据
       let metadataMap = new Map(Object.entries(row.metadata));
       // metadata的Json字符串类型的数据
       let metadataJson;
       // 如果metadataMap没有数据
-      if(metadataMap.size == 0){
-        metadataJson = '';
+      if (metadataMap.size == 0) {
+        metadataJson = "";
       }
       // 如果metadataMap有数据
-      else{
+      else {
         // 转成JSON
         metadataJson = this.Map2JsonStr(metadataMap);
         // 将JSON字符串格式化成用户容易看懂的格式
-        metadataJson = this.formatJsonStr(metadataJson)
+        metadataJson = this.formatJsonStr(metadataJson);
       }
 
       let modifyInstanceDTO = {
@@ -460,33 +477,40 @@ export default {
         online: false,
         metadata: metadataJson,
       };
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        modifyInstance(modifyInstanceDTO).then((response) => {
+          let result = response.data;
+          if (result.data == true) {
+            this.$message.success("下线成功");
+            row.online = false;
+            //
+            this.instanceTableLoading = false;
+          } else {
+            this.$message.error("下线失败");
+          }
+        });
+      }, 500);
       // 调用接口
-      modifyInstance(modifyInstanceDTO).then((response) => {
-        let result = response.data;
-        if (result.data == true) {
-          this.$message.success("下线成功");
-          row.online = false;
-        } else {
-          this.$message.error("下线失败");
-        }
-      });
     },
     // 上线
     online(row) {
+      //
+      this.instanceTableLoading = true;
       // 这里的metadata是Object类型的数据，将其转成Map类型的数据
       let metadataMap = new Map(Object.entries(row.metadata));
       // metadata的Json字符串类型的数据
       let metadataJson;
       // 如果metadataMap没有数据
-      if(metadataMap.size == 0){
-        metadataJson = '';
+      if (metadataMap.size == 0) {
+        metadataJson = "";
       }
       // 如果metadataMap有数据
-      else{
+      else {
         // 转成JSON
         metadataJson = this.Map2JsonStr(metadataMap);
         // 将JSON字符串格式化成用户容易看懂的格式
-        metadataJson = this.formatJsonStr(metadataJson)
+        metadataJson = this.formatJsonStr(metadataJson);
       }
 
       let modifyInstanceDTO = {
@@ -499,16 +523,22 @@ export default {
         online: true,
         metadata: metadataJson,
       };
-      // 调用接口
-      modifyInstance(modifyInstanceDTO).then((response) => {
-        let result = response.data;
-        if (result.data == true) {
-          this.$message.success("上线成功");
-          row.online = true;
-        } else {
-          this.$message.error("上线失败");
-        }
-      });
+
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        // 调用接口
+        modifyInstance(modifyInstanceDTO).then((response) => {
+          let result = response.data;
+          if (result.data == true) {
+            this.$message.success("上线成功");
+            row.online = true;
+            //
+            this.instanceTableLoading = false;
+          } else {
+            this.$message.error("上线失败");
+          }
+        });
+      }, 500);
     },
     back() {
       this.$router.go(-1);

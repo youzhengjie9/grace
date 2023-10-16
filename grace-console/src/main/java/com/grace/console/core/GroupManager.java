@@ -3,6 +3,7 @@ package com.grace.console.core;
 import com.grace.common.constant.Constants;
 import com.grace.common.entity.Group;
 import com.grace.common.entity.Instance;
+import com.grace.common.entity.Namespace;
 import com.grace.common.entity.Service;
 import com.grace.common.entity.builder.InstanceBuilder;
 import com.grace.common.entity.builder.ServiceBuilder;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 分组管理器（用于管理group）
@@ -396,6 +398,18 @@ public class GroupManager {
      */
     public Set<String> getAllNamespaceId() {
         return groupMap.keySet();
+    }
+
+    /**
+     * 给groupMap创建指定的命名空间（前提是groupMap的key不存在该namespaceId）
+     *
+     * @param namespaceId namespaceId
+     * @return {@link Boolean}
+     */
+    public Boolean createNamespaceIfAbsent(String namespaceId){
+
+        groupMap.putIfAbsent(namespaceId,Collections.synchronizedSet(new HashSet<>()));
+        return true;
     }
 
     /**
@@ -1020,6 +1034,28 @@ public class GroupManager {
     }
 
     /**
+     * 获取指定命名空间下面的所有服务总数
+     *
+     * @param namespaceId namespaceId
+     * @return int
+     */
+    public int getServiceCount(String namespaceId) {
+        AtomicInteger serviceCount = new AtomicInteger(0);
+        // 如果有该命名空间
+        if (hasNamespace(namespaceId)) {
+            Set<Group> groups = groupMap.get(namespaceId);
+            for (Group group : groups) {
+                int size = group.getServices().size();
+                // 将每个组下面的所有服务数量统计到serviceCount变量中
+                serviceCount.addAndGet(size);
+            }
+            return serviceCount.get();
+        }
+        return 0;
+    }
+
+
+    /**
      * 该命名空间是否存在
      *
      * @param namespaceId namespaceId
@@ -1082,6 +1118,38 @@ public class GroupManager {
                 return false;
             }
         }
+        return false;
+    }
+
+
+    /**
+     * 删除service
+     *
+     * @param namespaceId namespaceId
+     * @param groupName   groupName
+     * @param serviceName serviceName
+     * @return {@link Boolean}
+     */
+    public Boolean deleteService(String namespaceId, String groupName, String serviceName) {
+        Service service = getService(namespaceId, groupName, serviceName);
+        // 如果service存在
+        if (service != null) {
+            Set<Group> groups = groupMap.get(namespaceId);
+            for (Group group : groups) {
+                // 如果找到分组
+                if (group.getGroupName().equals(groupName)) {
+                    Set<Service> services = group.getServices();
+                    for (Service svc : services) {
+                        // 如果找到service
+                        if (svc.getServiceName().equals(serviceName)) {
+                            // 删除指定的service
+                            return services.remove(svc);
+                        }
+                    }
+                }
+            }
+        }
+        // service不存在,删除失败
         return false;
     }
 }

@@ -28,9 +28,14 @@ public class NamespaceVO implements Serializable {
     private int serviceCount;
 
     /**
-     * 配置数量
+     * 当前命名空间的配置数
      */
     private int configCount;
+
+    /**
+     * 该命名空间最大的配置数
+     */
+    private int maxConfigCount;
 
     /**
      * 命名空间描述
@@ -41,11 +46,12 @@ public class NamespaceVO implements Serializable {
     public NamespaceVO() {
     }
 
-    public NamespaceVO(String namespaceId, String namespaceName, int serviceCount, int configCount, String namespaceDesc) {
+    public NamespaceVO(String namespaceId, String namespaceName, int serviceCount, int configCount, int maxConfigCount, String namespaceDesc) {
         this.namespaceId = namespaceId;
         this.namespaceName = namespaceName;
         this.serviceCount = serviceCount;
         this.configCount = configCount;
+        this.maxConfigCount = maxConfigCount;
         this.namespaceDesc = namespaceDesc;
     }
 
@@ -81,6 +87,14 @@ public class NamespaceVO implements Serializable {
         this.configCount = configCount;
     }
 
+    public int getMaxConfigCount() {
+        return maxConfigCount;
+    }
+
+    public void setMaxConfigCount(int maxConfigCount) {
+        this.maxConfigCount = maxConfigCount;
+    }
+
     public String getNamespaceDesc() {
         return namespaceDesc;
     }
@@ -96,6 +110,7 @@ public class NamespaceVO implements Serializable {
                 ", namespaceName='" + namespaceName + '\'' +
                 ", serviceCount=" + serviceCount +
                 ", configCount=" + configCount +
+                ", maxConfigCount=" + maxConfigCount +
                 ", namespaceDesc='" + namespaceDesc + '\'' +
                 '}';
     }

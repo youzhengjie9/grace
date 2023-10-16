@@ -1,6 +1,9 @@
 package com.grace.common.entity.builder;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.grace.common.entity.Namespace;
 
 import java.time.LocalDateTime;
@@ -14,7 +17,7 @@ import java.time.LocalDateTime;
 public class NamespaceBuilder {
 
     /**
-     * 主键,命令空间id
+     * 主键，命令空间id
      */
     private String namespaceId;
 
@@ -24,20 +27,9 @@ public class NamespaceBuilder {
     private String namespaceName;
 
     /**
-     * 配额
+     * 该命名空间最大的配置数
      */
-    private int quota;
-
-    /**
-     * 配置数量
-     */
-    private int configCount;
-
-    /**
-     * 命名空间类型。（ 0 : Global configuration， 1 : Default private namespace ，2 : Custom namespace.）
-     */
-    private int type;
-
+    private int maxConfigCount;
 
     /**
      * 命名空间描述
@@ -63,18 +55,8 @@ public class NamespaceBuilder {
         return this;
     }
 
-    public NamespaceBuilder quota(int quota) {
-        this.quota = quota;
-        return this;
-    }
-
-    public NamespaceBuilder configCount(int configCount) {
-        this.configCount = configCount;
-        return this;
-    }
-
-    public NamespaceBuilder type(int type) {
-        this.type = type;
+    public NamespaceBuilder maxConfigCount(int maxConfigCount) {
+        this.maxConfigCount = maxConfigCount;
         return this;
     }
 
@@ -83,14 +65,13 @@ public class NamespaceBuilder {
         return this;
     }
 
-
     /**
      * 构建对象
      *
      * @return {@link Namespace}
      */
     public Namespace build() {
-        return new Namespace(namespaceId, namespaceName, quota, configCount, type, namespaceDesc);
+        return new Namespace(namespaceId, namespaceName, maxConfigCount, namespaceDesc);
     }
 
 }

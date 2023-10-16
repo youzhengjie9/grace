@@ -13,7 +13,7 @@ import java.io.Serializable;
  * @author youzhengjie
  * @date 2023-10-07 09:25:39
  */
-@TableName("sys_name_space")
+@TableName("sys_namespace")
 public class Namespace implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -21,47 +21,35 @@ public class Namespace implements Serializable {
     /**
      * 主键，命令空间id
      */
-    @TableId(value = "namespaceId",type = IdType.INPUT)
+    @TableId(value = "namespace_id",type = IdType.INPUT)
     private String namespaceId;
 
     /**
      * 命名空间名称
      */
-    @TableField("`namespace_name`")
+    @TableField("namespace_name")
     private String namespaceName;
 
     /**
-     * 配额
+     * 该命名空间最大的配置数
      */
-    @TableField("quota")
-    private int quota;
-
-    /**
-     * 配置数量
-     */
-    private int configCount;
-
-    /**
-     * 命名空间类型。（ 0 : Global configuration， 1 : Default private namespace ，2 : Custom namespace.）
-     */
-    private int type;
+    @TableField("max_config_count")
+    private int maxConfigCount;
 
     /**
      * 命名空间描述
      */
-    @TableField("namespaceDesc")
+    @TableField("namespace_desc")
     private String namespaceDesc;
 
 
     public Namespace() {
     }
 
-    public Namespace(String namespaceId, String namespaceName, int quota, int configCount, int type, String namespaceDesc) {
+    public Namespace(String namespaceId, String namespaceName, int maxConfigCount, String namespaceDesc) {
         this.namespaceId = namespaceId;
         this.namespaceName = namespaceName;
-        this.quota = quota;
-        this.configCount = configCount;
-        this.type = type;
+        this.maxConfigCount = maxConfigCount;
         this.namespaceDesc = namespaceDesc;
     }
 
@@ -81,28 +69,12 @@ public class Namespace implements Serializable {
         this.namespaceName = namespaceName;
     }
 
-    public int getQuota() {
-        return quota;
+    public int getMaxConfigCount() {
+        return maxConfigCount;
     }
 
-    public void setQuota(int quota) {
-        this.quota = quota;
-    }
-
-    public int getConfigCount() {
-        return configCount;
-    }
-
-    public void setConfigCount(int configCount) {
-        this.configCount = configCount;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
+    public void setMaxConfigCount(int maxConfigCount) {
+        this.maxConfigCount = maxConfigCount;
     }
 
     public String getNamespaceDesc() {
@@ -118,9 +90,7 @@ public class Namespace implements Serializable {
         return "Namespace{" +
                 "namespaceId='" + namespaceId + '\'' +
                 ", namespaceName='" + namespaceName + '\'' +
-                ", quota=" + quota +
-                ", configCount=" + configCount +
-                ", type=" + type +
+                ", maxConfigCount=" + maxConfigCount +
                 ", namespaceDesc='" + namespaceDesc + '\'' +
                 '}';
     }

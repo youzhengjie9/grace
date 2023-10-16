@@ -45,12 +45,12 @@ public class ServiceController {
     }
 
     @DeleteMapping("/deleteService")
-    public Result<String> deleteService(
+    public Result<Boolean> deleteService(
             @RequestParam(value = "namespaceId",required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
             @RequestParam(value = "groupName", required = false, defaultValue = Constants.DEFAULT_GROUP_NAME) String groupName,
             @RequestParam(value = "serviceName") String serviceName){
 
-        return Result.ok();
+        return Result.ok(groupManager.deleteService(namespaceId,groupName,serviceName));
     }
 
     /**

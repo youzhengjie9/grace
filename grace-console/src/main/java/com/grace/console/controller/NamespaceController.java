@@ -3,7 +3,8 @@ package com.grace.console.controller;
 import com.grace.common.constant.ParentMappingConstants;
 import com.grace.common.entity.Namespace;
 import com.grace.common.utils.Result;
-import com.grace.console.dto.NamespaceDTO;
+import com.grace.console.dto.CreateNamespaceDTO;
+import com.grace.console.dto.ModifyNamespaceDTO;
 import com.grace.console.service.NamespaceService;
 import com.grace.console.vo.NamespaceVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,28 +35,25 @@ public class NamespaceController {
         return Result.ok(namespaceService.getNamespaceList());
     }
 
-    /**
-     * 根据命名空间id获取命名空间
-     *
-     * @param namespaceId namespaceId
-     * @return {@link Result}<{@link Namespace}>
-     */
-    @GetMapping("/getNamespace")
-    public Result<Namespace> getNamespace(@RequestParam("namespaceId") String namespaceId) {
-        return Result.ok(namespaceService.getNamespace(namespaceId));
-    }
-
     @PostMapping("/createNamespace")
-    public Result<Boolean> createNamespace(NamespaceDTO namespaceDTO){
-
-//        return Result.ok(namespaceService.createNamespace(namespace));
-        return null;
+    public Result<Boolean> createNamespace(CreateNamespaceDTO createNamespaceDTO){
+        // 校验必填项
+        createNamespaceDTO.validateRequired();
+        // 填充默认值
+        createNamespaceDTO.fillDefaultValue();
+        // 构建Namespace对象
+        Namespace namespace = createNamespaceDTO.buildNamespaceByCreateNamespaceDTO();
+        return Result.ok(namespaceService.createNamespace(namespace));
     }
-
 
     @PutMapping("/modifyNamespace")
-    public Result<Boolean> modifyNamespace(NamespaceDTO namespaceDTO){
-
+    public Result<Boolean> modifyNamespace(ModifyNamespaceDTO modifyNamespaceDTO){
+        // 校验必填项
+        modifyNamespaceDTO.validateRequired();
+        // 填充默认值
+        modifyNamespaceDTO.fillDefaultValue();
+        // 构建Namespace对象
+        Namespace namespace = modifyNamespaceDTO.buildNamespaceByModifyNamespaceDTO();
         return null;
     }
     @DeleteMapping("/deleteNamespace")

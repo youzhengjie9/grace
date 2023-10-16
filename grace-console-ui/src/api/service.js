@@ -54,3 +54,15 @@ export function getServiceDetail(namespaceId,groupName,serviceName){
         }
     })
 }
+
+export function deleteService(namespaceId,groupName,serviceName){
+    return request({
+        method:'delete',
+        url:'/grace/server/service/deleteService',
+        params:{
+            namespaceId:namespaceId,
+            groupName:groupName,
+            serviceName:serviceName
+        }
+    })
+}

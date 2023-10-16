@@ -74,4 +74,9 @@ public class Constants {
 
     public static final String ENCODE = "UTF-8";
 
+
+    /**
+     * 命名空间默认最大的配置数
+     */
+    public static final int DEFAULT_MAX_CONFIG_COUNT = 200;
 }
