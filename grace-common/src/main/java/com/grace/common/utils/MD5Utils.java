@@ -1,26 +1,12 @@
-/*
- * Copyright 1999-2018 Alibaba Group Holding Ltd.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.grace.common.utils;
+
+import com.grace.common.constant.Constants;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * MD5 util.
+ * MD5加密工具
  *
  * @author nacos
  */
@@ -40,14 +26,7 @@ public class MD5Utils {
             return null;
         }
     });
-    
-    /**
-     * Calculate MD5 hex string.
-     *
-     * @param bytes byte arrays
-     * @return MD5 hex string of input
-     * @throws NoSuchAlgorithmException if can't load md5 digest spi.
-     */
+
     public static String md5Hex(byte[] bytes) throws NoSuchAlgorithmException {
         try {
             MessageDigest messageDigest = MESSAGE_DIGEST_LOCAL.get();
@@ -61,15 +40,15 @@ public class MD5Utils {
     }
     
     /**
-     * Calculate MD5 hex string with encode charset.
+     * 将内容先进行md5加密,再转换成16进制字符串（推荐使用这个方法！）
      *
-     * @param value  value
-     * @param encode encode charset of input
+     * @param content  需要加密的内容
+     * @param encode 编码（比如 UTF-8 ）
      * @return MD5 hex string of input
      */
-    public static String md5Hex(String value, String encode) {
+    public static String md5Hex(String content, String encode) {
         try {
-            return md5Hex(value.getBytes(encode));
+            return md5Hex(content.getBytes(encode));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -89,6 +68,18 @@ public class MD5Utils {
         }
         
         return new String(out);
+    }
+
+    public static void main(String[] args) {
+
+        String str1 = "a";
+        String str2 = "abcde";
+        String str3 = "你好asdfghjkqwerty";
+
+        System.out.println(md5Hex(str1, Constants.ENCODE));
+        System.out.println(md5Hex(str2, Constants.ENCODE));
+        System.out.println(md5Hex(str3, Constants.ENCODE));
+
     }
     
 }

@@ -29,5 +29,10 @@ public final class ParentMappingConstants {
      */
     public static final String SERVICE_CONTROLLER= GRACE_SERVER_BASE_URL+"/service";
 
+    /**
+     * ConfigController接口的顶层路径
+     */
+    public static final String CONFIG_CONTROLLER= GRACE_SERVER_BASE_URL+"/config";
+
 
 }
