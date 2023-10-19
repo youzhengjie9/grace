@@ -75,7 +75,7 @@ public class Config implements Serializable {
     /**
      * 创建该配置的用户的id
      */
-    @TableId("create_user_id")
+    @TableField("create_user_id")
     private Long createUserId;
 
     /**

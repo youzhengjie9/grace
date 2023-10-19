@@ -8,14 +8,15 @@ import com.grace.common.entity.Config;
 import com.grace.common.utils.IpUtils;
 import com.grace.common.utils.MD5Utils;
 import com.grace.common.utils.SnowId;
-import com.grace.console.dto.PublishConfigDTO;
 import com.grace.console.mapper.ConfigMapper;
 import com.grace.console.service.ConfigService;
+import com.grace.console.vo.ConfigListItemVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * ConfigService实现类
@@ -30,9 +31,7 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
     private ConfigMapper configMapper;
 
     @Override
-    public Boolean publishConfig(PublishConfigDTO publishConfigDTO, HttpServletRequest request) {
-
-        Config config = publishConfigDTO.buildConfigByPublishConfigDTO();
+    public Boolean publishConfig(Config config, HttpServletRequest request) {
         String namespaceId = config.getNamespaceId();
         String groupName = config.getGroupName();
         String dataId = config.getDataId();
@@ -56,11 +55,14 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
             config.setLastUpdateTime(currentTime);
             LambdaUpdateWrapper<Config> updateWrapper =
                     new LambdaUpdateWrapper<Config>()
-                            .eq(Config::getContent,config.getContent())
-                            .eq(Config::getMd5,config.getMd5())
-                            .eq(Config::getConfigDesc,config.getConfigDesc())
-                            .eq(Config::getType,config.getType())
-                            .eq(Config::getLastUpdateTime,config.getLastUpdateTime());
+                            .set(Config::getConfigDesc,config.getConfigDesc())
+                            .set(Config::getType,config.getType())
+                            .set(Config::getContent,config.getContent())
+                            .set(Config::getMd5,config.getMd5())
+                            .set(Config::getLastUpdateTime,config.getLastUpdateTime())
+                            .eq(Config::getNamespaceId, namespaceId)
+                            .eq(Config::getGroupName, groupName)
+                            .eq(Config::getDataId, dataId);
             int updateResult = configMapper.update(null,updateWrapper);
             return updateResult > 0 ;
         }
@@ -75,6 +77,22 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
                         .eq(Config::getGroupName, groupName)
                         .eq(Config::getDataId, dataId)
         );
+    }
+
+    @Override
+    public List<ConfigListItemVO> getConfigListItemVOByPage(String namespaceId, String groupName, String dataId, Integer page, Integer size) {
+        return configMapper.getConfigListItemVOByPage(namespaceId, groupName, dataId, page, size);
+    }
+
+    @Override
+    public int getConfigTotalCount(String namespaceId, String groupName, String dataId) {
+        return configMapper.getConfigTotalCount(namespaceId, groupName, dataId);
+    }
+
+    @Override
+    public Boolean deleteConfig(String namespaceId, String groupName, String dataId) {
+
+        return configMapper.deleteConfig(namespaceId,groupName,dataId) > 0 ;
     }
 
 

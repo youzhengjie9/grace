@@ -43,7 +43,11 @@ const router = new VueRouter({
                 },
                 {
                     path:'/config/list',
-                    component: () => import('../views/config/list/index.vue')
+                    component: () => import('../views/config/list/index.vue'),
+                    meta: {
+                        // 该路由组件是否可以被缓存
+                        keepAlive: true
+                    }
                 },
                 {
                     // 配置的历史版本列表路由

@@ -72,14 +72,14 @@ public class ServiceController {
      * @param namespaceId namespaceId
      * @param hideEmptyService 是否隐藏空服务（也就是说不统计没有instance的service）
      * @param page 当前页（最小页是: 1）
-     * @param size 每一页的大小
+     * @param size 每一页的大小（最小值为: 1）
      * @return {@link Result}<{@link ServiceNameListVO}>
      */
     @GetMapping("/getServiceList")
     public Result<ServiceListVO> getServiceList(
             @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
-            @RequestParam(name = "groupName",required = false, defaultValue = "") String groupName,
-            @RequestParam(name = "serviceName",required = false, defaultValue = "") String serviceName,
+            @RequestParam(value = "groupName",required = false, defaultValue = "") String groupName,
+            @RequestParam(value = "serviceName",required = false, defaultValue = "") String serviceName,
             @RequestParam(value = "hideEmptyService", required = false, defaultValue = "true") boolean hideEmptyService,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size) {
@@ -87,9 +87,9 @@ public class ServiceController {
         if(page < 1){
             page = 1;
         }
-        // 如果 size < 0 ,则要把size恢复成 0 ,因为size的最小值为 0
-        if(size < 0 ){
-            size = 0;
+        // 如果 size <= 0 ,则要把size恢复成 1 ,因为size的最小值为 1
+        if(size <= 0 ){
+            size = 1;
         }
         // 对size的大小进行限制,防止一次性获取太多的数据（下面的代码意思是一次“最多”获取500条记录,如果size的值小于500,则size还是原来的值不变）
         size = Math.min(size,500);
@@ -173,7 +173,6 @@ public class ServiceController {
         if(services.size() < endIndex){
             endIndex = services.size();
         }
-        int cur = 0;
         // 将set集合转成list集合（主要是list集合有索引）
         final List<Service> serviceList = new CopyOnWriteArrayList<>(services);
         // 被分页后的service集合

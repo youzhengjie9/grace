@@ -21,14 +21,10 @@
       <el-form-item prop="namespaceName">
         <!-- 标题 -->
         <span slot="label">
-          <span style="font-weight: bold">命名空间</span>
+          <span style="font-weight: bold">命名空间Id</span>
         </span>
         <el-col :span="22">
-          <el-input
-            v-model="createConfigForm.namespaceName"
-            autocomplete="off"
-            :disabled="true"
-          ></el-input>
+          {{ createConfigForm.namespaceId }}
         </el-col>
       </el-form-item>
       <!-- Data Id -->
@@ -62,13 +58,13 @@
       <el-form-item>
         <!-- 标题 -->
         <span slot="label">
-          <span style="font-weight: bold">描述</span>
+          <span style="font-weight: bold">配置描述</span>
         </span>
         <el-col :span="22">
           <el-input
             type="textarea"
             :rows="3"
-            v-model="createConfigForm.description"
+            v-model="createConfigForm.configDesc"
             autocomplete="off"
             resize="none"
           ></el-input>
@@ -83,15 +79,14 @@
         <el-col :span="22">
           <!-- 配置格式单选框组 -->
           <el-radio-group
-           v-model="createConfigForm.format"
-           @input="changeConfigFormatCallback"
-           >
-            <el-radio label="text">text</el-radio>
-            <el-radio label="json">json</el-radio>
-            <el-radio label="properties">properties</el-radio>
+            v-model="createConfigForm.type"
+            @input="changeConfigTypeCallback"
+          >
             <el-radio label="yaml">yaml</el-radio>
+            <el-radio label="properties">properties</el-radio>
+            <el-radio label="json">json</el-radio>
+            <el-radio label="text">text</el-radio>
             <el-radio label="xml">xml</el-radio>
-            <el-radio label="html">html</el-radio>
           </el-radio-group>
         </el-col>
       </el-form-item>
@@ -104,7 +99,7 @@
         <!-- 代码编辑器 -->
         <editor
           v-model="createConfigForm.content"
-          :lang="createConfigForm.format"
+          :lang="createConfigForm.type"
           theme="tomorrow_night"
           width="92%"
           height="320"
@@ -140,47 +135,15 @@ export default {
   components: {
     Editor,
   },
+  props: {
+    createConfigForm: Object,
+    createConfigRules: Object,
+  },
   data() {
     return {
-      // 创建配置表单
-      createConfigForm: {
-        // 命名空间
-        namespaceName: "public",
-        // dataId
-        dataId: "",
-        // 分组名称
-        groupName: "",
-        // 描述
-        description: "",
-        // 配置格式
-        format: "text",
-        // 配置内容
-        content: "",
-      },
-      // 创建配置表单规则
-      createConfigRules: {
-        // 命名空间名称
-        namespaceName: [
-          { required: true, message: "请输入命名空间", trigger: "blur" },
-        ],
-        // dataId
-        dataId: [{ required: true, message: "请输入Data Id", trigger: "blur" }],
-        // 分组名称
-        groupName: [
-          { required: true, message: "请输入分组名称", trigger: "blur" },
-        ],
-        // 描述
-        description: [
-          { required: true, message: "请输入描述", trigger: "blur" },
-        ],
-        // 配置内容
-        content: [
-          { required: true, message: "请输入配置内容", trigger: "blur" },
-        ],
-      },
       // 可写的（可以进行编辑的）代码编辑器配置
       writableEditorOptions: {
-        // 启用基本自动完
+        // 启用基本自动完成
         enableBasicAutocompletion: true,
         //启用实时自动完成
         enableLiveAutocompletion: true,
@@ -225,29 +188,27 @@ export default {
       require("brace/snippets/yaml");
       require("brace/snippets/xml");
       require("brace/snippets/html");
-
     },
     // 返回上一个页面
     back() {
       this.$router.go(-1);
     },
-    // 切换配置格式回调方法(selectConfigFormat是我们最新选择的配置格式)
-    changeConfigFormatCallback(selectConfigFormat){
-
-      // 更新创建配置表单的配置格式
-      this.createConfigForm.format = selectConfigFormat;
-      
+    // 切换配置格式回调方法(selectConfigType是我们最新选择的配置格式)
+    changeConfigTypeCallback(selectConfigType) {
+      this.$emit("changeConfigTypeCallback", selectConfigType);
     },
     // 发布配置
-    publishConfig(createConfigForm) {
-      this.$refs[createConfigForm].validate((valid) => {
+    publishConfig(createConfigFormRef) {
+      // 校验表单必填项是否已经填写
+      this.$refs[createConfigFormRef].validate((valid) => {
         if (valid) {
-          alert("submit!");
+          // 如果表单必填项已经填写了就可以交给父组件发送发布配置api请求
+          this.$emit("publishConfig");
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
+      
     },
   },
 };

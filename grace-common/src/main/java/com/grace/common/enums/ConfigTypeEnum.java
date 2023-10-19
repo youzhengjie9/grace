@@ -9,9 +9,14 @@ package com.grace.common.enums;
 public enum ConfigTypeEnum {
 
     /**
-     * txt类型
+     * yaml类型
      */
-    TXT("txt"),
+    YAML("yaml"),
+
+    /**
+     * properties类型
+     */
+    PROPERTIES("properties"),
 
     /**
      * JSON类型
@@ -19,24 +24,14 @@ public enum ConfigTypeEnum {
     JSON("json"),
 
     /**
+     * text类型
+     */
+    TEXT("text"),
+
+    /**
      * xml类型
      */
-    XML("xml"),
-
-    /**
-     * yaml类型
-     */
-    YAML("yaml"),
-
-    /**
-     * yml类型
-     */
-    YML("yml"),
-
-    /**
-     * properties类型
-     */
-    PROPERTIES("properties");
+    XML("xml");
 
     private String type;
 

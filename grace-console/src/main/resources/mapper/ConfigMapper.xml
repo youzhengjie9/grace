@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.grace.console.mapper.ConfigMapper">
+
+    <select id="getConfigListItemVOByPage" resultType="com.grace.console.vo.ConfigListItemVO">
+        SELECT
+            id,
+            namespace_id,
+            group_name,
+            data_id
+        FROM
+            sys_config
+        WHERE namespace_id = #{namespaceId}
+        AND group_name LIKE CONCAT('%',#{groupName},'%')
+        AND data_id LIKE CONCAT('%',#{dataId},'%')
+        LIMIT #{page},#{size}
+    </select>
+    <select id="getConfigTotalCount" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            sys_config
+        WHERE namespace_id = #{namespaceId}
+        AND group_name LIKE CONCAT('%',#{groupName},'%')
+        AND data_id LIKE CONCAT('%',#{dataId},'%')
+    </select>
+
+    <delete id="deleteConfig">
+        DELETE
+        FROM
+            sys_config
+        WHERE namespace_id = #{namespaceId}
+        AND group_name = #{groupName}
+        AND data_id = #{dataId}
+    </delete>
+
+</mapper>

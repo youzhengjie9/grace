@@ -2,8 +2,12 @@ package com.grace.console.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.grace.common.entity.Config;
+import com.grace.console.vo.ConfigListItemVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * ConfigMapper
@@ -15,6 +19,46 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ConfigMapper extends BaseMapper<Config> {
 
+    /**
+     * 分页获取ConfigListItemVO
+     *
+     * @param namespaceId namespaceId（精确搜索）
+     * @param groupName   groupName（模糊搜素）
+     * @param dataId      dataId（模糊搜索）
+     * @param page page
+     * @param size size
+     * @return {@link List}<{@link ConfigListItemVO}>
+     */
+    List<ConfigListItemVO> getConfigListItemVOByPage(@Param("namespaceId") String namespaceId,
+                             @Param("groupName") String groupName,
+                             @Param("dataId") String dataId,
+                             @Param("page") Integer page,
+                             @Param("size") Integer size);
+
+    /**
+     * 获取配置总数
+     *
+     * @param namespaceId namespaceId（精确搜索）
+     * @param groupName groupName（模糊搜素）
+     * @param dataId dataId（模糊搜索）
+     * @return int
+     */
+    int getConfigTotalCount(@Param("namespaceId") String namespaceId,
+                            @Param("groupName") String groupName,
+                            @Param("dataId") String dataId);
+
+
+    /**
+     * 删除配置
+     *
+     * @param namespaceId
+     * @param groupName
+     * @param dataId
+     * @return {@link Boolean}
+     */
+    int deleteConfig(@Param("namespaceId") String namespaceId,
+                         @Param("groupName") String groupName,
+                         @Param("dataId") String dataId);
 
 
 }

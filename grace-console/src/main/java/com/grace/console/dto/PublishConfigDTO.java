@@ -97,9 +97,6 @@ public class PublishConfigDTO implements Serializable {
      * 校验当前对象的必填属性是否为空,为空则抛出异常
      */
     public void validateRequired(){
-        if (StringUtils.isBlank(namespaceId)) {
-            throw new RuntimeException("namespaceId不能为空");
-        }
         if (StringUtils.isBlank(groupName)) {
             throw new RuntimeException("groupName不能为空");
         }
@@ -138,6 +135,9 @@ public class PublishConfigDTO implements Serializable {
      * 填充默认值（注意: 不会填充必填属性！）
      */
     public void fillDefaultValue() {
+        if (StringUtils.isBlank(namespaceId)) {
+            namespaceId = "";
+        }
         if(StringUtils.isBlank(content)){
             content="";
         }

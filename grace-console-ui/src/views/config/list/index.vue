@@ -19,7 +19,7 @@
       <div
         style="cursor: pointer"
         v-for="(namespace, index) in namespaceData"
-        :key="namespace.id"
+        :key="namespace.namespaceId"
       >
         <!-- 没有高亮显示（也就是当前选择的命名空间不是这个） -->
         <span
@@ -29,8 +29,8 @@
             border: none;
             font-size: 14px;
           "
-          v-if="namespace.id != currentSelectedNamespaceId"
-          @click="namespaceToggle(namespace.id)"
+          v-if="namespace.namespaceId != currentSelectedNamespaceId"
+          @click="namespaceToggle(namespace.namespaceId)"
           >{{ namespace.namespaceName }}</span
         >
 
@@ -42,7 +42,7 @@
             border: none;
             font-size: 14px;
           "
-          v-if="namespace.id == currentSelectedNamespaceId"
+          v-if="namespace.namespaceId == currentSelectedNamespaceId"
           >{{ namespace.namespaceName }}</span
         >
 
@@ -286,7 +286,7 @@
       :header-cell-style="{ background: '#eef1f6', color: '#606266' }"
       v-loading="tableLoading"
       element-loading-background="rgba(255, 255, 255, .5)"
-      element-loading-text="加载中，请稍后..."
+      element-loading-text="拼命加载中"
       element-loading-spinner="el-icon-loading"
     >
       <!-- 多选框 -->
@@ -310,25 +310,57 @@
       <el-table-column label="操作" min-width="180">
         <template slot-scope="scope">
           <!-- 配置详情 -->
-          <span class="operation" @click="configDetail(scope.row.id)"
+          <span
+            class="operation"
+            @click="
+              configDetail(
+                scope.row.namespaceId,
+                scope.row.groupName,
+                scope.row.dataId
+              )
+            "
             >详情</span
           >
           <span style="margin-right: 5px">|</span>
 
           <!-- 示例代码 -->
-          <span class="operation" @click="sampleCode(scope.row.id)"
+          <span
+            class="operation"
+            @click="
+              sampleCode(
+                scope.row.namespaceId,
+                scope.row.groupName,
+                scope.row.dataId
+              )
+            "
             >示例代码</span
           >
           <span style="margin-right: 5px">|</span>
 
           <!-- 修改/编辑配置 -->
-          <span class="operation" @click="modifyConfig(scope.row.id)"
+          <span
+            class="operation"
+            @click="
+              modifyConfig(
+                scope.row.namespaceId,
+                scope.row.groupName,
+                scope.row.dataId
+              )
+            "
             >编辑</span
           >
           <span style="margin-right: 5px">|</span>
 
           <!-- 删除配置 -->
-          <span class="operation" @click="clickOpenDeleteDialog(scope.row)"
+          <span
+            class="operation"
+            @click="
+              clickOpenDeleteDialog(
+                scope.row.namespaceId,
+                scope.row.groupName,
+                scope.row.dataId
+              )
+            "
             >删除</span
           >
           <span style="margin-right: 5px">|</span>
@@ -398,10 +430,10 @@
             next-text="下一页"
             :page-sizes="[10, 20, 30, 50, 100]"
             :total="totalCount"
-            :page-size="pagesize"
-            :current-page="currentPage"
-            @size-change="handlePageSizeChange"
-            @current-change="handleCurrentPageChange"
+            :current-page.sync="page"
+            :page-size="size"
+            @current-change="handlePageChange"
+            @size-change="handleSizeChange"
           >
           </el-pagination>
         </div>
@@ -477,7 +509,9 @@
       <!-- 内容 -->
       <el-row :gutter="24" style="margin-left: 30px">
         <el-col :span="24" style="margin-bottom: 10px">
-          <span style="font-size: 16px">确定要删除以下配置吗？</span>
+          <span style="font-size: 16px"
+            >确定要删除当前命名空间下面的以下配置吗？</span
+          >
         </el-col>
         <!-- Data Id -->
         <el-col :span="24" style="margin-bottom: 10px">
@@ -699,6 +733,8 @@
 <script>
 // 引入vue2-ace-editor代码编辑器
 import Editor from "vue2-ace-editor";
+import { getNamespaceList } from "@/api/namespace";
+import { getConfigList, deleteConfig } from "@/api/config";
 
 export default {
   name: "ConfigList",
@@ -708,56 +744,9 @@ export default {
   data() {
     return {
       // 命名空间数据
-      namespaceData: [
-        {
-          id: 1,
-          namespaceName: "public",
-        },
-        {
-          id: 2,
-          namespaceName: "dev",
-        },
-        {
-          id: 3,
-          namespaceName: "test",
-        },
-      ],
+      namespaceData: [],
       // 当前选择的命名空间的id
-      currentSelectedNamespaceId: 1,
-      // 是否打开创建配置的对话框（dialog）
-      openCreateConfigDialog: false,
-      // 创建配置表单
-      createConfigForm: {
-        // 命名空间
-        namespaceName: "",
-        // 配置文件全名（例如application-dev.yaml）
-        dataId: "",
-        // 分组名称
-        groupName: "",
-        // 配置文件描述
-        description: "",
-        // 配置文件类型（例如text、json、yaml、html、properties、xml）
-        type: "",
-        // 配置内容
-        content: "",
-      },
-      // 创建配置规则
-      createConfigRules: {
-        // 命名空间
-        namespaceName: [
-          { required: true, message: "请输入命名空间", trigger: "blur" },
-        ],
-        // 配置文件名
-        dataId: [{ required: true, message: "请输入Data Id", trigger: "blur" }],
-        // 分组名称
-        groupName: [
-          { required: true, message: "请输入分组名称", trigger: "blur" },
-        ],
-        // 配置内容
-        content: [
-          { required: true, message: "请输入配置内容", trigger: "blur" },
-        ],
-      },
+      currentSelectedNamespaceId: "",
       // 查询条件
       queryCondition: {
         // 配置文件全名（例如application-dev.yaml）
@@ -783,7 +772,9 @@ export default {
       // 当前导入的配置如果已存在后对该配置处理的策略（方式）
       importConfigIfExistPolicy: "abort",
       // 请求头
-      requestHeaders: { accessToken: "123456789" },
+      requestHeaders: {
+        accessToken: "123456789",
+      },
       // 多选框中勾选的所有数据
       multipleSelectionData: [],
       // 配置列表数据
@@ -791,11 +782,11 @@ export default {
       // 表格是否加载中（ true说明表格正在加载中,则会显示加载动画。反之false则关闭加载动画）
       tableLoading: false,
       // 总记录数
-      totalCount: 0,
-      // 每页展示的数量
-      pagesize: 7,
+      totalCount: 200,
       // 当前页
-      currentPage: 1,
+      page: 1,
+      // 每页展示的数量
+      size: 10,
       // 是否打开示例代码dialog
       openSampleCodeDialog: false,
       // 当前选择的示例代码的标签
@@ -809,7 +800,11 @@ export default {
       // 是否打开删除dialog
       openDeleteDialog: false,
       // 当前点击删除配置的dialog所需要的数据（这个不是批量删除,而是删除）
-      deleteConfigDialogData: "",
+      deleteConfigDialogData: {
+        namespaceId: "",
+        groupName: "",
+        dataId: "",
+      },
       // 是否打开批量删除dialog
       openBatchDeleteDialog: false,
       // 是否打开克隆dialog
@@ -869,9 +864,18 @@ export default {
       },
     };
   },
+  // “（第一次）进入该路由、点击浏览器的刷新按钮后”会执行该生命周期。
   created() {
-    // 加载数据
-    this.loadData();
+  },
+  // “（每次）进入该路由、点击浏览器的刷新按钮后”会执行该生命周期。
+  // 作用是: 实现在一个路由组件中部分数据缓存（比如currentSelectedNamespaceId、page、size）、部分数据重新加载的功能（比如tableData、totalCount）。
+  // 可以在被keep-alive缓存的路由组件中（比如当前组件）“刷新部分缓存数据”（比如tableData、totalCount）,
+  // 这样我们每次进入这个路由的时候,（tableData、totalCount）都会重新刷新，而该vue路由组件其余定义data数据（比如currentSelectedNamespaceId、page、size）保持不变。
+  activated() {
+    // 加载命名空间数据
+    this.loadNamespaceData();
+    // 加载表格数据
+    this.loadTableData();
   },
   methods: {
     // vue2-ace-editor代码编辑器初始化(下面的额外配置（例如主题、语言等）可以在node_modules\brace文件夹找 ,然后导入即可)
@@ -892,64 +896,127 @@ export default {
       require("brace/snippets/json");
       require("brace/mode/java");
     },
-    // 加载数据
-    loadData() {
+    // 加载命名空间数据
+    loadNamespaceData() {
+      // 加载命名空间数据
+      getNamespaceList().then((response) => {
+        // 后端返回给前端的result对象
+        let result = response.data;
+        this.namespaceData = result.data;
+      });
+    },
+    // 加载表格数据
+    loadTableData() {
       // 开启表格的加载动画
       this.tableLoading = true;
 
-      // 每页展示的数量
-      let pageSize = this.pagesize;
-      // 当前页
-      let currentPage = this.currentPage;
-      // 根据上面的属性从后端分页的获取tableData数据
-      let result = {
-        code: 200,
-        data: {
-          // 分页查询出来的数据
-          tableData: [
-            {
-              id: 10001,
-              // 配置文件全名（例如application-dev.yaml）
-              dataId: "application1-dev.yaml",
-              // 分组名称
-              groupName: "DEFAULT_GROUP",
-              // 归属应用
-              formApplication: "",
-            },
-            {
-              id: 10002,
-              // 配置文件全名（例如userservice-dev.yaml）
-              dataId: "userservice2-test.properties",
-              // 分组名称
-              groupName: "DEFAULT_GROUP",
-              // 归属应用
-              formApplication: "",
-            },
-          ],
-          // 所有数据的总数（没有分页）
-          totalCount: 70,
-        },
-      };
-
-      // 将数据放到vue中
-      this.tableData = result.data.tableData;
-      this.totalCount = result.data.totalCount;
-      // 关闭表格的加载动画
-      this.tableLoading = false;
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        //当前选择的命名空间的id
+        let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
+        // 指定分组名
+        let groupName = this.queryCondition.groupName;
+        // 指定dataid
+        let dataId = this.queryCondition.dataId;
+        // 当前页
+        let page = this.page;
+        // 每页展示的数量
+        let size = this.size;
+        // 从后端分页的获取配置列表的数据
+        getConfigList(
+          currentSelectedNamespaceId,
+          groupName,
+          dataId,
+          page,
+          size
+        ).then((response) => {
+          // 后端返回给前端的result对象
+          let result = response.data;
+          // 将数据放到vue中
+          this.tableData = result.data.pagedList;
+          this.totalCount = result.data.totalCount;
+          // 关闭表格的加载动画
+          this.tableLoading = false;
+        });
+      }, 500);
     },
     // 点击切换命名空间
     namespaceToggle(selectedNamespaceId) {
       this.currentSelectedNamespaceId = selectedNamespaceId;
+      // 开启表格的加载动画
+      this.tableLoading = true;
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        // 指定分组名
+        let groupName = this.queryCondition.groupName;
+        // 指定dataid
+        let dataId = this.queryCondition.dataId;
+        // 是否隐藏空服务
+        // 将当前页重置回第 1 页（分页标签上的current-page属性必须加上.sync,不然无法将当前页重置回第 1 页）
+        this.page = 1;
+        // 每页展示的数量
+        let size = this.size;
+        // 从后端分页的获取配置列表的数据
+        getConfigList(
+          this.currentSelectedNamespaceId,
+          groupName,
+          dataId,
+          this.page,
+          size
+        ).then((response) => {
+          // 后端返回给前端的result对象
+          let result = response.data;
+          // 将数据放到vue中
+          this.tableData = result.data.pagedList;
+          this.totalCount = result.data.totalCount;
+          // 关闭表格的加载动画
+          this.tableLoading = false;
+        });
+      }, 500);
     },
     // 跳转到创建配置路由
     createConfig() {
       this.$router.push({
         path: "/config/create",
+        query: {
+          namespaceId: this.currentSelectedNamespaceId,
+        },
       });
     },
     // 点击查询
     query() {
-      console.log(this.queryCondition);
+      // 开启表格的加载动画
+      this.tableLoading = true;
+
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        //当前选择的命名空间的id
+        let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
+        // 指定分组名
+        let groupName = this.queryCondition.groupName;
+        // 指定dataid
+        let dataId = this.queryCondition.dataId;
+        // 当前页
+        let page = this.page;
+        // 每页展示的数量
+        let size = this.size;
+        // 从后端分页的获取配置列表的数据
+        getConfigList(
+          currentSelectedNamespaceId,
+          groupName,
+          dataId,
+          page,
+          size
+        ).then((response) => {
+          // 后端返回给前端的result对象
+          let result = response.data;
+          // 将数据放到vue中
+          this.tableData = result.data.pagedList;
+          this.totalCount = result.data.totalCount;
+          // 关闭表格的加载动画
+          this.tableLoading = false;
+        });
+      }, 500);
     },
     // 控制高级查询条件的显示和隐藏，如果高级查询条件（showAdvancedQueryCondition）为true,则将其变成false,反之变为true。
     oppositeShowAdvancedQueryCondition() {
@@ -1016,16 +1083,18 @@ export default {
       this.multipleSelectionData = curMultipleSelectionData;
     },
     // 跳转配置详情
-    configDetail(configId) {
+    configDetail(namespaceId, groupName, dataId) {
       this.$router.push({
         path: "/config/detail",
         query: {
-          configId: configId,
+          namespaceId: namespaceId,
+          groupName: groupName,
+          dataId: dataId,
         },
       });
     },
     // 打开示例代码
-    sampleCode(id) {
+    sampleCode(namespaceId, groupName, dataId) {
       this.openSampleCodeDialog = true;
       // 从后端获取默认的（Java）示例代码内容
       this.javaSampleCodeContent = "";
@@ -1038,31 +1107,42 @@ export default {
       // 根据当前选择的标签的名称,从后端获取指定的示例代码内容
     },
     // 跳转修改/编辑配置
-    modifyConfig(configId) {
+    modifyConfig(namespaceId, groupName, dataId) {
       this.$router.push({
         path: "/config/modify",
         query: {
-          configId: configId,
+          namespaceId: namespaceId,
+          groupName: groupName,
+          dataId: dataId,
         },
       });
     },
     // 点击打开删除配置dialog(deleteConfigDialogData是用户所点击删除的那一行配置信息)
-    clickOpenDeleteDialog(deleteConfigDialogData) {
+    clickOpenDeleteDialog(namespaceId, groupName, dataId) {
       // 记录当前点击删除配置的dialog所需要的数据（这个不是批量删除,而是删除）
-      this.deleteConfigDialogData = deleteConfigDialogData;
+      this.deleteConfigDialogData = {
+        namespaceId: namespaceId,
+        groupName: groupName,
+        dataId: dataId,
+      };
       // 打开dialog
       this.openDeleteDialog = true;
     },
     // 删除配置
     deleteConfig() {
-      // 删除的配置id
-      let deleteConfigId = this.deleteConfigDialogData.id;
+      let namespaceId = this.deleteConfigDialogData.namespaceId;
+      let groupName = this.deleteConfigDialogData.groupName;
+      let dataId = this.deleteConfigDialogData.dataId;
       // 请求后端进行删除
-
-      // 重新加载tableData数据（记住要保留当前分页）
-      this.loadData();
-      // 关闭删除配置dialog
-      this.openDeleteDialog = false;
+      deleteConfig(namespaceId, groupName, dataId).then((response) => {
+        let result = response.data;
+        if (result.data == true) {
+          // 关闭删除配置dialog
+          this.openDeleteDialog = false;
+          // 重新加载tableData数据（记住要保留当前分页）
+          this.loadTableData();
+        }
+      });
     },
     // 点击“更多”选项所展开的下拉菜单项
     clickMoreDropdownItem(command) {
@@ -1135,13 +1215,13 @@ export default {
         console.log("新版导出选中的配置");
       }
     },
-    // pageSize（每页展示的数量）改变时触发
-    handlePageSizeChange(pageSize) {
-      console.log("pageSize=" + pageSize);
+    // page（当前页）改变时触发
+    handlePageChange(page) {
+      console.log("page=" + page);
     },
-    // currentPage（当前页）改变时触发
-    handleCurrentPageChange(currentPage) {
-      console.log("currentPage=" + currentPage);
+    // size（每页展示的数量）改变时触发
+    handleSizeChange(size) {
+      console.log("size=" + size);
     },
     // 将创建/修改的配置进行发布
     publishConfig() {},
