@@ -29,12 +29,6 @@ public class Config implements Serializable {
     private Long id;
 
     /**
-     * dataId。也就是配置的名称（注意: 这个属性一旦放入数据库则不能修改）
-     */
-    @TableField("data_id")
-    private String dataId;
-
-    /**
      * 配置所属的命名空间id（注意: 这个属性一旦放入数据库则不能修改）
      */
     @TableField("namespace_id")
@@ -45,6 +39,12 @@ public class Config implements Serializable {
      */
     @TableField("group_name")
     private String groupName;
+
+    /**
+     * dataId。也就是配置的名称（注意: 这个属性一旦放入数据库则不能修改）
+     */
+    @TableField("data_id")
+    private String dataId;
 
     /**
      * 配置的内容
@@ -99,11 +99,11 @@ public class Config implements Serializable {
     public Config() {
     }
 
-    public Config(Long id, String dataId, String namespaceId, String groupName, String content, String md5, String configDesc, String type, Long createUserId, String createUserIp, LocalDateTime createTime, LocalDateTime lastUpdateTime) {
+    public Config(Long id, String namespaceId, String groupName, String dataId, String content, String md5, String configDesc, String type, Long createUserId, String createUserIp, LocalDateTime createTime, LocalDateTime lastUpdateTime) {
         this.id = id;
-        this.dataId = dataId;
         this.namespaceId = namespaceId;
         this.groupName = groupName;
+        this.dataId = dataId;
         this.content = content;
         this.md5 = md5;
         this.configDesc = configDesc;
@@ -220,9 +220,9 @@ public class Config implements Serializable {
         }
         Config config = (Config) o;
         return Objects.equals(id, config.id)
-                && Objects.equals(dataId, config.dataId)
                 && Objects.equals(namespaceId, config.namespaceId)
                 && Objects.equals(groupName, config.groupName)
+                && Objects.equals(dataId, config.dataId)
                 && Objects.equals(content, config.content)
                 && Objects.equals(md5, config.md5)
                 && Objects.equals(configDesc, config.configDesc)
@@ -235,16 +235,16 @@ public class Config implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, dataId, namespaceId, groupName, content, md5, configDesc, type, createUserId, createUserIp, createTime, lastUpdateTime);
+        return Objects.hash(id, namespaceId, groupName, dataId, content, md5, configDesc, type, createUserId, createUserIp, createTime, lastUpdateTime);
     }
 
     @Override
     public String toString() {
         return "Config{" +
                 "id=" + id +
-                ", dataId='" + dataId + '\'' +
                 ", namespaceId='" + namespaceId + '\'' +
                 ", groupName='" + groupName + '\'' +
+                ", dataId='" + dataId + '\'' +
                 ", content='" + content + '\'' +
                 ", md5='" + md5 + '\'' +
                 ", configDesc='" + configDesc + '\'' +

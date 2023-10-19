@@ -11,36 +11,38 @@
  Target Server Version : 80028
  File Encoding         : 65001
 
- Date: 17/10/2023 00:24:43
+ Date: 20/10/2023 00:51:06
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
--- Table structure for sys_config_info
+-- Table structure for sys_config
 -- ----------------------------
-DROP TABLE IF EXISTS `sys_config_info`;
-CREATE TABLE `sys_config_info`  (
+DROP TABLE IF EXISTS `sys_config`;
+CREATE TABLE `sys_config`  (
   `id` bigint(0) NOT NULL COMMENT '主键,配置信息id',
-  `config_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '配置信息的名称',
-  `group_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '该配置信息所属的分组名称',
-  `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '配置信息的内容',
-  `md5` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'md5值,每一次修改配置内容这个值都要重新生成,用于判断配置文件是否被修改',
-  `desc` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '配置信息的描述',
-  `name_space_id` bigint(0) NOT NULL COMMENT '该配置所属的命名空间id',
-  `type` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '配置信息内容的类型(例如:text、yml或yaml、properties、json、xml)',
-  `user_id` bigint(0) NOT NULL COMMENT '创建该配置信息的用户id',
-  `ip` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '创建该配置信息的用户的ip地址',
-  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
-  `update_time` datetime(0) NULL DEFAULT NULL COMMENT '最后一次修改时间',
-  `del_flag` tinyint(1) NULL DEFAULT 0 COMMENT '删除标志（0代表未删除，1代表已删除）',
+  `namespace_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '配置所属的命名空间id',
+  `group_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '配置所属的分组名称',
+  `data_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '配置的名称',
+  `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '配置的内容',
+  `md5` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '配置内容的MD5值,用于判断配置文件是否被修改',
+  `config_desc` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '配置的描述',
+  `type` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '配置的类型',
+  `create_user_id` bigint(0) NULL DEFAULT NULL COMMENT '创建该配置的用户的id',
+  `create_user_ip` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '创建该配置的用户的ip地址',
+  `create_time` datetime(0) NOT NULL COMMENT '创建该配置的时间',
+  `last_update_time` datetime(0) NOT NULL COMMENT '最后一次修改该配置的时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'grace配置中心的配置信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Records of sys_config_info
+-- Records of sys_config
 -- ----------------------------
+INSERT INTO `sys_config` VALUES (7569069410354181, '', 'grace_group', 'grace-console.yml', 'spring:\r\n  servlet:\r\n    #文件上传配置\r\n    multipart:\r\n      max-file-size: 3MB\r\n      max-request-size: 6MB\r\n  mvc:\r\n    pathmatch:\r\n      #swagger所需要的配置\r\n      matching-strategy: ant_path_matcher\r\n  application:\r\n    name: grace-console\r\n  datasource:\r\n    type: com.zaxxer.hikari.HikariDataSource\r\n    driver-class-name: com.mysql.cj.jdbc.Driver\r\n    url: jdbc:mysql://127.0.0.1:3306/grace_config?serverTimezone=GMT%2B8&characterEncoding=utf-8&useSSL=false\r\n    username: root\r\n    password: 18420163207\r\n  # spring-data-redis配置\r\n  redis:\r\n    database: 1\r\n    host: 192.168.184.100\r\n    port: 6379', 'd17b2efcdb2fcf18c86559b9fd2b8db5', 'grace-console配置', 'yaml', 666888, '127.0.0.1', '2023-10-18 20:13:56', '2023-10-20 00:42:50');
+INSERT INTO `sys_config` VALUES (7572651925832709, '', 'DEFAULT_GROUP', 'user.properties', 'user.id=520\nuser.name=youzhengjie\nuser.age=18', '1086ef9b1d0afa959870fcaaef8655cb', 'user配置', 'properties', 666888, '127.0.0.1', '2023-10-19 11:25:00', '2023-10-20 00:45:23');
+INSERT INTO `sys_config` VALUES (7573148522120197, 'dev-namespace', 'DEFAULT_GROUP', 'system.json', '{\n  \"user\":{\n    \"id\": 789123,\n    \"name\": \"yzj\",\n    \"age\": 20\n  }\n}', '8cdf7d0626ac7d6e9d34ff4ccc6b313b', 'system的json配置', 'json', 666888, '127.0.0.1', '2023-10-19 13:31:18', '2023-10-20 00:44:18');
 
 -- ----------------------------
 -- Table structure for sys_menu
@@ -96,7 +98,7 @@ INSERT INTO `sys_menu` VALUES (5005, 5002, '删除菜单', NULL, NULL, 0, 0, 'sy
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_namespace`;
 CREATE TABLE `sys_namespace`  (
-  `namespace_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '主键,命令空间id',
+  `namespace_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '主键,命令空间id',
   `namespace_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '命名空间名称',
   `max_config_count` int(0) NULL DEFAULT 200 COMMENT '该命名空间最大的配置数',
   `namespace_desc` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '命名空间描述',
@@ -109,6 +111,35 @@ CREATE TABLE `sys_namespace`  (
 -- ----------------------------
 INSERT INTO `sys_namespace` VALUES ('dev-namespace', 'dev', 200, '开发环境');
 INSERT INTO `sys_namespace` VALUES ('test-namespace', 'test', 200, '测试环境');
+
+-- ----------------------------
+-- Table structure for sys_revisions_config
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_revisions_config`;
+CREATE TABLE `sys_revisions_config`  (
+  `id` bigint(0) NOT NULL COMMENT '主键,历史配置id（只能通过这个id去获取到某一个历史配置）',
+  `namespace_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '配置所属的命名空间id',
+  `group_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '配置所属的分组名称',
+  `data_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'dataId。也就是配置的名称',
+  `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '配置的内容',
+  `md5` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '配置内容的MD5值',
+  `config_desc` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '配置的描述',
+  `type` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '配置的类型',
+  `operation_user_id` bigint(0) NULL DEFAULT NULL COMMENT '操作这个配置的用户的id',
+  `operation_user_ip` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '操作这个配置的用户的ip地址',
+  `operation_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '这个配置被执行了什么操作（比如更新、删除）',
+  `operation_time` datetime(0) NOT NULL COMMENT '操作这个配置的时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'grace配置中心的配置信息表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of sys_revisions_config
+-- ----------------------------
+INSERT INTO `sys_revisions_config` VALUES (7575791996961797, '', 'DEFAULT_GROUP', 'user.properties', 'user.id=1314520\nuser.name=youzhengjie666\nuser.age=22', '43da6bc11334e4a942d2691e8f3fb7cb', 'user配置', 'properties', 123456, '127.0.0.1', '更新', '2023-10-20 00:43:34');
+INSERT INTO `sys_revisions_config` VALUES (7575793346872325, 'dev-namespace', 'DEFAULT_GROUP', 'system.json', '{\n  \"user\":{\n    \"id\": 666888,\n    \"name\": \"youzhengjie\",\n    \"age\": 36\n  }\n}', 'b21d0f60cbec6162dffd4091f4fbdf02', 'system的json配置', 'json', 123456, '127.0.0.1', '更新', '2023-10-20 00:43:55');
+INSERT INTO `sys_revisions_config` VALUES (7575794877268997, 'dev-namespace', 'DEFAULT_GROUP', 'system.json', '{\n  \"user\":{\n    \"id\": 789123,\n    \"name\": \"yzj\",\n    \"age\": 20\n  }\n}', '8cdf7d0626ac7d6e9d34ff4ccc6b313b', 'system的json配置', 'json', 123456, '127.0.0.1', '更新', '2023-10-20 00:44:18');
+INSERT INTO `sys_revisions_config` VALUES (7575796800029701, '', 'DEFAULT_GROUP', '123', '123', '202cb962ac59075b964b07152d234b70', '123', 'yaml', 5201314, '127.0.0.1', '删除', '2023-10-20 00:44:47');
+INSERT INTO `sys_revisions_config` VALUES (7575799120921605, '', 'DEFAULT_GROUP', 'user.properties', 'user.id=520\nuser.name=youzhengjie\nuser.age=18', '1086ef9b1d0afa959870fcaaef8655cb', 'user配置', 'properties', 123456, '127.0.0.1', '更新', '2023-10-20 00:45:23');
 
 -- ----------------------------
 -- Table structure for sys_role

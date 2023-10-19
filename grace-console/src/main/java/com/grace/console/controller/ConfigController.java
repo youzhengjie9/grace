@@ -92,19 +92,21 @@ public class ConfigController {
     /**
      * 删除配置
      *
-     * @param namespaceId
-     * @param groupName
-     * @param dataId
+     * @param namespaceId namespaceId
+     * @param groupName groupName
+     * @param dataId dataId
+     * @param request request
      * @return {@link Result}<{@link Boolean}>
      */
     @DeleteMapping("/deleteConfig")
     public Result<Boolean> deleteConfig(
             @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
             @RequestParam(value = "groupName", required = false, defaultValue = "") String groupName,
-            @RequestParam(value = "dataId",required = false, defaultValue = "") String dataId){
+            @RequestParam(value = "dataId",required = false, defaultValue = "") String dataId,
+            HttpServletRequest request){
 
 
-        return Result.ok(configService.deleteConfig(namespaceId,groupName,dataId));
+        return Result.ok(configService.deleteConfig(namespaceId,groupName,dataId,request));
     }
 
 }

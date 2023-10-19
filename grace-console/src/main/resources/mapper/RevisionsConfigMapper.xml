@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.grace.console.mapper.RevisionsConfigMapper">
+
+
+    <select id="getRevisionsConfigListItemVOByPage" resultType="com.grace.console.vo.RevisionsConfigListItemVO">
+
+    </select>
+    <select id="getRevisionsConfigTotalCount" resultType="java.lang.Integer">
+
+
+    </select>
+</mapper>

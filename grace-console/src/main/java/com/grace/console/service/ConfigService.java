@@ -40,7 +40,7 @@ public interface ConfigService extends IService<Config> {
     /**
      * 分页获取ConfigListItemVO
      *
-     * @param namespaceId namespaceId（精确搜索）
+     * @param namespaceId namespaceId（"精确"搜索）
      * @param groupName   groupName（模糊搜素）
      * @param dataId      dataId（模糊搜索）
      * @param page page
@@ -52,7 +52,7 @@ public interface ConfigService extends IService<Config> {
     /**
      * 获取配置总数
      *
-     * @param namespaceId namespaceId（精确搜索）
+     * @param namespaceId namespaceId（"精确"搜索）
      * @param groupName groupName（模糊搜素）
      * @param dataId dataId（模糊搜索）
      * @return int
@@ -62,12 +62,13 @@ public interface ConfigService extends IService<Config> {
     /**
      * 删除配置
      *
-     * @param namespaceId
-     * @param groupName
-     * @param dataId
+     * @param namespaceId namespaceId
+     * @param groupName groupName
+     * @param dataId dataId
+     * @param request request
      * @return {@link Boolean}
      */
-    Boolean deleteConfig(String namespaceId, String groupName, String dataId);
+    Boolean deleteConfig(String namespaceId, String groupName, String dataId,HttpServletRequest request);
 
 
 }

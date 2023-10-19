@@ -34,5 +34,9 @@ public final class ParentMappingConstants {
      */
     public static final String CONFIG_CONTROLLER= GRACE_SERVER_BASE_URL+"/config";
 
+    /**
+     * RevisionsConfigController接口的顶层路径
+     */
+    public static final String REVISIONS_CONFIG_CONTROLLER= GRACE_SERVER_BASE_URL+"/revisions/config";
 
 }

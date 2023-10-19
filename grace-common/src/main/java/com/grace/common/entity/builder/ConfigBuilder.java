@@ -19,11 +19,6 @@ public class ConfigBuilder {
     private Long id;
 
     /**
-     * dataId。也就是配置的名称（注意: 这个属性一旦放入数据库则不能修改）
-     */
-    private String dataId;
-
-    /**
      * 配置所属的命名空间id（注意: 这个属性一旦放入数据库则不能修改）
      */
     private String namespaceId;
@@ -32,6 +27,11 @@ public class ConfigBuilder {
      * 配置所属的分组名称（注意: 这个属性一旦放入数据库则不能修改）
      */
     private String groupName;
+
+    /**
+     * dataId。也就是配置的名称（注意: 这个属性一旦放入数据库则不能修改）
+     */
+    private String dataId;
 
     /**
      * 配置的内容
@@ -89,11 +89,6 @@ public class ConfigBuilder {
         return this;
     }
 
-    public ConfigBuilder dataId(String dataId) {
-        this.dataId = dataId;
-        return this;
-    }
-
     public ConfigBuilder namespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
         return this;
@@ -101,6 +96,11 @@ public class ConfigBuilder {
 
     public ConfigBuilder groupName(String groupName) {
         this.groupName = groupName;
+        return this;
+    }
+
+    public ConfigBuilder dataId(String dataId) {
+        this.dataId = dataId;
         return this;
     }
 
@@ -148,6 +148,6 @@ public class ConfigBuilder {
      * 构建对象
      */
     public Config build() {
-        return new Config(id, dataId, namespaceId, groupName, content, md5, configDesc, type, createUserId, createUserIp, createTime, lastUpdateTime);
+        return new Config(id, namespaceId, groupName, dataId, content, md5, configDesc, type, createUserId, createUserIp, createTime, lastUpdateTime);
     }
 }
