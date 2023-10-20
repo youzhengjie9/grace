@@ -9,18 +9,18 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 历史配置实体类（其实历史配置就相当于是操作配置的日志）,包括对配置的修改、删除都会记录到这里
+ * 配置版本实体类（其实配置版本就相当于是操作配置的日志）,包括对配置的新增、修改、删除都会记录到这里
  *
  * @author youzhengjie
  * @date 2023/10/19 17:28:12
  */
-@TableName("sys_revisions_config")
-public class RevisionsConfig implements Serializable {
+@TableName("sys_config_version")
+public class ConfigVersion implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键,历史配置id（通过这个id去获取到"某一个"历史配置，但是获取某一个配置的“历史配置列表”还是通过namespaceId、groupName、dataId）
+     * 主键,配置版本id（通过这个id去获取到"某一个"配置版本，但是获取某一个配置的“配置版本列表”还是通过namespaceId、groupName、dataId）
      */
     @TableId(value = "id",type = IdType.INPUT)
     private Long id;
@@ -38,7 +38,7 @@ public class RevisionsConfig implements Serializable {
     private String groupName;
 
     /**
-     * dataId。也就是配置的名称
+     * 配置的名称
      */
     @TableField("data_id")
     private String dataId;
@@ -80,7 +80,7 @@ public class RevisionsConfig implements Serializable {
     private String operationUserIp;
 
     /**
-     * 这个配置被执行了什么操作（比如更新、删除）,可查看com.grace.common.enums.ConfigOperationTypeEnum
+     * 这个配置被执行了什么操作（比如新增、修改、删除）,可查看com.grace.common.enums.ConfigOperationTypeEnum
      */
     @TableField("operation_type")
     private String operationType;
@@ -91,10 +91,10 @@ public class RevisionsConfig implements Serializable {
     @TableField("operation_time")
     private LocalDateTime operationTime;
 
-    public RevisionsConfig() {
+    public ConfigVersion() {
     }
 
-    public RevisionsConfig(Long id, String namespaceId, String groupName, String dataId, String content, String md5, String configDesc, String type, Long operationUserId, String operationUserIp, String operationType, LocalDateTime operationTime) {
+    public ConfigVersion(Long id, String namespaceId, String groupName, String dataId, String content, String md5, String configDesc, String type, Long operationUserId, String operationUserIp, String operationType, LocalDateTime operationTime) {
         this.id = id;
         this.namespaceId = namespaceId;
         this.groupName = groupName;
@@ -207,7 +207,7 @@ public class RevisionsConfig implements Serializable {
 
     @Override
     public String toString() {
-        return "RevisionsConfig{" +
+        return "ConfigVersion{" +
                 "id=" + id +
                 ", namespaceId='" + namespaceId + '\'' +
                 ", groupName='" + groupName + '\'' +

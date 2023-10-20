@@ -2,11 +2,11 @@ package com.grace.console.controller;
 
 import com.grace.common.constant.Constants;
 import com.grace.common.constant.ParentMappingConstants;
-import com.grace.common.entity.RevisionsConfig;
+import com.grace.common.entity.ConfigVersion;
 import com.grace.common.utils.PageData;
 import com.grace.common.utils.Result;
-import com.grace.console.service.RevisionsConfigService;
-import com.grace.console.vo.RevisionsConfigListItemVO;
+import com.grace.console.service.ConfigVersionService;
+import com.grace.console.vo.ConfigVersionListItemVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,10 +20,10 @@ import javax.servlet.http.HttpServletRequest;
  */
 @RestController
 @RequestMapping(path = ParentMappingConstants.REVISIONS_CONFIG_CONTROLLER)
-public class RevisionsConfigController {
+public class ConfigVersionController {
 
     @Autowired
-    private RevisionsConfigService revisionsConfigService;
+    private ConfigVersionService configVersionService;
 
     /**
      * 获取指定配置的历史配置列表
@@ -33,10 +33,10 @@ public class RevisionsConfigController {
      * @param dataId dataId（必填）
      * @param page 当前页（最小页是: 1）
      * @param size 每一页的大小（最小值为: 1）
-     * @return {@link Result}<{@link PageData}<{@link RevisionsConfigListItemVO}>>
+     * @return {@link Result}<{@link PageData}<{@link ConfigVersionListItemVO}>>
      */
     @GetMapping(path = "/getRevisionsConfigList")
-    public Result<PageData<RevisionsConfigListItemVO>> getRevisionsConfigList(
+    public Result<PageData<ConfigVersionListItemVO>> getRevisionsConfigList(
             @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
             @RequestParam(value = "groupName") String groupName,
             @RequestParam(value = "dataId") String dataId,
@@ -54,9 +54,9 @@ public class RevisionsConfigController {
         page = (page-1)*size;
         // 对size的大小进行限制,防止一次性获取太多的数据（下面的代码意思是一次“最多”获取500条记录,如果size的值小于500,则size还是原来的值不变）
         size = Math.min(size,500);
-        PageData<RevisionsConfigListItemVO> pageData = new PageData<>();
-        pageData.setPagedList(revisionsConfigService.getRevisionsConfigListItemVOByPage(namespaceId, groupName, dataId, page, size));
-        pageData.setTotalCount(revisionsConfigService.getRevisionsConfigTotalCount(namespaceId, groupName, dataId));
+        PageData<ConfigVersionListItemVO> pageData = new PageData<>();
+        pageData.setPagedList(configVersionService.getRevisionsConfigListItemVOByPage(namespaceId, groupName, dataId, page, size));
+        pageData.setTotalCount(configVersionService.getRevisionsConfigTotalCount(namespaceId, groupName, dataId));
         return Result.ok(pageData);
     }
 
@@ -64,12 +64,12 @@ public class RevisionsConfigController {
      * 获取指定的历史配置（只能通过历史配置id才能去获取）
      *
      * @param revisionsConfigId 历史配置id
-     * @return {@link Result}<{@link RevisionsConfig}>
+     * @return {@link Result}<{@link ConfigVersion}>
      */
     @GetMapping(path = "/getRevisionsConfig/{revisionsConfigId}")
-    public Result<RevisionsConfig> getRevisionsConfig(@PathVariable("revisionsConfigId") Long revisionsConfigId){
+    public Result<ConfigVersion> getRevisionsConfig(@PathVariable("revisionsConfigId") Long revisionsConfigId){
 
-        return Result.ok(revisionsConfigService.getRevisionsConfig(revisionsConfigId));
+        return Result.ok(configVersionService.getRevisionsConfig(revisionsConfigId));
     }
 
     /**

@@ -50,9 +50,9 @@ const router = new VueRouter({
                     }
                 },
                 {
-                    // 配置的历史版本列表路由
-                    path:'/config/revisions/list',
-                    component: () => import('../views/config/revisions/list/index.vue')
+                    // 配置版本列表路由
+                    path:'/config/version/list',
+                    component: () => import('../views/config/version/list/index.vue')
                 },
                 {
                     // 命名空间列表路由
@@ -82,14 +82,14 @@ const router = new VueRouter({
             component: () => import('../views/config/modify/index.vue')
         },
         {
-            // 配置的历史版本详情路由
-            path:'/config/revisions/detail',
-            component: () => import('../views/config/revisions/detail/index.vue')
+            // 配置版本详情路由
+            path:'/config/version/detail',
+            component: () => import('../views/config/version/detail/index.vue')
         },
         {
             // 配置回滚路由
-            path:'/config/revisions/rollback',
-            component: () => import('../views/config/revisions/rollback/index.vue')
+            path:'/config/version/rollback',
+            component: () => import('../views/config/version/rollback/index.vue')
         },
         {
             // 登录路由

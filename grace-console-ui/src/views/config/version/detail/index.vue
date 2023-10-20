@@ -1,5 +1,5 @@
 <template>
-    <div class="config-history-version-detail-box">
+    <div class="config-version-detail-box">
       <el-container style="height: 500px">
         <!-- 页头 -->
         <el-header style="text-align: right; font-size: 12px">
@@ -24,7 +24,7 @@
           <el-container>
             <!-- 右侧内容 -->
             <el-main>
-              <config-revisions-detail-content/>
+              <config-version-detail-content/>
             </el-main>
           </el-container>
           
@@ -37,13 +37,13 @@
   
   <script>
   import PageHeader from "@/layout/components/PageHeader/index.vue";
-  import ConfigRevisionsDetailContent from '@/components/config/revisions/detail/content/index.vue'
+  import ConfigVersionDetailContent from '@/components/config/version/detail/content/index.vue'
   
   export default {
-    name: "ConfigDetail",
+    name: "ConfigVersionDetail",
     components: {
       PageHeader,
-      ConfigRevisionsDetailContent
+      ConfigVersionDetailContent
     },
     methods: {
       back() {

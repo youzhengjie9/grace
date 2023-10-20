@@ -1,5 +1,5 @@
 <template>
-    <div class="config-history-version-rollback-box">
+    <div class="config-version-rollback-box">
       <el-container style="height: 500px">
         <!-- 页头 -->
         <el-header style="text-align: right; font-size: 12px">
@@ -24,7 +24,7 @@
           <el-container>
             <!-- 右侧内容 -->
             <el-main>
-              <config-revisions-rollback-content/>
+              <config-version-rollback-content/>
             </el-main>
           </el-container>
           
@@ -37,13 +37,13 @@
   
   <script>
   import PageHeader from "@/layout/components/PageHeader/index.vue";
-  import ConfigRevisionsRollbackContent from '@/components/config/revisions/rollback/content/index.vue'
+  import ConfigVersionRollbackContent from '@/components/config/version/rollback/content/index.vue'
   
   export default {
-    name: "ConfigDetail",
+    name: "ConfigVersionRollback",
     components: {
       PageHeader,
-      ConfigRevisionsRollbackContent
+      ConfigVersionRollbackContent
     },
     methods: {
       back() {

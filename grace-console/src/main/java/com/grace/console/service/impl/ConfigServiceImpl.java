@@ -5,14 +5,14 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.grace.common.constant.Constants;
 import com.grace.common.entity.Config;
-import com.grace.common.entity.RevisionsConfig;
-import com.grace.common.entity.builder.RevisionsConfigBuilder;
+import com.grace.common.entity.ConfigVersion;
+import com.grace.common.entity.builder.ConfigVersionBuilder;
 import com.grace.common.enums.ConfigOperationTypeEnum;
 import com.grace.common.utils.IpUtils;
 import com.grace.common.utils.MD5Utils;
 import com.grace.common.utils.SnowId;
 import com.grace.console.mapper.ConfigMapper;
-import com.grace.console.mapper.RevisionsConfigMapper;
+import com.grace.console.mapper.ConfigVersionMapper;
 import com.grace.console.service.ConfigService;
 import com.grace.console.vo.ConfigListItemVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
     private ConfigMapper configMapper;
 
     @Autowired
-    private RevisionsConfigMapper revisionsConfigMapper;
+    private ConfigVersionMapper configVersionMapper;
 
     @Override
     public Boolean publishConfig(Config config, HttpServletRequest request) {
@@ -45,26 +45,43 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
             String namespaceId = config.getNamespaceId();
             String groupName = config.getGroupName();
             String dataId = config.getDataId();
+            // 生成当前最新的配置版本的id（因为我们后面要生成一条配置版本）
+            long versionId = SnowId.nextId();
             LocalDateTime currentTime = LocalDateTime.now();
-
+            // 设置新增和修改共用的属性（这样避免在下面写两份同样的代码）
+            config.setMd5(MD5Utils.md5Hex(config.getContent(), Constants.ENCODE));
+            config.setLastUpdateTime(currentTime);
             // 如果数据库中没有该配置,则“新增”该配置
             if(getConfig(namespaceId, groupName, dataId) == null){
                 config.setId(SnowId.nextId());
-                config.setMd5(MD5Utils.md5Hex(config.getContent(), Constants.ENCODE));
+                // 设置当前配置对应的最新的配置版本id
+                config.setCurrentVersionId(versionId);
                 // TODO: 2023/10/18 userid暂时写死
                 config.setCreateUserId(666888L);
                 config.setCreateUserIp(IpUtils.getIpAddrByHttpServletRequest(request));
                 config.setCreateTime(currentTime);
-                config.setLastUpdateTime(currentTime);
-                int insertResult = configMapper.insert(config);
-                return insertResult > 0 ;
+                int insertConfigResult = configMapper.insert(config);
+                // 如果“新增”成功就生成一个类型为“新增”的配置版本
+                if(insertConfigResult > 0){
+                    // 创建一个类型为“新增”的配置版本
+                    ConfigVersion configVersion = ConfigVersionBuilder
+                            .directBuild(config,versionId,ConfigOperationTypeEnum.INSERT, request);
+                    // 生成配置版本
+                    int insertConfigVersionResult = configVersionMapper.insert(configVersion);
+                    if (insertConfigVersionResult > 0) {
+                        return true;
+                    }else {
+                        // 如果生成配置版本失败则直接抛出异常,让MySQL事务进行回滚（主要是回滚这步configVersionMapper.insert(configVersion)）
+                        throw new RuntimeException();
+                    }
+                }
             }
             // 如果数据库中有该配置,则“修改”该配置
             else {
-                config.setMd5(MD5Utils.md5Hex(config.getContent(), Constants.ENCODE));
-                config.setLastUpdateTime(currentTime);
                 LambdaUpdateWrapper<Config> updateWrapper =
                         new LambdaUpdateWrapper<Config>()
+                                // 更新当前配置对应的最新的配置版本id
+                                .set(Config::getCurrentVersionId,versionId)
                                 .set(Config::getConfigDesc,config.getConfigDesc())
                                 .set(Config::getType,config.getType())
                                 .set(Config::getContent,config.getContent())
@@ -75,39 +92,28 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
                                 .eq(Config::getDataId, dataId);
                 // 修改配置
                 int updateResult = configMapper.update(null,updateWrapper);
-                // 如果修改成功就生成一个历史配置
+                // 如果“修改”成功就生成一个类型为“修改”的配置版本
                 if(updateResult > 0) {
-                    RevisionsConfig revisionsConfig = RevisionsConfigBuilder.newBuilder()
-                            .id(SnowId.nextId())
-                            .namespaceId(namespaceId)
-                            .groupName(groupName)
-                            .dataId(dataId)
-                            .content(config.getContent())
-                            .md5(config.getMd5())
-                            .configDesc(config.getConfigDesc())
-                            .type(config.getType())
-                            .operationUserId(123456L)
-                            .operationUserIp(IpUtils.getIpAddrByHttpServletRequest(request))
-                            // 设置操作类型为更新
-                            .operationType(ConfigOperationTypeEnum.UPDATE.getOperationType())
-                            .operationTime(currentTime)
-                            .build();
+                    // 创建一个类型为“修改”的配置版本
+                    ConfigVersion configVersion = ConfigVersionBuilder
+                            .directBuild(config, versionId, ConfigOperationTypeEnum.UPDATE, request);
                     // 生成历史配置
-                    int insertResult = revisionsConfigMapper.insert(revisionsConfig);
-                    if (insertResult > 0) {
+                    int insertConfigVersionResult = configVersionMapper.insert(configVersion);
+                    if (insertConfigVersionResult > 0) {
                         return true;
                     }else {
-                        // 如果生成历史配置失败则直接抛出异常,让MySQL事务进行回滚（主要是回滚这步configMapper.update(null,updateWrapper)）
+                        // 如果生成配置版本失败则直接抛出异常,让MySQL事务进行回滚（主要是回滚这步configMapper.update(null,updateWrapper)）
                         throw new RuntimeException();
                     }
                 }
-                return false;
             }
+            return false;
         }catch (Exception e){
             e.printStackTrace();
             // 触发事务回滚
             throw new RuntimeException();
         }
+
     }
 
     @Override
@@ -137,33 +143,22 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
         try {
             // 先通过namespaceId, groupName, dataId查询该需要被删除的配置（注意: 必须放在删除配置的代码之前）
             Config config = getConfig(namespaceId, groupName, dataId);
+            // 配置版本id
+            long versionId = SnowId.nextId();
             // 删除配置
             int deleteConfigResult = configMapper.deleteConfig(namespaceId, groupName, dataId);
             // 如果删除配置成功
             if(deleteConfigResult > 0){
-
-                RevisionsConfig revisionsConfig = RevisionsConfigBuilder.newBuilder()
-                        .id(SnowId.nextId())
-                        .namespaceId(namespaceId)
-                        .groupName(groupName)
-                        .dataId(dataId)
-                        .content(config.getContent())
-                        .md5(config.getMd5())
-                        .configDesc(config.getConfigDesc())
-                        .type(config.getType())
-                        .operationUserId(5201314L)
-                        .operationUserIp(IpUtils.getIpAddrByHttpServletRequest(request))
-                         // 设置操作类型为删除
-                        .operationType(ConfigOperationTypeEnum.DELETE.getOperationType())
-                        .operationTime(LocalDateTime.now())
-                        .build();
-                // 生成历史配置
-                int insertResult = revisionsConfigMapper.insert(revisionsConfig);
-                // 如果生成历史配置成功
-                if(insertResult > 0){
+                // 创建一个类型为“删除”的配置版本
+                ConfigVersion configVersion = ConfigVersionBuilder
+                        .directBuild(config, versionId, ConfigOperationTypeEnum.DELETE, request);
+                // 生成配置版本
+                int insertConfigVersionResult = configVersionMapper.insert(configVersion);
+                // 如果生成配置版本成功
+                if(insertConfigVersionResult > 0){
                     return true;
                 }else {
-                    // 如果生成历史配置失败则直接抛出异常,让MySQL事务进行回滚（主要是回滚这步configMapper.deleteConfig(namespaceId, groupName, dataId)
+                    // 如果生成配置版本失败则直接抛出异常,让MySQL事务进行回滚（主要是回滚这步configMapper.deleteConfig(namespaceId, groupName, dataId)
                     throw new RuntimeException();
                 }
             }

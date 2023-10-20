@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.grace.console.mapper.RevisionsConfigMapper">
+<mapper namespace="com.grace.console.mapper.ConfigVersionMapper">
 
 
-    <select id="getRevisionsConfigListItemVOByPage" resultType="com.grace.console.vo.RevisionsConfigListItemVO">
+    <select id="getRevisionsConfigListItemVOByPage" resultType="com.grace.console.vo.ConfigVersionListItemVO">
 
         SELECT
             id,
@@ -29,7 +29,7 @@
           AND group_name = #{groupName}
           AND data_id = #{dataId}
     </select>
-    <select id="getRevisionsConfig" resultType="com.grace.common.entity.RevisionsConfig">
+    <select id="getRevisionsConfig" resultType="com.grace.common.entity.ConfigVersion">
         SELECT
             id,
             namespace_id,

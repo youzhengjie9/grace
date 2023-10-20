@@ -47,6 +47,12 @@ public class Config implements Serializable {
     private String dataId;
 
     /**
+     * 该配置当前的版本id(com.grace.common.entity.ConfigVersion.id)
+     */
+    @TableField("current_version_id")
+    private Long currentVersionId;
+
+    /**
      * 配置的内容
      */
     @TableField("content")
@@ -99,11 +105,12 @@ public class Config implements Serializable {
     public Config() {
     }
 
-    public Config(Long id, String namespaceId, String groupName, String dataId, String content, String md5, String configDesc, String type, Long createUserId, String createUserIp, LocalDateTime createTime, LocalDateTime lastUpdateTime) {
+    public Config(Long id, String namespaceId, String groupName, String dataId, Long currentVersionId, String content, String md5, String configDesc, String type, Long createUserId, String createUserIp, LocalDateTime createTime, LocalDateTime lastUpdateTime) {
         this.id = id;
         this.namespaceId = namespaceId;
         this.groupName = groupName;
         this.dataId = dataId;
+        this.currentVersionId = currentVersionId;
         this.content = content;
         this.md5 = md5;
         this.configDesc = configDesc;
@@ -122,14 +129,6 @@ public class Config implements Serializable {
         this.id = id;
     }
 
-    public String getDataId() {
-        return dataId;
-    }
-
-    public void setDataId(String dataId) {
-        this.dataId = dataId;
-    }
-
     public String getNamespaceId() {
         return namespaceId;
     }
@@ -144,6 +143,22 @@ public class Config implements Serializable {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public String getDataId() {
+        return dataId;
+    }
+
+    public void setDataId(String dataId) {
+        this.dataId = dataId;
+    }
+
+    public void setCurrentVersionId(Long currentVersionId) {
+        this.currentVersionId = currentVersionId;
+    }
+
+    public Long getCurrentVersionId() {
+        return currentVersionId;
     }
 
     public String getContent() {
@@ -223,6 +238,7 @@ public class Config implements Serializable {
                 && Objects.equals(namespaceId, config.namespaceId)
                 && Objects.equals(groupName, config.groupName)
                 && Objects.equals(dataId, config.dataId)
+                && Objects.equals(currentVersionId, config.currentVersionId)
                 && Objects.equals(content, config.content)
                 && Objects.equals(md5, config.md5)
                 && Objects.equals(configDesc, config.configDesc)
@@ -235,7 +251,7 @@ public class Config implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, namespaceId, groupName, dataId, content, md5, configDesc, type, createUserId, createUserIp, createTime, lastUpdateTime);
+        return Objects.hash(id, namespaceId, groupName, dataId,currentVersionId, content, md5, configDesc, type, createUserId, createUserIp, createTime, lastUpdateTime);
     }
 
     @Override
@@ -245,6 +261,7 @@ public class Config implements Serializable {
                 ", namespaceId='" + namespaceId + '\'' +
                 ", groupName='" + groupName + '\'' +
                 ", dataId='" + dataId + '\'' +
+                ", currentVersionId=" + currentVersionId +
                 ", content='" + content + '\'' +
                 ", md5='" + md5 + '\'' +
                 ", configDesc='" + configDesc + '\'' +

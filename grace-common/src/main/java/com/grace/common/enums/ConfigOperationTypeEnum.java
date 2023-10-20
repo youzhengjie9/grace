@@ -8,7 +8,8 @@ package com.grace.common.enums;
  */
 public enum ConfigOperationTypeEnum {
 
-    UPDATE("更新"),
+    INSERT("新增"),
+    UPDATE("修改"),
     DELETE("删除");
 
     /**

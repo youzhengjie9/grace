@@ -34,6 +34,11 @@ public class ConfigBuilder {
     private String dataId;
 
     /**
+     * 该配置当前的版本id(com.grace.common.entity.ConfigVersion.id)
+     */
+    private Long currentVersionId;
+
+    /**
      * 配置的内容
      */
     private String content;
@@ -104,6 +109,11 @@ public class ConfigBuilder {
         return this;
     }
 
+    public ConfigBuilder currentVersionId(Long currentVersionId) {
+        this.currentVersionId = currentVersionId;
+        return this;
+    }
+
     public ConfigBuilder content(String content) {
         this.content = content;
         return this;
@@ -148,6 +158,6 @@ public class ConfigBuilder {
      * 构建对象
      */
     public Config build() {
-        return new Config(id, namespaceId, groupName, dataId, content, md5, configDesc, type, createUserId, createUserIp, createTime, lastUpdateTime);
+        return new Config(id, namespaceId, groupName, dataId , currentVersionId , content, md5, configDesc, type, createUserId, createUserIp, createTime, lastUpdateTime);
     }
 }

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
  * @author youzhengjie
  * @date 2023/10/19 17:25:32
  */
-public class RevisionsConfigListItemVO implements Serializable {
+public class ConfigVersionListItemVO implements Serializable {
 
 
     private static final long serialVersionUID = 1L;
@@ -44,10 +44,10 @@ public class RevisionsConfigListItemVO implements Serializable {
      */
     private LocalDateTime operationTime;
 
-    public RevisionsConfigListItemVO() {
+    public ConfigVersionListItemVO() {
     }
 
-    public RevisionsConfigListItemVO(Long id, String namespaceId, String groupName, String dataId, String operationType, LocalDateTime operationTime) {
+    public ConfigVersionListItemVO(Long id, String namespaceId, String groupName, String dataId, String operationType, LocalDateTime operationTime) {
         this.id = id;
         this.namespaceId = namespaceId;
         this.groupName = groupName;

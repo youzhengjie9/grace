@@ -1,5 +1,5 @@
 <template>
-  <div class="config-revisions-list-box">
+  <div class="config-version-list-box">
     <!-- 标题 -->
     <div
       style="
@@ -10,7 +10,7 @@
       "
     >
       <span style="font-size: 28px; height: 40px; font-weight: 500"
-        >历史版本</span
+        >配置版本</span
       >
     </div>
 
@@ -148,13 +148,13 @@
       <el-table-column label="操作" min-width="180">
         <template slot-scope="scope">
           <!-- 版本详情 -->
-          <span class="operation" @click="ConfigRevisionsDetail(scope.row.id)"
+          <span class="operation" @click="versionDetail(scope.row.id)"
             >版本详情</span
           >
           <span style="margin-right: 5px">|</span>
 
           <!-- 版本回滚 -->
-          <span class="operation" @click="ConfigRevisionsRollback(scope.row.id)"
+          <span class="operation" @click="versionRollback(scope.row.id)"
             >版本回滚</span
           >
           <span style="margin-right: 5px">|</span>
@@ -162,22 +162,22 @@
           <!-- 版本比较 -->
           <span
             class="operation"
-            @click="clickOpenRevisionsCompareDialog(scope.row.id)"
+            @click="clickOpenVersionCompareDialog(scope.row.id)"
             >版本比较</span
           >
         </template>
       </el-table-column>
     </el-table>
 
-    <!-- 历史版本的比较dialog -->
+    <!-- 配置版本的比较dialog -->
     <el-dialog
-      :visible.sync="openRevisionsCompareDialog"
+      :visible.sync="openVersionCompareDialog"
       top="15vh"
       width="80%"
     >
       <!-- dialog标题插槽 -->
       <div slot="title">
-        <span style="font-size: 20px">历史版本比较</span>
+        <span style="font-size: 20px">配置版本比较</span>
       </div>
 
       <!-- 代码差异对比上面的标题 -->
@@ -198,10 +198,10 @@
         <!-- 使用v-code-diff插件进行代码差异对比 -->
         <code-diff
           :old-string="
-            this.revisionsCompareDialogData.currentSelectedVersionConfigContent
+            this.versionCompareDialogData.currentSelectedVersionConfigContent
           "
           :new-string="
-            this.revisionsCompareDialogData.latestVersionConfigContent
+            this.versionCompareDialogData.latestVersionConfigContent
           "
           output-format="side-by-side"
         >
@@ -210,7 +210,7 @@
 
       <!-- 底部插槽 -->
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="openRevisionsCompareDialog = false"
+        <el-button type="primary" @click="openVersionCompareDialog = false"
           >返回</el-button
         >
       </div>
@@ -245,7 +245,7 @@
 import Editor from "vue2-ace-editor";
 
 export default {
-  name: "ConfigRevisionsList",
+  name: "ConfigVersionList",
   components: {
     Editor,
   },
@@ -289,10 +289,10 @@ export default {
       pagesize: 7,
       // 当前页
       currentPage: 1,
-      // 是否打开历史版本比较dialog（历史版本指的是同一个namespace、DataId、groupName的配置）
-      openRevisionsCompareDialog: false,
-      // 历史版本比较dialog所需要的数据
-      revisionsCompareDialogData: {
+      // 是否打开版本比较dialog（版本指的是同一个namespace、DataId、groupName的配置）
+      openVersionCompareDialog: false,
+      // 版本比较dialog所需要的数据
+      versionCompareDialogData: {
         // 当前选择的版本的配置内容
         currentSelectedVersionConfigContent: "",
         // 最新版本的配置内容
@@ -497,29 +497,29 @@ export default {
       console.log(this.queryCondition);
     },
     // 跳转到版本详情路由
-    ConfigRevisionsDetail(versionId) {
+    versionDetail(versionId) {
       this.$router.push({
-        path: "/config/revisions/detail",
+        path: "/config/version/detail",
         query: {
           versionId: versionId,
         },
       });
     },
     // 跳转到版本回滚路由
-    ConfigRevisionsRollback(versionId) {
+    versionRollback(versionId) {
       this.$router.push({
-        path: "/config/revisions/rollback",
+        path: "/config/version/rollback",
         query: {
           versionId: versionId,
         },
       });
     },
     // 点击打开版本比较dialog
-    clickOpenRevisionsCompareDialog(versionId) {
-      this.openRevisionsCompareDialog = true;
+    clickOpenVersionCompareDialog(versionId) {
+      this.openVersionCompareDialog = true;
 
-      // 从后端查询历史版本比较dialog所需要的数据
-      this.revisionsCompareDialogData = {
+      // 从后端查询版本比较dialog所需要的数据
+      this.versionCompareDialogData = {
         // 当前选择的版本的配置内容
         currentSelectedVersionConfigContent: "2",
         // 当前选择的版本的配置格式

@@ -1,8 +1,8 @@
 package com.grace.console.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.grace.common.entity.RevisionsConfig;
-import com.grace.console.vo.RevisionsConfigListItemVO;
+import com.grace.common.entity.ConfigVersion;
+import com.grace.console.vo.ConfigVersionListItemVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  * @author youzhengjie
  * @date 2023/10/19 15:09:52
  */
-public interface RevisionsConfigService extends IService<RevisionsConfig> {
+public interface ConfigVersionService extends IService<ConfigVersion> {
 
     /**
      *
@@ -22,9 +22,9 @@ public interface RevisionsConfigService extends IService<RevisionsConfig> {
      * @param dataId      dataId（“精确”搜索）
      * @param page page
      * @param size size
-     * @return {@link List}<{@link RevisionsConfigListItemVO}>
+     * @return {@link List}<{@link ConfigVersionListItemVO}>
      */
-    List<RevisionsConfigListItemVO> getRevisionsConfigListItemVOByPage(String namespaceId, String groupName, String dataId, Integer page, Integer size);
+    List<ConfigVersionListItemVO> getRevisionsConfigListItemVOByPage(String namespaceId, String groupName, String dataId, Integer page, Integer size);
 
     /**
      *
@@ -40,9 +40,9 @@ public interface RevisionsConfigService extends IService<RevisionsConfig> {
      * 获取指定的历史配置
      *
      * @param revisionsConfigId 历史配置id
-     * @return {@link RevisionsConfig}
+     * @return {@link ConfigVersion}
      */
-    RevisionsConfig getRevisionsConfig(Long revisionsConfigId);
+    ConfigVersion getRevisionsConfig(Long revisionsConfigId);
 
     /**
      * 回滚配置（原理和“发布配置”差不多）
