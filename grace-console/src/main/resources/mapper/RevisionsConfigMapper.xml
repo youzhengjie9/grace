@@ -5,9 +5,45 @@
 
     <select id="getRevisionsConfigListItemVOByPage" resultType="com.grace.console.vo.RevisionsConfigListItemVO">
 
+        SELECT
+            id,
+            namespace_id,
+            group_name,
+            data_id,
+            operation_type,
+            operation_time
+        FROM
+            sys_revisions_config
+        WHERE namespace_id = #{namespaceId}
+          AND group_name = #{groupName}
+          AND data_id = #{dataId}
+        ORDER BY id DESC
+        LIMIT #{page},#{size}
     </select>
     <select id="getRevisionsConfigTotalCount" resultType="java.lang.Integer">
-
-
+        SELECT
+            COUNT(*)
+        FROM
+            sys_revisions_config
+        WHERE namespace_id = #{namespaceId}
+          AND group_name = #{groupName}
+          AND data_id = #{dataId}
+    </select>
+    <select id="getRevisionsConfig" resultType="com.grace.common.entity.RevisionsConfig">
+        SELECT
+            id,
+            namespace_id,
+            group_name,
+            data_id,
+            content,
+            md5,
+            config_desc,
+            type,
+            operation_user_id,
+            operation_user_ip,
+            operation_type,
+            operation_time
+        FROM sys_revisions_config
+        WHERE id = #{revisionsConfigId}
     </select>
 </mapper>

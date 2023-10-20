@@ -14,6 +14,7 @@ import java.util.List;
 public interface RevisionsConfigMapper extends BaseMapper<RevisionsConfig> {
 
     /**
+     * 分页获取RevisionsConfigListItemVO（并按id（这个id是雪花算法id,是自增的）倒序排序,目的是将最新的历史配置放在前面）
      *
      * @param namespaceId namespaceId（“精确”搜索）
      * @param groupName   groupName（“精确”搜素）
@@ -39,5 +40,13 @@ public interface RevisionsConfigMapper extends BaseMapper<RevisionsConfig> {
                                      @Param("groupName") String groupName,
                                      @Param("dataId") String dataId);
 
+
+    /**
+     * 获取指定的历史配置
+     *
+     * @param revisionsConfigId 历史配置id
+     * @return {@link RevisionsConfig}
+     */
+    RevisionsConfig getRevisionsConfig(@Param("revisionsConfigId") Long revisionsConfigId);
 
 }

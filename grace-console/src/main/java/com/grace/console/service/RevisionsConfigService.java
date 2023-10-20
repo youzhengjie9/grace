@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.grace.common.entity.RevisionsConfig;
 import com.grace.console.vo.RevisionsConfigListItemVO;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -35,7 +36,23 @@ public interface RevisionsConfigService extends IService<RevisionsConfig> {
     int getRevisionsConfigTotalCount(String namespaceId, String groupName, String dataId);
 
 
+    /**
+     * 获取指定的历史配置
+     *
+     * @param revisionsConfigId 历史配置id
+     * @return {@link RevisionsConfig}
+     */
+    RevisionsConfig getRevisionsConfig(Long revisionsConfigId);
 
-
+    /**
+     * 回滚配置（原理和“发布配置”差不多）
+     * <p>
+     * 原理是: 通过历史配置（RevisionsConfig）去调用发布配置（com.grace.console.service.ConfigService.publishConfig）方法
+     *
+     * @param revisionsConfigId 历史配置id
+     * @param request request
+     * @return {@link Boolean}
+     */
+    Boolean rollbackConfig(Long revisionsConfigId, HttpServletRequest request);
 
 }

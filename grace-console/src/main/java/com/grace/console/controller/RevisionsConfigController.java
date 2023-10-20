@@ -2,15 +2,15 @@ package com.grace.console.controller;
 
 import com.grace.common.constant.Constants;
 import com.grace.common.constant.ParentMappingConstants;
+import com.grace.common.entity.RevisionsConfig;
 import com.grace.common.utils.PageData;
 import com.grace.common.utils.Result;
 import com.grace.console.service.RevisionsConfigService;
 import com.grace.console.vo.RevisionsConfigListItemVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 历史配置控制器
@@ -60,6 +60,36 @@ public class RevisionsConfigController {
         return Result.ok(pageData);
     }
 
+    /**
+     * 获取指定的历史配置（只能通过历史配置id才能去获取）
+     *
+     * @param revisionsConfigId 历史配置id
+     * @return {@link Result}<{@link RevisionsConfig}>
+     */
+    @GetMapping(path = "/getRevisionsConfig/{revisionsConfigId}")
+    public Result<RevisionsConfig> getRevisionsConfig(@PathVariable("revisionsConfigId") Long revisionsConfigId){
 
+        return Result.ok(revisionsConfigService.getRevisionsConfig(revisionsConfigId));
+    }
+
+    /**
+     * 回滚配置（原理和“发布配置”差不多）
+     * <p>
+     * 原理是: 通过历史配置（RevisionsConfig）去调用发布配置（com.grace.console.service.ConfigService.publishConfig）方法
+     * <p>
+     * 通过历史配置（RevisionsConfig）存储的namespaceId、groupName、dataId去找到配置（Config）,
+     * 如果找不到该配置（Config为null）则“将历史配置对象构建出配置对象,然后进行发布配置（publishConfig）”,
+     * 如果找到了该配置（config不为null）则“进行修改配置操作（也是publishConfig）”
+     *
+     * @param revisionsConfigId 历史配置id
+     * @param request request
+     * @return {@link Result}<{@link Boolean}>
+     */
+    @PostMapping(path = "/rollbackConfig/{revisionsConfigId}")
+    public Result<Boolean> rollbackConfig(@PathVariable("revisionsConfigId") Long revisionsConfigId,
+                                          HttpServletRequest request){
+
+        return
+    }
 
 }

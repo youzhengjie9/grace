@@ -1,8 +1,13 @@
 package com.grace.console.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.grace.common.entity.Config;
 import com.grace.common.entity.RevisionsConfig;
+import com.grace.common.entity.builder.ConfigBuilder;
+import com.grace.common.utils.IpUtils;
+import com.grace.common.utils.SnowId;
 import com.grace.console.mapper.RevisionsConfigMapper;
+import com.grace.console.service.ConfigService;
 import com.grace.console.service.RevisionsConfigService;
 import com.grace.console.vo.RevisionsConfigListItemVO;
 import org.slf4j.Logger;
@@ -10,7 +15,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * revisions config service impl
@@ -26,13 +35,51 @@ public class RevisionsConfigServiceImpl extends ServiceImpl<RevisionsConfigMappe
     @Autowired
     private RevisionsConfigMapper revisionsConfigMapper;
 
+    @Autowired
+    private ConfigService configService;
+
     @Override
     public List<RevisionsConfigListItemVO> getRevisionsConfigListItemVOByPage(String namespaceId, String groupName, String dataId, Integer page, Integer size) {
-        return null;
+        return revisionsConfigMapper.getRevisionsConfigListItemVOByPage(namespaceId, groupName, dataId, page, size);
     }
 
     @Override
     public int getRevisionsConfigTotalCount(String namespaceId, String groupName, String dataId) {
-        return 0;
+        return revisionsConfigMapper.getRevisionsConfigTotalCount(namespaceId, groupName, dataId);
+    }
+
+    @Override
+    public RevisionsConfig getRevisionsConfig(Long revisionsConfigId) {
+
+        return revisionsConfigMapper.getRevisionsConfig(revisionsConfigId);
+    }
+
+    @Override
+    public Boolean rollbackConfig(Long revisionsConfigId, HttpServletRequest request) {
+
+        // 获取指定的历史配置
+        RevisionsConfig revisionsConfig = revisionsConfigMapper.getRevisionsConfig(revisionsConfigId);
+        if(Objects.isNull(revisionsConfig)){
+            return false;
+        }
+        LocalDateTime currentTime = LocalDateTime.now();
+        Config config = ConfigBuilder.newBuilder()
+                .id(SnowId.nextId())
+                .namespaceId(revisionsConfig.getNamespaceId())
+                .groupName(revisionsConfig.getGroupName())
+                .dataId(revisionsConfig.getDataId())
+                .content(revisionsConfig.getContent())
+                .md5(revisionsConfig.getMd5())
+                .configDesc(revisionsConfig.getConfigDesc())
+                .type(revisionsConfig.getType())
+                // TODO: 2023/10/20 userid
+                .createUserId(123L)
+                .createUserIp(IpUtils.getIpAddrByHttpServletRequest(request))
+                .createTime(currentTime)
+                .lastUpdateTime(currentTime)
+                .build();
+        // 发布配置
+        configService.publishConfig(config);
+
     }
 }

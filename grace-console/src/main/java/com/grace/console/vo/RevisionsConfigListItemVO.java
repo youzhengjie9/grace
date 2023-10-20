@@ -15,7 +15,7 @@ public class RevisionsConfigListItemVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 历史配置id（只能通过这个id去获取到某一个历史配置）
+     * 历史配置id
      */
     private Long id;
 

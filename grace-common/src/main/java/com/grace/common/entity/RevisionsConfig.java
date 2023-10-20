@@ -20,7 +20,7 @@ public class RevisionsConfig implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键,历史配置id（只能通过这个id去获取到某一个历史配置）
+     * 主键,历史配置id（通过这个id去获取到"某一个"历史配置，但是获取某一个配置的“历史配置列表”还是通过namespaceId、groupName、dataId）
      */
     @TableId(value = "id",type = IdType.INPUT)
     private Long id;
