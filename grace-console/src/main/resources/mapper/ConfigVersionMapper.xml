@@ -52,6 +52,6 @@
         FROM
             sys_config_version
         WHERE
-            namespace_id = ''
+            namespace_id = #{namespaceId}
     </select>
 </mapper>

@@ -3,11 +3,11 @@ package com.grace.console.controller;
 import com.grace.common.constant.Constants;
 import com.grace.common.constant.ParentMappingConstants;
 import com.grace.common.entity.ConfigVersion;
-import com.grace.common.utils.PageData;
 import com.grace.common.utils.Result;
 import com.grace.console.service.ConfigService;
 import com.grace.console.service.ConfigVersionService;
 import com.grace.console.utils.ConfigVersionListPageData;
+import com.grace.console.vo.ConfigVersionInputSuggestionDataVO;
 import com.grace.console.vo.ConfigVersionListItemVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -65,14 +65,31 @@ public class ConfigVersionController {
         // 分页数据
         configVersionListPageData.setPagedList(configVersionService.getConfigVersionListItemVOByPage(namespaceId, groupName, dataId, page, size));
         configVersionListPageData.setTotalCount(configVersionService.getConfigVersionTotalCount(namespaceId, groupName, dataId));
-        // 获取配置版本数据库表（sys_config_version）中指定命名空间(namespaceId)下面的所有dataId和groupName,并去重
-        Map<String, Set<String>> allDataIdAndGroupNameMap = configVersionService.getAllDataIdAndGroupName(namespaceId);
-        // 将去重好的dataId和groupName放到configVersionListPageData中
-        configVersionListPageData.setAllDataId(allDataIdAndGroupNameMap.get("allDataId"));
-        configVersionListPageData.setAllGroupName(allDataIdAndGroupNameMap.get("allGroupName"));
         // 当前配置的版本id
         configVersionListPageData.setCurrentVersionId(configService.getCurrentVersionId(namespaceId, groupName, dataId));
         return Result.ok(configVersionListPageData);
+    }
+
+    /**
+     * 获取前端的配置版本页面的输入框建议的数据
+     *
+     * @param namespaceId namespaceId
+     * @return {@link Result}<{@link ConfigVersionInputSuggestionDataVO}>
+     */
+    @GetMapping("/getConfigVersionInputSuggestionData")
+    public Result<ConfigVersionInputSuggestionDataVO> getConfigVersionInputSuggestionData(
+            @RequestParam(value = "namespaceId",required = false,defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId){
+
+        ConfigVersionInputSuggestionDataVO configVersionInputSuggestionDataVO =
+                new ConfigVersionInputSuggestionDataVO();
+        // 获取配置版本数据库表（sys_config_version）中指定命名空间(namespaceId)下面的所有dataId和groupName,并去重
+        Map<String, Set<String>> allDataIdAndGroupNameMap =
+                configVersionService.getAllDataIdAndGroupName(namespaceId);
+        // 将去重好的dataId和groupName放到configVersionInputSuggestionDataVO中
+        configVersionInputSuggestionDataVO.setAllDataIds(allDataIdAndGroupNameMap.get("allDataId"));
+        configVersionInputSuggestionDataVO.setAllGroupNames(allDataIdAndGroupNameMap.get("allGroupName"));
+
+        return Result.ok(configVersionInputSuggestionDataVO);
     }
 
     /**
@@ -82,7 +99,7 @@ public class ConfigVersionController {
      * @return {@link Result}<{@link ConfigVersion}>
      */
     @GetMapping(path = "/getConfigVersion/{configVersionId}")
-    public Result<ConfigVersion> getConfigVersion(@PathVariable("configVersionId") Long configVersionId){
+    public Result<ConfigVersion> getConfigVersion(@RequestParam("configVersionId") Long configVersionId){
 
         return Result.ok(configVersionService.getConfigVersion(configVersionId));
     }
@@ -100,7 +117,7 @@ public class ConfigVersionController {
      * @return {@link Result}<{@link Boolean}>
      */
     @PostMapping(path = "/rollbackConfig/{configVersionId}")
-    public Result<Boolean> rollbackConfig(@PathVariable("configVersionId") Long configVersionId,
+    public Result<Boolean> rollbackConfig(@RequestParam("configVersionId") Long configVersionId,
                                           HttpServletRequest request){
 
         return Result.ok(false);

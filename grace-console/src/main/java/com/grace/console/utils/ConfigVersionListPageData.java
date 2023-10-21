@@ -1,10 +1,6 @@
 package com.grace.console.utils;
 
 import com.grace.common.utils.PageData;
-import com.grace.console.vo.ConfigVersionListItemVO;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * 配置版本列表分页数据,专门给ConfigVersionController接口的getConfigVersionList方法使用。

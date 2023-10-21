@@ -79,10 +79,11 @@
           placeholder="请输入Data ID"
           clearable
           @select="selectDataIdCallback"
+          :debounce="0"
         >
           <!-- 展示输入框下面的dataId建议 -->
           <template slot-scope="{ item }">
-            <div class="name">{{ item.dataId }}</div>
+            <div class="name">{{ item }}</div>
           </template>
         </el-autocomplete>
       </el-col>
@@ -108,7 +109,7 @@
         >
           <!-- 展示输入框下面的dataId建议 -->
           <template slot-scope="{ item }">
-            <div class="name">{{ item.groupName }}</div>
+            <div class="name">{{ item }}</div>
           </template>
         </el-autocomplete>
       </el-col>
@@ -253,7 +254,7 @@
 // 引入vue2-ace-editor代码编辑器
 import Editor from "vue2-ace-editor";
 import { getNamespaceList } from "@/api/namespace";
-import { getConfigVersionList } from "@/api/configVersion";
+import { getConfigVersionList,getConfigVersionInputSuggestionData } from "@/api/configVersion";
 
 export default {
   name: "ConfigVersionList",
@@ -273,10 +274,11 @@ export default {
         // 分组名称
         groupName: "",
       },
-      // 数据库中所有dataId
-      allDataIdsInDatabase: [],
-      // 数据库中所有分组名称
-      allGroupNamesInDatabase: [],
+      // 指定namespaceId下面的所有dataId
+      allDataIds: [],
+      
+      // 指定namespaceId下面的所有groupName
+      allGroupNames: [],
       // 配置版本列表数据
       tableData: [],
       // 当前配置的版本id
@@ -318,9 +320,10 @@ export default {
     };
   },
   created() {
+    // 加载命名空间数据
     this.loadNamespaceData();
-    // 加载数据
-    this.loadData();
+    // 加载dataId和groupName输入框建议的数据
+    this.loadInputSuggestionData();
   },
   methods: {
     // vue2-ace-editor代码编辑器初始化(下面的额外配置（例如主题、语言等）可以在node_modules\brace文件夹找 ,然后导入即可)
@@ -349,36 +352,15 @@ export default {
       require("brace/snippets/xml");
       require("brace/snippets/html");
     },
-    // 加载数据
-    loadData() {
-      // 根据命名空间从后端服务器中查询在数据库中所有dataId
-      this.allDataIdsInDatabase = [
-        {
-          dataId: "user.properties",
-        },
-        {
-          dataId: "application-test.yaml",
-        },
-        {
-          dataId: "application-dev.yaml",
-        },
-        {
-          dataId: "userservice.yaml",
-        },
-        {
-          dataId: "application.properties",
-        },
-      ];
-
-      // 根据命名空间从后端服务器中查询在数据库中所有分组名称
-      this.allGroupNamesInDatabase = [
-        {
-          groupName: "DEFAULT_GROUP",
-        },
-        {
-          groupName: "abc_group",
-        },
-      ];
+    // 加载dataId和groupName输入框建议的数据
+    loadInputSuggestionData() {
+      // 当前选中的命名空间id
+      let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
+      getConfigVersionInputSuggestionData(currentSelectedNamespaceId).then((response) => {
+        let result = response.data;
+        this.allDataIds = result.data.allDataIds;
+        this.allGroupNames = result.data.allGroupNames;
+      })
     },
     // 加载命名空间数据
     loadNamespaceData() {
@@ -391,71 +373,69 @@ export default {
     },
     // 点击切换命名空间
     namespaceToggle(selectedNamespaceId) {
+      console.log(selectedNamespaceId)
       this.currentSelectedNamespaceId = selectedNamespaceId;
+      // 重新加载dataId和groupName输入框建议的数据
+      this.loadInputSuggestionData();
     },
     // 根据dataId获取输入框建议(当我们点击dataId的输入框就会自动调用这个方法)
     getInputSuggestionsByDataId(queryString, callback) {
-      // 数据库中所有dataId
-      var allDataIdsInDatabase = this.allDataIdsInDatabase;
-      // 输入框建议
-      var inputSuggestions = queryString
-        ? allDataIdsInDatabase.filter(this.createDataIdFilter(queryString))
-        : allDataIdsInDatabase;
+      // 指定命名空间下的所有dataId
+      var allDataIds = this.allDataIds;
+      // 输入框建议列表
+      var inputSuggestionList = queryString
+        ? allDataIds.filter(this.createDataIdFilter(queryString))
+        : allDataIds;
+         // 如果输入框建议列表为空
+      // if(inputSuggestionList.length == 0){
+      //   inputSuggestionList = ['无选项']
+      // }
 
-      // 调用callback方法返回输入建议
-      callback(inputSuggestions);
+      // 调用callback方法返回输入建议列表
+      callback(inputSuggestionList);
     },
     // 创建dataId过滤器。筛选出和输入数据匹配的建议
     createDataIdFilter(queryString) {
-      // //模糊匹配
-      // return (item) => {
-      //   return item.value.toUpperCase().match(queryString.toUpperCase());
-      // };
-
-      // 精确匹配
+      // 模糊匹配
       return (item) => {
-        return (
-          item.dataId.toLowerCase().indexOf(queryString.toLowerCase()) === 0
-        );
+        return item.toUpperCase().match(queryString.toUpperCase());
       };
     },
     // 点击输入框的dataId建议项的回调方法
     selectDataIdCallback(item) {
       // 将用户点击的dataId更新到输入框内容中
-      this.queryCondition.dataId = item.dataId;
+      this.queryCondition.dataId = item;
     },
     // 根据分组名称获取输入框建议(当我们点击dataId的输入框就会自动调用这个方法)
     getInputSuggestionsByGroupName(queryString, callback) {
-      // 数据库中所有分组名称
-      var allGroupNamesInDatabase = this.allGroupNamesInDatabase;
+      // 指定命名空间下的所有分组名称
+      var allGroupNames = this.allGroupNames;
       // 输入框建议
-      var inputSuggestions = queryString
-        ? allGroupNamesInDatabase.filter(
+      var inputSuggestionList = queryString
+        ? allGroupNames.filter(
             this.createGroupNameFilter(queryString)
           )
-        : allGroupNamesInDatabase;
+        : allGroupNames;
+
+      // 如果输入框建议列表为空
+      // if(inputSuggestionList.length == 0){
+      //   inputSuggestionList = ['无选项']
+      // }
 
       // 调用callback方法返回输入建议
-      callback(inputSuggestions);
+      callback(inputSuggestionList);
     },
     // 创建分组名称过滤器。筛选出和输入数据匹配的建议
     createGroupNameFilter(queryString) {
-      // //模糊匹配
-      // return (item) => {
-      //   return item.value.toUpperCase().match(queryString.toUpperCase());
-      // };
-
-      // 精确匹配
+      // 模糊匹配
       return (item) => {
-        return (
-          item.groupName.toLowerCase().indexOf(queryString.toLowerCase()) === 0
-        );
+        return item.toUpperCase().match(queryString.toUpperCase());
       };
     },
     // 点击输入框的分组名称建议项的回调方法
     selectGroupNameCallback(item) {
       // 将用户点击的分组名称更新到输入框内容中
-      this.queryCondition.groupName = item.groupName;
+      this.queryCondition.groupName = item;
     },
     // 点击查询
     query() {
@@ -562,4 +542,5 @@ export default {
 .operation:hover {
   text-decoration: underline;
 }
+
 </style>

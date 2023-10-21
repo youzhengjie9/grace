@@ -173,7 +173,12 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
 
     @Override
     public long getCurrentVersionId(String namespaceId, String groupName, String dataId) {
-        return configMapper.getCurrentVersionId(namespaceId, groupName, dataId);
+        Long currentVersionId = configMapper.getCurrentVersionId(namespaceId, groupName, dataId);
+        // 如果currentVersionId为空,说明该配置在sys_config表中不存在（这种情况比较罕见,但是也有可能）
+        if(currentVersionId == null){
+            return 0;
+        }
+        return currentVersionId;
     }
 
 

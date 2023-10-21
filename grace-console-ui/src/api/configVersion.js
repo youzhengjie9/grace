@@ -14,16 +14,32 @@ export function getConfigVersionList(namespaceId,groupName,dataId,page,size){
     })
 }
 
+export function getConfigVersionInputSuggestionData(namespaceId){
+    return request({
+        method:'get',
+        url:'/grace/server/config/version/getConfigVersionInputSuggestionData',
+        params:{
+            namespaceId:namespaceId
+        }
+    })
+}
+
 export function getConfigVersion(configVersionId){
     return request({
         method:'get',
-        url:'/grace/server/config/version/getConfigVersion/'+configVersionId,
+        url:'/grace/server/config/version/getConfigVersion',
+        params:{
+            configVersionId:configVersionId
+        }
     })
 }
 
 export function rollbackConfig(configVersionId){
     return request({
         method:'post',
-        url:'/grace/server/config/version/rollbackConfig/'+configVersionId,
+        url:'/grace/server/config/version/rollbackConfig',
+        params:{
+            configVersionId:configVersionId
+        }
     })
 }

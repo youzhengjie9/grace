@@ -64,11 +64,11 @@ public interface ConfigMapper extends BaseMapper<Config> {
      * 获取当前配置的版本id
      *
      * @param namespaceId namespaceId（“精确”搜索）
-     * @param groupName groupName（“精确”搜索素）
-     * @param dataId dataId（“精确”搜索）
+     * @param groupName   groupName（“精确”搜索素）
+     * @param dataId      dataId（“精确”搜索）
      * @return long
      */
-    long getCurrentVersionId(@Param("namespaceId") String namespaceId,
+    Long getCurrentVersionId(@Param("namespaceId") String namespaceId,
                              @Param("groupName") String groupName,
                              @Param("dataId") String dataId);
 
