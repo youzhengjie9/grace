@@ -5,38 +5,44 @@ import com.grace.common.constant.ParentMappingConstants;
 import com.grace.common.entity.ConfigVersion;
 import com.grace.common.utils.PageData;
 import com.grace.common.utils.Result;
+import com.grace.console.service.ConfigService;
 import com.grace.console.service.ConfigVersionService;
+import com.grace.console.utils.ConfigVersionListPageData;
 import com.grace.console.vo.ConfigVersionListItemVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * 历史配置控制器
+ * 配置版本控制器
  *
  * @author youzhengjie
  * @date 2023/10/19 17:22:30
  */
 @RestController
-@RequestMapping(path = ParentMappingConstants.REVISIONS_CONFIG_CONTROLLER)
+@RequestMapping(path = ParentMappingConstants.CONFIG_VERSION_CONTROLLER)
 public class ConfigVersionController {
 
+    @Autowired
+    private ConfigService configService;
     @Autowired
     private ConfigVersionService configVersionService;
 
     /**
-     * 获取指定配置的历史配置列表
+     * 获取指定配置的配置版本列表
      *
      * @param namespaceId namespaceId
-     * @param groupName groupName（必填）
-     * @param dataId dataId（必填）
-     * @param page 当前页（最小页是: 1）
-     * @param size 每一页的大小（最小值为: 1）
-     * @return {@link Result}<{@link PageData}<{@link ConfigVersionListItemVO}>>
+     * @param groupName   groupName（必填）
+     * @param dataId      dataId（必填）
+     * @param page        当前页（最小页是: 1）
+     * @param size        每一页的大小（最小值为: 1）
+     * @return {@link Result}<{@link ConfigVersionListPageData}<{@link ConfigVersionListItemVO}>>
      */
-    @GetMapping(path = "/getRevisionsConfigList")
-    public Result<PageData<ConfigVersionListItemVO>> getRevisionsConfigList(
+    @GetMapping(path = "/getConfigVersionList")
+    public Result<ConfigVersionListPageData> getConfigVersionList(
             @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
             @RequestParam(value = "groupName") String groupName,
             @RequestParam(value = "dataId") String dataId,
@@ -54,42 +60,50 @@ public class ConfigVersionController {
         page = (page-1)*size;
         // 对size的大小进行限制,防止一次性获取太多的数据（下面的代码意思是一次“最多”获取500条记录,如果size的值小于500,则size还是原来的值不变）
         size = Math.min(size,500);
-        PageData<ConfigVersionListItemVO> pageData = new PageData<>();
-        pageData.setPagedList(configVersionService.getRevisionsConfigListItemVOByPage(namespaceId, groupName, dataId, page, size));
-        pageData.setTotalCount(configVersionService.getRevisionsConfigTotalCount(namespaceId, groupName, dataId));
-        return Result.ok(pageData);
+        // 封装ConfigVersionListPageData
+        ConfigVersionListPageData configVersionListPageData = new ConfigVersionListPageData();
+        // 分页数据
+        configVersionListPageData.setPagedList(configVersionService.getConfigVersionListItemVOByPage(namespaceId, groupName, dataId, page, size));
+        configVersionListPageData.setTotalCount(configVersionService.getConfigVersionTotalCount(namespaceId, groupName, dataId));
+        // 获取配置版本数据库表（sys_config_version）中指定命名空间(namespaceId)下面的所有dataId和groupName,并去重
+        Map<String, Set<String>> allDataIdAndGroupNameMap = configVersionService.getAllDataIdAndGroupName(namespaceId);
+        // 将去重好的dataId和groupName放到configVersionListPageData中
+        configVersionListPageData.setAllDataId(allDataIdAndGroupNameMap.get("allDataId"));
+        configVersionListPageData.setAllGroupName(allDataIdAndGroupNameMap.get("allGroupName"));
+        // 当前配置的版本id
+        configVersionListPageData.setCurrentVersionId(configService.getCurrentVersionId(namespaceId, groupName, dataId));
+        return Result.ok(configVersionListPageData);
     }
 
     /**
-     * 获取指定的历史配置（只能通过历史配置id才能去获取）
+     * 获取指定的配置版本（只能通过配置版本id才能去获取）
      *
-     * @param revisionsConfigId 历史配置id
+     * @param configVersionId 配置版本id
      * @return {@link Result}<{@link ConfigVersion}>
      */
-    @GetMapping(path = "/getRevisionsConfig/{revisionsConfigId}")
-    public Result<ConfigVersion> getRevisionsConfig(@PathVariable("revisionsConfigId") Long revisionsConfigId){
+    @GetMapping(path = "/getConfigVersion/{configVersionId}")
+    public Result<ConfigVersion> getConfigVersion(@PathVariable("configVersionId") Long configVersionId){
 
-        return Result.ok(configVersionService.getRevisionsConfig(revisionsConfigId));
+        return Result.ok(configVersionService.getConfigVersion(configVersionId));
     }
 
     /**
-     * 回滚配置（原理和“发布配置”差不多）
+     * 回滚配置
      * <p>
-     * 原理是: 通过历史配置（RevisionsConfig）去调用发布配置（com.grace.console.service.ConfigService.publishConfig）方法
-     * <p>
-     * 通过历史配置（RevisionsConfig）存储的namespaceId、groupName、dataId去找到配置（Config）,
-     * 如果找不到该配置（Config为null）则“将历史配置对象构建出配置对象,然后进行发布配置（publishConfig）”,
-     * 如果找到了该配置（config不为null）则“进行修改配置操作（也是publishConfig）”
+     * 原理是:
+     *  通过配置版本（ConfigVersion）存储的namespaceId、groupName、dataId去找到配置（Config）,
+     *      1: 如果找不到该配置（Config为null）则“将配置版本对象逆向构建出配置(Config)对象,”,
+     *      2: 如果找到了该配置（config不为null）则“进行修改配置操作”
      *
-     * @param revisionsConfigId 历史配置id
+     * @param configVersionId 配置版本id
      * @param request request
      * @return {@link Result}<{@link Boolean}>
      */
-    @PostMapping(path = "/rollbackConfig/{revisionsConfigId}")
-    public Result<Boolean> rollbackConfig(@PathVariable("revisionsConfigId") Long revisionsConfigId,
+    @PostMapping(path = "/rollbackConfig/{configVersionId}")
+    public Result<Boolean> rollbackConfig(@PathVariable("configVersionId") Long configVersionId,
                                           HttpServletRequest request){
 
-        return
+        return Result.ok(false);
     }
 
 }

@@ -17,11 +17,11 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * revisions config service impl
+ * 配置版本service实现类
  *
  * @author youzhengjie
  * @date 2023/10/19 15:10:57
@@ -38,26 +38,43 @@ public class ConfigVersionServiceImpl extends ServiceImpl<ConfigVersionMapper, C
     private ConfigService configService;
 
     @Override
-    public List<ConfigVersionListItemVO> getRevisionsConfigListItemVOByPage(String namespaceId, String groupName, String dataId, Integer page, Integer size) {
-        return configVersionMapper.getRevisionsConfigListItemVOByPage(namespaceId, groupName, dataId, page, size);
+    public List<ConfigVersionListItemVO> getConfigVersionListItemVOByPage(String namespaceId, String groupName, String dataId, Integer page, Integer size) {
+        return configVersionMapper.getConfigVersionListItemVOByPage(namespaceId, groupName, dataId, page, size);
     }
 
     @Override
-    public int getRevisionsConfigTotalCount(String namespaceId, String groupName, String dataId) {
-        return configVersionMapper.getRevisionsConfigTotalCount(namespaceId, groupName, dataId);
+    public int getConfigVersionTotalCount(String namespaceId, String groupName, String dataId) {
+        return configVersionMapper.getConfigVersionTotalCount(namespaceId, groupName, dataId);
     }
 
     @Override
-    public ConfigVersion getRevisionsConfig(Long revisionsConfigId) {
+    public ConfigVersion getConfigVersion(Long configVersionId) {
 
-        return configVersionMapper.getRevisionsConfig(revisionsConfigId);
+        return configVersionMapper.getConfigVersion(configVersionId);
     }
 
     @Override
-    public Boolean rollbackConfig(Long revisionsConfigId, HttpServletRequest request) {
+    public Map<String, Set<String>> getAllDataIdAndGroupName(String namespaceId) {
+        Map<String,Set<String>> allDataIdAndGroupNameMap = new ConcurrentHashMap<>();
+        Set<String> allDataId = Collections.synchronizedSet(new HashSet<>());
+        Set<String> allGroupName = Collections.synchronizedSet(new HashSet<>());
+        List<ConfigVersion> configVersionList = configVersionMapper.getAllDataIdAndGroupName(namespaceId);
+        configVersionList.forEach(configVersion -> {
+            // 将dataId和groupName分别放在不同的set集合中进行去重。
+            allDataId.add(configVersion.getDataId());
+            allGroupName.add(configVersion.getGroupName());
+        });
+        // 将数据放到map集合中
+        allDataIdAndGroupNameMap.put("allDataId",allDataId);
+        allDataIdAndGroupNameMap.put("allGroupName",allGroupName);
+        return allDataIdAndGroupNameMap;
+    }
 
-        // 获取指定的历史配置
-        ConfigVersion configVersion = configVersionMapper.getRevisionsConfig(revisionsConfigId);
+    @Override
+    public Boolean rollbackConfig(Long configVersionId, HttpServletRequest request) {
+
+        // 获取指定的配置版本
+        ConfigVersion configVersion = configVersionMapper.getConfigVersion(configVersionId);
         if(Objects.isNull(configVersion)){
             return false;
         }
@@ -77,8 +94,8 @@ public class ConfigVersionServiceImpl extends ServiceImpl<ConfigVersionMapper, C
                 .createTime(currentTime)
                 .lastUpdateTime(currentTime)
                 .build();
-        // 发布配置
-        configService.publishConfig(config);
-
+//        // 发布配置
+//        configService.publishConfig(config);
+        return true;
     }
 }

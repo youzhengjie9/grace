@@ -174,7 +174,7 @@ public class ConfigVersionBuilder implements Serializable {
                 .md5(config.getMd5())
                 .configDesc(config.getConfigDesc())
                 .type(config.getType())
-                // TODO: 2023/10/21 operation暂未实现,这里直接写死
+                // TODO: 2023/10/21 有关operation的暂未实现,这里直接写死
                 .operationUserId(123456L)
                 .operationUserIp(IpUtils.getIpAddrByHttpServletRequest(request))
                 // 设置这个配置被执行了什么操作

@@ -3,7 +3,6 @@ package com.grace.console.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.grace.common.entity.Config;
 import com.grace.console.vo.ConfigListItemVO;
-import org.apache.ibatis.annotations.Param;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -70,5 +69,14 @@ public interface ConfigService extends IService<Config> {
      */
     Boolean deleteConfig(String namespaceId, String groupName, String dataId,HttpServletRequest request);
 
+    /**
+     * 获取当前配置的版本id
+     *
+     * @param namespaceId namespaceId（“精确”搜索）
+     * @param groupName groupName（“精确”搜索素）
+     * @param dataId dataId（“精确”搜索）
+     * @return long
+     */
+    long getCurrentVersionId(String namespaceId, String groupName, String dataId);
 
 }

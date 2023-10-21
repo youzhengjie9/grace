@@ -912,7 +912,7 @@ export default {
 
       // 模拟延迟,让加载动画更明显
       setTimeout(() => {
-        //当前选择的命名空间的id
+        // 当前选择的命名空间的id
         let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
         // 指定分组名
         let groupName = this.queryCondition.groupName;

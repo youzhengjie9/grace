@@ -66,7 +66,7 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
                     // 创建一个类型为“新增”的配置版本
                     ConfigVersion configVersion = ConfigVersionBuilder
                             .directBuild(config,versionId,ConfigOperationTypeEnum.INSERT, request);
-                    // 生成配置版本
+                    // 生成类型为“新增”的配置版本
                     int insertConfigVersionResult = configVersionMapper.insert(configVersion);
                     if (insertConfigVersionResult > 0) {
                         return true;
@@ -97,7 +97,7 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
                     // 创建一个类型为“修改”的配置版本
                     ConfigVersion configVersion = ConfigVersionBuilder
                             .directBuild(config, versionId, ConfigOperationTypeEnum.UPDATE, request);
-                    // 生成历史配置
+                    // 生成类型为“修改”的配置版本
                     int insertConfigVersionResult = configVersionMapper.insert(configVersion);
                     if (insertConfigVersionResult > 0) {
                         return true;
@@ -152,7 +152,7 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
                 // 创建一个类型为“删除”的配置版本
                 ConfigVersion configVersion = ConfigVersionBuilder
                         .directBuild(config, versionId, ConfigOperationTypeEnum.DELETE, request);
-                // 生成配置版本
+                // 生成类型为“删除”的配置版本
                 int insertConfigVersionResult = configVersionMapper.insert(configVersion);
                 // 如果生成配置版本成功
                 if(insertConfigVersionResult > 0){
@@ -169,6 +169,11 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
             throw new RuntimeException();
         }
 
+    }
+
+    @Override
+    public long getCurrentVersionId(String namespaceId, String groupName, String dataId) {
+        return configMapper.getCurrentVersionId(namespaceId, groupName, dataId);
     }
 
 

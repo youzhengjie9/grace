@@ -19,7 +19,7 @@
       <div
         style="cursor: pointer"
         v-for="(namespace, index) in namespaceData"
-        :key="namespace.id"
+        :key="namespace.namespaceId"
       >
         <!-- 没有高亮显示（也就是当前选择的命名空间不是这个） -->
         <span
@@ -29,8 +29,8 @@
             border: none;
             font-size: 14px;
           "
-          v-if="namespace.id != currentSelectedNamespaceId"
-          @click="namespaceToggle(namespace.id)"
+          v-if="namespace.namespaceId != currentSelectedNamespaceId"
+          @click="namespaceToggle(namespace.namespaceId)"
           >{{ namespace.namespaceName }}</span
         >
 
@@ -42,7 +42,7 @@
             border: none;
             font-size: 14px;
           "
-          v-if="namespace.id == currentSelectedNamespaceId"
+          v-if="namespace.namespaceId == currentSelectedNamespaceId"
           >{{ namespace.namespaceName }}</span
         >
 
@@ -136,12 +136,27 @@
       <!-- 分组名称 -->
       <el-table-column prop="groupName" label="分组名称" width="250">
       </el-table-column>
-      <!-- 操作人 -->
-      <el-table-column prop="operator" label="操作人" width="204">
+      <!-- 这个配置被执行了什么操作（比如新增、修改、删除） -->
+      <el-table-column prop="operationType" label="操作类型" width="123">
       </el-table-column>
-
-      <!-- 最后修改时间 -->
-      <el-table-column prop="updateTime" label="最后修改时间" width="204">
+      <!-- 如果这个版本是当前配置的版本（通过scope.row.id == currentVersionId判断）,则展示“当前版本”的标签,如果不是则不展示标签 -->
+      <el-table-column prop="operationType" label="当前版本" width="123">
+        <template slot-scope="scope">
+          <el-tag
+            :type="'success'"
+            v-if="scope.row.id == currentVersionId"
+            disable-transitions
+            >当前版本</el-tag
+          >
+        </template>
+      </el-table-column>
+      <!-- 操作这个配置的时间 -->
+      <el-table-column prop="operationTime" label="操作时间" width="204">
+        <template slot-scope="scope">
+          <span>{{
+            scope.row.operationTime | dateformat("YYYY-MM-DD HH:mm:ss")
+          }}</span>
+        </template>
       </el-table-column>
 
       <!-- 操作 -->
@@ -170,11 +185,7 @@
     </el-table>
 
     <!-- 配置版本的比较dialog -->
-    <el-dialog
-      :visible.sync="openVersionCompareDialog"
-      top="15vh"
-      width="80%"
-    >
+    <el-dialog :visible.sync="openVersionCompareDialog" top="15vh" width="80%">
       <!-- dialog标题插槽 -->
       <div slot="title">
         <span style="font-size: 20px">配置版本比较</span>
@@ -200,9 +211,7 @@
           :old-string="
             this.versionCompareDialogData.currentSelectedVersionConfigContent
           "
-          :new-string="
-            this.versionCompareDialogData.latestVersionConfigContent
-          "
+          :new-string="this.versionCompareDialogData.latestVersionConfigContent"
           output-format="side-by-side"
         >
         </code-diff>
@@ -228,10 +237,10 @@
             next-text="下一页"
             :page-sizes="[10, 20, 30, 50, 100]"
             :total="totalCount"
-            :page-size="pagesize"
-            :current-page="currentPage"
-            @size-change="handlePageSizeChange"
-            @current-change="handleCurrentPageChange"
+            :current-page.sync="page"
+            :page-size="size"
+            @current-change="handlePageChange"
+            @size-change="handleSizeChange"
           >
           </el-pagination>
         </div>
@@ -243,6 +252,8 @@
 <script>
 // 引入vue2-ace-editor代码编辑器
 import Editor from "vue2-ace-editor";
+import { getNamespaceList } from "@/api/namespace";
+import { getConfigVersionList } from "@/api/configVersion";
 
 export default {
   name: "ConfigVersionList",
@@ -252,22 +263,9 @@ export default {
   data() {
     return {
       // 命名空间数据
-      namespaceData: [
-        {
-          id: 1,
-          namespaceName: "public",
-        },
-        {
-          id: 2,
-          namespaceName: "dev",
-        },
-        {
-          id: 3,
-          namespaceName: "test",
-        },
-      ],
+      namespaceData: [],
       // 当前选择的命名空间的id
-      currentSelectedNamespaceId: 1,
+      currentSelectedNamespaceId: "",
       // 查询条件
       queryCondition: {
         // 配置文件全名（例如application-dev.yaml）
@@ -279,16 +277,18 @@ export default {
       allDataIdsInDatabase: [],
       // 数据库中所有分组名称
       allGroupNamesInDatabase: [],
-      // 配置列表数据
+      // 配置版本列表数据
       tableData: [],
+      // 当前配置的版本id
+      currentVersionId: 0,
       // 表格是否加载中（ true说明表格正在加载中,则会显示加载动画。反之false则关闭加载动画）
       tableLoading: false,
       // 总记录数
-      totalCount: 0,
-      // 每页展示的数量
-      pagesize: 7,
+      totalCount: 200,
       // 当前页
-      currentPage: 1,
+      page: 1,
+      // 每页展示的数量
+      size: 10,
       // 是否打开版本比较dialog（版本指的是同一个namespace、DataId、groupName的配置）
       openVersionCompareDialog: false,
       // 版本比较dialog所需要的数据
@@ -318,6 +318,7 @@ export default {
     };
   },
   created() {
+    this.loadNamespaceData();
     // 加载数据
     this.loadData();
   },
@@ -350,53 +351,10 @@ export default {
     },
     // 加载数据
     loadData() {
-      // 开启表格的加载动画
-      this.tableLoading = true;
-      // 每页展示的数量
-      let pageSize = this.pagesize;
-      // 当前页
-      let currentPage = this.currentPage;
-      // 根据上面的属性从后端分页的获取tableData数据
-      let result = {
-        code: 200,
-        data: {
-          // 分页查询出来的数据
-          tableData: [
-            {
-              id: 10001,
-              // 配置文件全名（例如application-dev.yaml）
-              dataId: "application1-dev.yaml",
-              // 分组名称
-              groupName: "DEFAULT_GROUP",
-              // 操作人
-              operator: "yzj",
-              // 最后修改时间
-              updateTime: "2023/9/24 07:47:18",
-            },
-            {
-              id: 10002,
-              // 配置文件全名（例如userservice-dev.yaml）
-              dataId: "userservice2-test.properties",
-              // 分组名称
-              groupName: "DEFAULT_GROUP",
-              // 操作人
-              operator: "abc",
-              // 最后修改时间
-              updateTime: "2023/9/26 07:47:18",
-            },
-          ],
-          // 所有数据的总数（没有分页）
-          totalCount: 70,
-        },
-      };
-      // 将数据放到vue中
-      this.tableData = result.data.tableData;
-      this.totalCount = result.data.totalCount;
-
-      // 从后端服务器中查询在数据库中所有dataId
+      // 根据命名空间从后端服务器中查询在数据库中所有dataId
       this.allDataIdsInDatabase = [
         {
-          dataId: "application.yaml",
+          dataId: "user.properties",
         },
         {
           dataId: "application-test.yaml",
@@ -412,7 +370,7 @@ export default {
         },
       ];
 
-      // 从后端服务器中查询在数据库中所有分组名称
+      // 根据命名空间从后端服务器中查询在数据库中所有分组名称
       this.allGroupNamesInDatabase = [
         {
           groupName: "DEFAULT_GROUP",
@@ -421,8 +379,15 @@ export default {
           groupName: "abc_group",
         },
       ];
-      // 关闭表格的加载动画
-      this.tableLoading = false;
+    },
+    // 加载命名空间数据
+    loadNamespaceData() {
+      // 加载命名空间数据
+      getNamespaceList().then((response) => {
+        // 后端返回给前端的result对象
+        let result = response.data;
+        this.namespaceData = result.data;
+      });
     },
     // 点击切换命名空间
     namespaceToggle(selectedNamespaceId) {
@@ -494,7 +459,40 @@ export default {
     },
     // 点击查询
     query() {
-      console.log(this.queryCondition);
+      // 开启表格的加载动画
+      this.tableLoading = true;
+
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        // 当前选择的命名空间的id
+        let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
+        // 指定分组名
+        let groupName = this.queryCondition.groupName;
+        // 指定dataid
+        let dataId = this.queryCondition.dataId;
+        // 当前页
+        let page = this.page;
+        // 每页展示的数量
+        let size = this.size;
+        // 从后端分页的获取配置版本列表的数据
+        getConfigVersionList(
+          currentSelectedNamespaceId,
+          groupName,
+          dataId,
+          page,
+          size
+        ).then((response) => {
+          // 后端返回给前端的result对象
+          let result = response.data;
+          // 更新当前配置的版本id
+          this.currentVersionId = result.data.currentVersionId;
+          // 将数据放到vue中
+          this.tableData = result.data.pagedList;
+          this.totalCount = result.data.totalCount;
+          // 关闭表格的加载动画
+          this.tableLoading = false;
+        });
+      }, 500);
     },
     // 跳转到版本详情路由
     versionDetail(versionId) {
@@ -530,13 +528,13 @@ export default {
         latestVersionConfigFormat: "json",
       };
     },
-    // pageSize（每页展示的数量）改变时触发
-    handlePageSizeChange(pageSize) {
-      console.log("pageSize=" + pageSize);
+    // page（当前页）改变时触发
+    handlePageChange(page) {
+      console.log("page=" + page);
     },
-    // currentPage（当前页）改变时触发
-    handleCurrentPageChange(currentPage) {
-      console.log("currentPage=" + currentPage);
+    // size（每页展示的数量）改变时触发
+    handleSizeChange(size) {
+      console.log("size=" + size);
     },
   },
 };

@@ -32,9 +32,9 @@ const state = {
                 },
                 {
                     id: 2002,
-                    path: "/config/revisions/list",
-                    component: "../views/config/revisions/list/index.vue",
-                    menuName: "历史版本",
+                    path: "/config/version/list",
+                    component: "../views/config/version/list/index.vue",
+                    menuName: "配置版本",
                     icon: "el-icon-s-home",
                     children: []
                 },

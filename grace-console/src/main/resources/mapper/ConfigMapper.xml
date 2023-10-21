@@ -34,4 +34,14 @@
         AND data_id = #{dataId}
     </delete>
 
+    <select id="getCurrentVersionId" resultType="java.lang.Long">
+        SELECT
+            current_version_id
+        FROM
+            sys_config
+        WHERE namespace_id = #{namespaceId}
+        AND group_name = #{groupName}
+        AND data_id = #{dataId}
+    </select>
+
 </mapper>

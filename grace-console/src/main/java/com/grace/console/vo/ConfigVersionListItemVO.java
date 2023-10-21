@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 历史配置列表项VO
+ * 配置版本列表项VO
  *
  * @author youzhengjie
  * @date 2023/10/19 17:25:32
@@ -15,7 +15,7 @@ public class ConfigVersionListItemVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 历史配置id
+     * 配置版本id
      */
     private Long id;
 
@@ -35,7 +35,7 @@ public class ConfigVersionListItemVO implements Serializable {
     private String dataId;
 
     /**
-     * 这个配置被执行了什么操作（比如修改、删除）
+     * 这个配置被执行了什么操作（比如新增、修改、删除）
      */
     private String operationType;
 
@@ -106,7 +106,7 @@ public class ConfigVersionListItemVO implements Serializable {
 
     @Override
     public String toString() {
-        return "RevisionsConfigListItemVO{" +
+        return "ConfigVersionListItemVO{" +
                 "id=" + id +
                 ", namespaceId='" + namespaceId + '\'' +
                 ", groupName='" + groupName + '\'' +
