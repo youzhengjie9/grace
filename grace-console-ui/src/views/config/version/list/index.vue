@@ -593,11 +593,73 @@ export default {
     },
     // page（当前页）改变时触发
     handlePageChange(page) {
-      console.log("page=" + page);
+      // 开启表格的加载动画
+      this.tableLoading = true;
+
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        // 当前选择的命名空间的id
+        let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
+        // 指定分组名
+        let groupName = this.queryCondition.groupName;
+        // 指定dataid
+        let dataId = this.queryCondition.dataId;
+        // 每页展示的数量
+        let size = this.size;
+        // 从后端分页的获取配置版本列表的数据
+        getConfigVersionList(
+          currentSelectedNamespaceId,
+          groupName,
+          dataId,
+          page,
+          size
+        ).then((response) => {
+          // 后端返回给前端的result对象
+          let result = response.data;
+          // 更新当前配置的版本id
+          this.currentVersionId = result.data.currentVersionId;
+          // 将数据放到vue中
+          this.tableData = result.data.pagedList;
+          this.totalCount = result.data.totalCount;
+          // 关闭表格的加载动画
+          this.tableLoading = false;
+        });
+      }, 500);
     },
     // size（每页展示的数量）改变时触发
     handleSizeChange(size) {
-      console.log("size=" + size);
+      // 开启表格的加载动画
+      this.tableLoading = true;
+
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        // 当前选择的命名空间的id
+        let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
+        // 指定分组名
+        let groupName = this.queryCondition.groupName;
+        // 指定dataid
+        let dataId = this.queryCondition.dataId;
+        // 当前页
+        let page = this.page;
+        // 从后端分页的获取配置版本列表的数据
+        getConfigVersionList(
+          currentSelectedNamespaceId,
+          groupName,
+          dataId,
+          page,
+          size
+        ).then((response) => {
+          // 后端返回给前端的result对象
+          let result = response.data;
+          // 更新当前配置的版本id
+          this.currentVersionId = result.data.currentVersionId;
+          // 将数据放到vue中
+          this.tableData = result.data.pagedList;
+          this.totalCount = result.data.totalCount;
+          // 关闭表格的加载动画
+          this.tableLoading = false;
+        });
+      }, 500);
     },
   },
 };

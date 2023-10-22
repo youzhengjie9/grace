@@ -1159,17 +1159,17 @@ export default {
       });
     },
     // 自定义下拉菜单（ dropdown ）传值(也可以说是命令command)
-    customDropdownCommand(index, namespaceId, groupName,dataId) {
+    customDropdownCommand(index, namespaceId, groupName, dataId) {
       return {
         index: index,
         namespaceId: namespaceId,
         groupName: groupName,
-        dataId: dataId
+        dataId: dataId,
       };
     },
     // 点击“更多”选项所展开的下拉菜单项
     clickMoreDropdownItem(customDropdownCommand) {
-      console.log(customDropdownCommand)
+      console.log(customDropdownCommand);
       // 点击配置版本
       if (customDropdownCommand.index == 0) {
         // // 使用name+params进行跳转路由,特点是“url不会出现请求参数”（不会出现例如这种url格式:?groupName=aa&dataId=bb）
@@ -1185,7 +1185,7 @@ export default {
         // 使用name+params进行跳转路由,特点是“url不会出现请求参数”（不会出现例如这种url格式:?groupName=aa&dataId=bb）
         this.$router.push({
           // 路由名称
-          path:'/config/version/list',
+          path: "/config/version/list",
           query: {
             namespaceId: customDropdownCommand.namespaceId,
             groupName: customDropdownCommand.groupName,
@@ -1251,11 +1251,69 @@ export default {
     },
     // page（当前页）改变时触发
     handlePageChange(page) {
-      console.log("page=" + page);
+      // 开启表格的加载动画
+      this.tableLoading = true;
+
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        //当前选择的命名空间的id
+        let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
+        // 指定分组名
+        let groupName = this.queryCondition.groupName;
+        // 指定dataid
+        let dataId = this.queryCondition.dataId;
+        // 每页展示的数量
+        let size = this.size;
+        // 从后端分页的获取配置列表的数据
+        getConfigList(
+          currentSelectedNamespaceId,
+          groupName,
+          dataId,
+          page,
+          size
+        ).then((response) => {
+          // 后端返回给前端的result对象
+          let result = response.data;
+          // 将数据放到vue中
+          this.tableData = result.data.pagedList;
+          this.totalCount = result.data.totalCount;
+          // 关闭表格的加载动画
+          this.tableLoading = false;
+        });
+      }, 500);
     },
     // size（每页展示的数量）改变时触发
     handleSizeChange(size) {
-      console.log("size=" + size);
+      // 开启表格的加载动画
+      this.tableLoading = true;
+
+      // 模拟延迟,让加载动画更明显
+      setTimeout(() => {
+        //当前选择的命名空间的id
+        let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
+        // 指定分组名
+        let groupName = this.queryCondition.groupName;
+        // 指定dataid
+        let dataId = this.queryCondition.dataId;
+        // 当前页
+        let page = this.page;
+        // 从后端分页的获取配置列表的数据
+        getConfigList(
+          currentSelectedNamespaceId,
+          groupName,
+          dataId,
+          page,
+          size
+        ).then((response) => {
+          // 后端返回给前端的result对象
+          let result = response.data;
+          // 将数据放到vue中
+          this.tableData = result.data.pagedList;
+          this.totalCount = result.data.totalCount;
+          // 关闭表格的加载动画
+          this.tableLoading = false;
+        });
+      }, 500);
     },
     // 将创建/修改的配置进行发布
     publishConfig() {},

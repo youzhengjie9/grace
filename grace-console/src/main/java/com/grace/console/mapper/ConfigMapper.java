@@ -36,6 +36,14 @@ public interface ConfigMapper extends BaseMapper<Config> {
                              @Param("size") Integer size);
 
     /**
+     * 获取指定命名空间下的配置总数
+     *
+     * @param namespaceId namespaceId（精确搜索）
+     * @return int
+     */
+    int getConfigTotalCountByNamespaceId(@Param("namespaceId") String namespaceId);
+
+    /**
      * 获取配置总数
      *
      * @param namespaceId namespaceId（精确搜索）

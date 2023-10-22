@@ -13,8 +13,18 @@
         WHERE namespace_id = #{namespaceId}
         AND group_name LIKE CONCAT('%',#{groupName},'%')
         AND data_id LIKE CONCAT('%',#{dataId},'%')
+        ORDER BY last_update_time DESC
         LIMIT #{page},#{size}
     </select>
+
+    <select id="getConfigTotalCountByNamespaceId" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            sys_config
+        WHERE namespace_id = #{namespaceId}
+    </select>
+
     <select id="getConfigTotalCount" resultType="java.lang.Integer">
         SELECT
             COUNT(*)

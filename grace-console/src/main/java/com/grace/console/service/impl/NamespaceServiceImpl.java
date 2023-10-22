@@ -7,6 +7,7 @@ import com.grace.common.constant.Constants;
 import com.grace.common.entity.Namespace;
 import com.grace.console.core.GroupManager;
 import com.grace.console.dto.ModifyNamespaceDTO;
+import com.grace.console.mapper.ConfigMapper;
 import com.grace.console.mapper.NamespaceMapper;
 import com.grace.console.service.NamespaceService;
 import com.grace.console.vo.NamespaceVO;
@@ -34,6 +35,9 @@ public class NamespaceServiceImpl extends ServiceImpl<NamespaceMapper,Namespace>
     @Autowired
     private NamespaceMapper namespaceMapper;
 
+    @Autowired
+    private ConfigMapper configMapper;
+
     private final GroupManager groupManager = GroupManager.getGroupManagerSingleton();
 
     @Override
@@ -47,8 +51,8 @@ public class NamespaceServiceImpl extends ServiceImpl<NamespaceMapper,Namespace>
                 Constants.DEFAULT_NAMESPACE_ID,
                 Constants.DEFAULT_NAMESPACE_NAME,
                 groupManager.getServiceCount(Constants.DEFAULT_NAMESPACE_ID),
-                666,
-                200,
+                configMapper.getConfigTotalCountByNamespaceId(Constants.DEFAULT_NAMESPACE_ID),
+                Constants.DEFAULT_MAX_CONFIG_COUNT,
                 ""
         );
         // 先将public命名空间放到集合的第一个位置作为默认的命名空间
@@ -64,7 +68,7 @@ public class NamespaceServiceImpl extends ServiceImpl<NamespaceMapper,Namespace>
                             namespaceId,
                             namespace.getNamespaceName(),
                             serviceCount,
-                            666,
+                            configMapper.getConfigTotalCountByNamespaceId(namespaceId),
                             namespace.getMaxConfigCount(),
                             namespace.getNamespaceDesc()
                     );
