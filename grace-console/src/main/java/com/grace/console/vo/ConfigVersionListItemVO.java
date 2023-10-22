@@ -35,6 +35,11 @@ public class ConfigVersionListItemVO implements Serializable {
     private String dataId;
 
     /**
+     * 配置内容
+     */
+    private String content;
+
+    /**
      * 这个配置被执行了什么操作（比如新增、修改、删除）
      */
     private String operationType;
@@ -47,11 +52,12 @@ public class ConfigVersionListItemVO implements Serializable {
     public ConfigVersionListItemVO() {
     }
 
-    public ConfigVersionListItemVO(Long id, String namespaceId, String groupName, String dataId, String operationType, LocalDateTime operationTime) {
+    public ConfigVersionListItemVO(Long id, String namespaceId, String groupName, String dataId, String content, String operationType, LocalDateTime operationTime) {
         this.id = id;
         this.namespaceId = namespaceId;
         this.groupName = groupName;
         this.dataId = dataId;
+        this.content = content;
         this.operationType = operationType;
         this.operationTime = operationTime;
     }
@@ -104,6 +110,14 @@ public class ConfigVersionListItemVO implements Serializable {
         this.operationTime = operationTime;
     }
 
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     @Override
     public String toString() {
         return "ConfigVersionListItemVO{" +
@@ -111,6 +125,7 @@ public class ConfigVersionListItemVO implements Serializable {
                 ", namespaceId='" + namespaceId + '\'' +
                 ", groupName='" + groupName + '\'' +
                 ", dataId='" + dataId + '\'' +
+                ", content='" + content + '\'' +
                 ", operationType='" + operationType + '\'' +
                 ", operationTime=" + operationTime +
                 '}';

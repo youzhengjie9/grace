@@ -118,11 +118,22 @@
       <el-col :span="2" style="margin-top: 10px">
         <el-button type="primary" @click="query" size="medium">查询</el-button>
       </el-col>
+
+      <!-- 输入分组名称 -->
+      <el-col :span="2" style="margin-top: 10px">
+        <el-button
+          type="warning"
+          @click="clickOpenVersionCompareDialog"
+          size="medium"
+          >版本对比</el-button
+        >
+      </el-col>
     </el-row>
 
     <!-- 表格内容  -->
     <el-table
       :data="tableData"
+      ref="configVersionTableRef"
       border
       style="width: 100%; margin-bottom: 25px"
       :header-cell-style="{ background: '#eef1f6', color: '#606266' }"
@@ -130,18 +141,23 @@
       element-loading-background="rgba(255, 255, 255, .5)"
       element-loading-text="加载中，请稍后..."
       element-loading-spinner="el-icon-loading"
+      @selection-change="versionCompareMultipleSelectionChange"
     >
+      <!-- 版本比较多选框 -->
+      <el-table-column type="selection" width="55"> </el-table-column>
+      <!-- id -->
+      <el-table-column prop="id" label="id" width="180"> </el-table-column>
       <!-- dataId -->
-      <el-table-column prop="dataId" label="Data Id" width="290">
+      <el-table-column prop="dataId" label="Data Id" width="220">
       </el-table-column>
       <!-- 分组名称 -->
       <el-table-column prop="groupName" label="分组名称" width="250">
       </el-table-column>
       <!-- 这个配置被执行了什么操作（比如新增、修改、删除） -->
-      <el-table-column prop="operationType" label="操作类型" width="123">
+      <el-table-column prop="operationType" label="操作类型" width="100">
       </el-table-column>
       <!-- 如果这个版本是当前配置的版本（通过scope.row.id == currentVersionId判断）,则展示“当前版本”的标签,如果不是则不展示标签 -->
-      <el-table-column prop="operationType" label="当前版本" width="123">
+      <el-table-column prop="operationType" label="当前版本" width="100">
         <template slot-scope="scope">
           <el-tag
             :type="'success'"
@@ -152,7 +168,7 @@
         </template>
       </el-table-column>
       <!-- 操作这个配置的时间 -->
-      <el-table-column prop="operationTime" label="操作时间" width="204">
+      <el-table-column prop="operationTime" label="操作时间" width="180">
         <template slot-scope="scope">
           <span>{{
             scope.row.operationTime | dateformat("YYYY-MM-DD HH:mm:ss")
@@ -173,14 +189,6 @@
           <span class="operation" @click="versionRollback(scope.row.id)"
             >版本回滚</span
           >
-          <span style="margin-right: 5px">|</span>
-
-          <!-- 版本比较 -->
-          <span
-            class="operation"
-            @click="clickOpenVersionCompareDialog(scope.row.id)"
-            >版本比较</span
-          >
         </template>
       </el-table-column>
     </el-table>
@@ -196,23 +204,40 @@
       <el-row :gutter="24">
         <el-col :span="5" :offset="3">
           <span style="font-size: 16px; font-weight: 600"
-            >当前选中的版本(左侧区域)</span
+            >第一个勾选的版本(作为旧版本)</span
           >
         </el-col>
-        <el-col :span="4" :offset="9">
+        <el-col :span="6" :offset="7">
           <span style="font-size: 16px; font-weight: 600"
-            >最新版本(右侧区域)</span
+            >第二个勾选的版本(作为新版本)</span
           >
         </el-col>
       </el-row>
+
+      <!-- 代码差异对比上面的标题 -->
+      <el-row :gutter="24">
+        <el-col :span="5" :offset="3">
+          <span style="font-size: 14px;"
+            >该版本的id为: {{this.versionCompareDialogData.firstSelectedVersionId}}</span
+          >
+        </el-col>
+        <el-col :span="6" :offset="7">
+          <span style="font-size: 14px;"
+            >该版本的id为: {{this.versionCompareDialogData.secondSelectedVersionId}}</span
+          >
+        </el-col>
+      </el-row>
+
+
+
       <!-- 内容 -->
       <el-row :gutter="24">
         <!-- 使用v-code-diff插件进行代码差异对比 -->
         <code-diff
           :old-string="
-            this.versionCompareDialogData.currentSelectedVersionConfigContent
+            this.versionCompareDialogData.firstSelectedVersionConfigContent
           "
-          :new-string="this.versionCompareDialogData.latestVersionConfigContent"
+          :new-string="this.versionCompareDialogData.secondSelectedVersionConfigContent"
           output-format="side-by-side"
         >
         </code-diff>
@@ -254,7 +279,10 @@
 // 引入vue2-ace-editor代码编辑器
 import Editor from "vue2-ace-editor";
 import { getNamespaceList } from "@/api/namespace";
-import { getConfigVersionList,getConfigVersionInputSuggestionData } from "@/api/configVersion";
+import {
+  getConfigVersionList,
+  getConfigVersionInputSuggestionData,
+} from "@/api/configVersion";
 
 export default {
   name: "ConfigVersionList",
@@ -276,11 +304,12 @@ export default {
       },
       // 指定namespaceId下面的所有dataId
       allDataIds: [],
-      
       // 指定namespaceId下面的所有groupName
       allGroupNames: [],
       // 配置版本列表数据
       tableData: [],
+      // 保存表格的“版本比较”的多选框的勾选数据的“数组”(这个数组中的元素是一个个被勾选的那一行记录的全部数据)
+      versionCompareMultipleSelection: [],
       // 当前配置的版本id
       currentVersionId: 0,
       // 表格是否加载中（ true说明表格正在加载中,则会显示加载动画。反之false则关闭加载动画）
@@ -356,11 +385,13 @@ export default {
     loadInputSuggestionData() {
       // 当前选中的命名空间id
       let currentSelectedNamespaceId = this.currentSelectedNamespaceId;
-      getConfigVersionInputSuggestionData(currentSelectedNamespaceId).then((response) => {
-        let result = response.data;
-        this.allDataIds = result.data.allDataIds;
-        this.allGroupNames = result.data.allGroupNames;
-      })
+      getConfigVersionInputSuggestionData(currentSelectedNamespaceId).then(
+        (response) => {
+          let result = response.data;
+          this.allDataIds = result.data.allDataIds;
+          this.allGroupNames = result.data.allGroupNames;
+        }
+      );
     },
     // 加载命名空间数据
     loadNamespaceData() {
@@ -373,7 +404,7 @@ export default {
     },
     // 点击切换命名空间
     namespaceToggle(selectedNamespaceId) {
-      console.log(selectedNamespaceId)
+      console.log(selectedNamespaceId);
       this.currentSelectedNamespaceId = selectedNamespaceId;
       // 重新加载dataId和groupName输入框建议的数据
       this.loadInputSuggestionData();
@@ -386,7 +417,7 @@ export default {
       var inputSuggestionList = queryString
         ? allDataIds.filter(this.createDataIdFilter(queryString))
         : allDataIds;
-         // 如果输入框建议列表为空
+      // 如果输入框建议列表为空
       // if(inputSuggestionList.length == 0){
       //   inputSuggestionList = ['无选项']
       // }
@@ -412,9 +443,7 @@ export default {
       var allGroupNames = this.allGroupNames;
       // 输入框建议
       var inputSuggestionList = queryString
-        ? allGroupNames.filter(
-            this.createGroupNameFilter(queryString)
-          )
+        ? allGroupNames.filter(this.createGroupNameFilter(queryString))
         : allGroupNames;
 
       // 如果输入框建议列表为空
@@ -474,6 +503,17 @@ export default {
         });
       }, 500);
     },
+    // 勾选表格的“版本比较”的多选框回调方法
+    versionCompareMultipleSelectionChange(versionCompareMultipleSelection) {
+      if (versionCompareMultipleSelection.length > 2) {
+        this.$message.warning(`最多只能勾选2个配置版本`);
+        // 将刚刚超出勾选限制的那行记录的“选择框勾勾”给取消掉
+        let del_row = versionCompareMultipleSelection.pop();
+        this.$refs.configVersionTableRef.toggleRowSelection(del_row, false);
+      } else {
+        this.versionCompareMultipleSelection = versionCompareMultipleSelection;
+      }
+    },
     // 跳转到版本详情路由
     versionDetail(versionId) {
       this.$router.push({
@@ -493,20 +533,37 @@ export default {
       });
     },
     // 点击打开版本比较dialog
-    clickOpenVersionCompareDialog(versionId) {
-      this.openVersionCompareDialog = true;
-
-      // 从后端查询版本比较dialog所需要的数据
-      this.versionCompareDialogData = {
-        // 当前选择的版本的配置内容
-        currentSelectedVersionConfigContent: "2",
-        // 当前选择的版本的配置格式
-        currentSelectedVersionConfigFormat: "json",
-        // 最新版本的配置内容
-        latestVersionConfigContent: "123",
-        // 最新版本的配置格式
-        latestVersionConfigFormat: "json",
-      };
+    clickOpenVersionCompareDialog() {
+      // 获取表格的“版本比较”的多选框的勾选数据的“数组”
+      let versionArray =this.versionCompareMultipleSelection;
+      // 如果版本比较多选框“刚好勾选了两个配置版本”,则“可以打开”版本比较dialog
+      if (versionArray.length == 2) {
+        // 版本比较dialog所需要的数据
+        this.versionCompareDialogData = {
+          // 第一个勾选的版本的id
+          firstSelectedVersionId: versionArray[0].id,
+          // 第一个勾选的版本的配置内容
+          firstSelectedVersionConfigContent: versionArray[0].content,
+          // 第二个勾选的版本的id
+          secondSelectedVersionId: versionArray[1].id,
+          // 第二个勾选的版本的配置内容
+          secondSelectedVersionConfigContent: versionArray[1].content,
+          // // 当前选择的版本的配置内容
+          // currentSelectedVersionConfigContent: "2",
+          // // 当前选择的版本的配置格式
+          // currentSelectedVersionConfigFormat: "json",
+          // // 最新版本的配置内容
+          // latestVersionConfigContent: "123",
+          // // 最新版本的配置格式
+          // latestVersionConfigFormat: "json",
+        };
+        // 打开版本比较dialog
+        this.openVersionCompareDialog = true;
+      } 
+      // 如果版本比较多选框“没有勾选两个配置版本”,则“不可以”打开版本比较dialog
+      else {
+        this.$message.warning(`必须要勾选2个配置版本才能进行比较`);
+      }
     },
     // page（当前页）改变时触发
     handlePageChange(page) {
@@ -543,4 +600,9 @@ export default {
   text-decoration: underline;
 }
 
+/* 隐藏当前组件的全选框（一定要加上 ::v-deep ） */
+::v-deep .el-table__header-wrapper .el-checkbox {
+  display: none;
+}
 </style>
+

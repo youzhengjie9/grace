@@ -9,6 +9,7 @@
             namespace_id,
             group_name,
             data_id,
+            content,
             operation_type,
             operation_time
         FROM

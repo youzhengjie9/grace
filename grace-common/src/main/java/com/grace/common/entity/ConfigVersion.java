@@ -74,7 +74,7 @@ public class ConfigVersion implements Serializable {
     private Long operationUserId;
 
     /**
-     * 操作这个配置的用户的ip地址
+     * 操作这个配置的用户的ip地址（操作人的ip地址）
      */
     @TableField("operation_user_ip")
     private String operationUserIp;

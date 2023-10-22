@@ -20,11 +20,24 @@
         <el-form-item>
           <!-- 标题 -->
           <span slot="label">
-            <span style="font-weight: bold">命名空间</span>
+            <span style="font-weight: bold">命名空间Id</span>
           </span>
           <el-col :span="22">
             <el-input
-              v-model="versionDetailForm.namespaceName"
+              v-model="versionDetailForm.namespaceId"
+              :readonly="true"
+            ></el-input>
+          </el-col>
+        </el-form-item>
+        <!-- 分组名称 -->
+        <el-form-item>
+          <!-- 标题 -->
+          <span slot="label">
+            <span style="font-weight: bold">分组名称</span>
+          </span>
+          <el-col :span="22">
+            <el-input
+              v-model="versionDetailForm.groupName"
               :readonly="true"
             ></el-input>
           </el-col>
@@ -42,20 +55,6 @@
             ></el-input>
           </el-col>
         </el-form-item>
-        <!-- 操作人 -->
-        <el-form-item>
-          <!-- 标题 -->
-          <span slot="label">
-            <span style="font-weight: bold">操作人</span>
-          </span>
-          <el-col :span="22">
-            <el-input
-              v-model="versionDetailForm.operator"
-              :readonly="true"
-            ></el-input>
-          </el-col>
-        </el-form-item>
-     
         <!-- 操作人的IP -->
         <el-form-item>
           <!-- 标题 -->
@@ -64,12 +63,11 @@
           </span>
           <el-col :span="22">
             <el-input
-              v-model="versionDetailForm.operatorIp"
+              v-model="versionDetailForm.operationUserIp"
               :readonly="true"
             ></el-input>
           </el-col>
         </el-form-item>
-
         <!-- 操作类型 -->
         <el-form-item>
           <!-- 标题 -->
@@ -83,7 +81,32 @@
             ></el-input>
           </el-col>
         </el-form-item>
-
+        <!-- 配置描述 -->
+        <el-form-item>
+          <!-- 标题 -->
+          <span slot="label">
+            <span style="font-weight: bold">配置描述</span>
+          </span>
+          <el-col :span="22">
+            <el-input
+              v-model="versionDetailForm.configDesc"
+              :readonly="true"
+            ></el-input>
+          </el-col>
+        </el-form-item>
+        <!-- 配置时间 -->
+        <el-form-item>
+          <!-- 标题 -->
+          <span slot="label">
+            <span style="font-weight: bold">配置时间</span>
+          </span>
+          <el-col :span="22">
+            <el-input
+              v-model="versionDetailForm.operationTime"
+              :readonly="true"
+            ></el-input>
+          </el-col>
+        </el-form-item>
         <!-- MD5 -->
         <el-form-item>
           <!-- 标题 -->
@@ -94,15 +117,14 @@
             <el-input v-model="versionDetailForm.md5" :readonly="true"></el-input>
           </el-col>
         </el-form-item>
-
-        <!-- 配置格式 -->
+        <!-- 配置类型 -->
         <el-form-item>
           <!-- 标题 -->
           <span slot="label">
-            <span style="font-weight: bold">配置格式</span>
+            <span style="font-weight: bold">配置类型</span>
           </span>
           <el-col :span="22">
-            <!-- 配置格式单选框组(只显示当前配置选择的格式的单选框,作用是让用户不能切换单选框) -->
+            <!-- 配置类型单选框组(只显示当前配置选择的类型的单选框,作用是让用户不能切换单选框) -->
             <el-radio-group v-model="versionDetailForm.type">
               <el-radio v-if="versionDetailForm.type == 'text'" label="text"
                 >text</el-radio
@@ -165,27 +187,11 @@
     components: {
       Editor,
     },
+    props:{
+      versionDetailForm: Object
+    },
     data() {
       return {
-        // 版本详情表单
-        versionDetailForm: {
-          // 命名空间
-          namespaceName: "",
-          // dataId
-          dataId: "",
-          // 操作人
-          operator: "",
-          // 操作人的IP
-          operatorIp: "",
-          // 操作类型
-          operationType: '',
-          // MD5值
-          md5: "",
-          // 配置格式
-          format: "",
-          // 配置内容
-          content: "",
-        },
         // 只读的（不能进行编辑的）代码编辑器配置
         readOnlyEditorOptions: {
           // 是否只读
@@ -230,38 +236,10 @@
         require("brace/snippets/xml");
         require("brace/snippets/html");
       },
-      // 加载数据
-      loadData() {
-        // 从路由的请求参数中获取配置id
-        let configId = this.$route.query.configId;
-        // 通过配置id去数据库中查询该版本的信息，并赋值给configRevisionsDetailForm对象
-        this.versionDetailForm = {
-          // 命名空间
-          namespaceName: "",
-          // dataId
-          dataId: "123",
-          // 操作人
-          operator: "yzj1",
-          // 操作人的IP
-          operatorIp: "123.123.300.12",
-          // 操作类型
-          operationType: '更新',
-          // MD5值
-          md5: "f2862ddbd6eb0a05bf6fe3ea3e771c9c",
-          // 配置格式
-          format: "properties",
-          // 配置内容
-          content: 'spring:datasource:driver-class-name: com.mysql.jdbc.Driver',
-        };
-      },
       // 返回上一个页面
       back() {
         this.$router.go(-1);
       },
-    },
-    created() {
-      // 加载数据
-      this.loadData();
     },
   };
   </script>

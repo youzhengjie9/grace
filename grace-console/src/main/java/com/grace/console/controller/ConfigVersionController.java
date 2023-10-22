@@ -98,7 +98,7 @@ public class ConfigVersionController {
      * @param configVersionId 配置版本id
      * @return {@link Result}<{@link ConfigVersion}>
      */
-    @GetMapping(path = "/getConfigVersion/{configVersionId}")
+    @GetMapping(path = "/getConfigVersion")
     public Result<ConfigVersion> getConfigVersion(@RequestParam("configVersionId") Long configVersionId){
 
         return Result.ok(configVersionService.getConfigVersion(configVersionId));
@@ -116,7 +116,7 @@ public class ConfigVersionController {
      * @param request request
      * @return {@link Result}<{@link Boolean}>
      */
-    @PostMapping(path = "/rollbackConfig/{configVersionId}")
+    @PostMapping(path = "/rollbackConfig")
     public Result<Boolean> rollbackConfig(@RequestParam("configVersionId") Long configVersionId,
                                           HttpServletRequest request){
 
