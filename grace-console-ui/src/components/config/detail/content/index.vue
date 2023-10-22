@@ -11,7 +11,7 @@
 
     <!-- 配置详情表单  -->
     <el-form
-      :model="configDetailForm"
+      :model="configForm"
       label-width="113px"
       ref="configDetailForm"
       style="margin-top: 35px; margin-bottom: 60px"
@@ -20,24 +20,11 @@
       <el-form-item>
         <!-- 标题 -->
         <span slot="label">
-          <span style="font-weight: bold">命名空间</span>
+          <span style="font-weight: bold">命名空间id</span>
         </span>
         <el-col :span="22">
           <el-input
-            v-model="configDetailForm.namespaceName"
-            :readonly="true"
-          ></el-input>
-        </el-col>
-      </el-form-item>
-      <!-- Data Id -->
-      <el-form-item>
-        <!-- 标题 -->
-        <span slot="label">
-          <span style="font-weight: bold">Data Id</span>
-        </span>
-        <el-col :span="22">
-          <el-input
-            v-model="configDetailForm.dataId"
+            v-model="configForm.namespaceId"
             :readonly="true"
           ></el-input>
         </el-col>
@@ -50,22 +37,35 @@
         </span>
         <el-col :span="22">
           <el-input
-            v-model="configDetailForm.groupName"
+            v-model="configForm.groupName"
             :readonly="true"
           ></el-input>
         </el-col>
       </el-form-item>
-      <!-- 描述 -->
+      <!-- data Id -->
       <el-form-item>
         <!-- 标题 -->
         <span slot="label">
-          <span style="font-weight: bold">描述</span>
+          <span style="font-weight: bold">data Id</span>
+        </span>
+        <el-col :span="22">
+          <el-input
+            v-model="configForm.dataId"
+            :readonly="true"
+          ></el-input>
+        </el-col>
+      </el-form-item>
+      <!-- 配置描述 -->
+      <el-form-item>
+        <!-- 标题 -->
+        <span slot="label">
+          <span style="font-weight: bold">配置描述</span>
         </span>
         <el-col :span="22">
           <el-input
             type="textarea"
             :rows="3"
-            v-model="configDetailForm.description"
+            v-model="configForm.configDesc"
             resize="none"
             :readonly="true"
           ></el-input>
@@ -78,7 +78,7 @@
           <span style="font-weight: bold">MD5</span>
         </span>
         <el-col :span="22">
-          <el-input v-model="configDetailForm.md5" :readonly="true"></el-input>
+          <el-input v-model="configForm.md5" :readonly="true"></el-input>
         </el-col>
       </el-form-item>
       <!-- 配置格式 -->
@@ -89,26 +89,23 @@
         </span>
         <el-col :span="22">
           <!-- 配置格式单选框组(只显示当前配置选择的格式的单选框,作用是让用户不能切换单选框) -->
-          <el-radio-group v-model="configDetailForm.format">
-            <el-radio v-if="configDetailForm.format == 'text'" label="text"
-              >text</el-radio
-            >
-            <el-radio v-if="configDetailForm.format == 'json'" label="json"
-              >json</el-radio
+          <el-radio-group v-model="configForm.type">
+            <el-radio v-if="configForm.type == 'yaml'" label="yaml"
+              >yaml</el-radio
             >
             <el-radio
-              v-if="configDetailForm.format == 'properties'"
+              v-if="configForm.type == 'properties'"
               label="properties"
               >properties</el-radio
             >
-            <el-radio v-if="configDetailForm.format == 'yaml'" label="yaml"
-              >yaml</el-radio
+            <el-radio v-if="configForm.type == 'json'" label="json"
+              >json</el-radio
             >
-            <el-radio v-if="configDetailForm.format == 'xml'" label="xml"
+            <el-radio v-if="configForm.type == 'text'" label="text"
+              >text</el-radio
+            >
+            <el-radio v-if="configForm.type == 'xml'" label="xml"
               >xml</el-radio
-            >
-            <el-radio v-if="configDetailForm.format == 'html'" label="html"
-              >html</el-radio
             >
           </el-radio-group>
         </el-col>
@@ -121,8 +118,8 @@
         </span>
         <!-- 代码编辑器 -->
         <editor
-          v-model="configDetailForm.content"
-          :lang="configDetailForm.format"
+          v-model="configForm.content"
+          :lang="configForm.type"
           theme="tomorrow_night"
           width="92%"
           height="320"
@@ -159,25 +156,11 @@ export default {
   components: {
     Editor,
   },
+  props:{
+    configForm:Object,
+  },
   data() {
     return {
-      // 配置详情表单
-      configDetailForm: {
-        // 命名空间
-        namespaceName: "",
-        // dataId
-        dataId: "",
-        // 分组名称
-        groupName: "",
-        // 描述
-        description: "",
-        // md5值
-        md5: "",
-        // 配置格式
-        format: "",
-        // 配置内容
-        content: "",
-      },
       // 只读的（不能进行编辑的）代码编辑器配置
       readOnlyEditorOptions: {
         // 是否只读
@@ -222,36 +205,10 @@ export default {
       require("brace/snippets/xml");
       require("brace/snippets/html");
     },
-    // 初始化configDetailForm对象
-    initConfigDetailForm() {
-      // 从路由的请求参数中获取配置id
-      let configId = this.$route.query.configId;
-      // 通过配置id去数据库中查询该配置的数据，并赋值给configDetailForm对象
-      this.configDetailForm = {
-        // 命名空间
-        namespaceName: configId,
-        // dataId
-        dataId: "123",
-        // 分组名称
-        groupName: "22",
-        // 描述
-        description: "33",
-        // md5值
-        md5: "abc123456789",
-        // 配置格式
-        format: "json",
-        // 配置内容
-        content: "{'a':666}",
-      };
-    },
     // 返回上一个页面
     back() {
       this.$router.go(-1);
     },
-  },
-  created() {
-    // 初始化configDetailForm对象
-    this.initConfigDetailForm();
   },
 };
 </script>

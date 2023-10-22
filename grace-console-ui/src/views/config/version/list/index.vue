@@ -217,18 +217,18 @@
       <!-- 代码差异对比上面的标题 -->
       <el-row :gutter="24">
         <el-col :span="5" :offset="3">
-          <span style="font-size: 14px;"
-            >该版本的id为: {{this.versionCompareDialogData.firstSelectedVersionId}}</span
+          <span style="font-size: 14px"
+            >该版本的id为:
+            {{ this.versionCompareDialogData.firstSelectedVersionId }}</span
           >
         </el-col>
         <el-col :span="6" :offset="7">
-          <span style="font-size: 14px;"
-            >该版本的id为: {{this.versionCompareDialogData.secondSelectedVersionId}}</span
+          <span style="font-size: 14px"
+            >该版本的id为:
+            {{ this.versionCompareDialogData.secondSelectedVersionId }}</span
           >
         </el-col>
       </el-row>
-
-
 
       <!-- 内容 -->
       <el-row :gutter="24">
@@ -237,7 +237,9 @@
           :old-string="
             this.versionCompareDialogData.firstSelectedVersionConfigContent
           "
-          :new-string="this.versionCompareDialogData.secondSelectedVersionConfigContent"
+          :new-string="
+            this.versionCompareDialogData.secondSelectedVersionConfigContent
+          "
           output-format="side-by-side"
         >
         </code-diff>
@@ -348,11 +350,20 @@ export default {
       },
     };
   },
+  // “（第一次）进入该路由、点击浏览器的刷新按钮后”会执行该生命周期。
   created() {
+    // 如果跳转到该路由的时候传了参数（query）,则将这些参数保存到该组件
+    this.loadRouterParams();
     // 加载命名空间数据
     this.loadNamespaceData();
     // 加载dataId和groupName输入框建议的数据
     this.loadInputSuggestionData();
+  },
+  // “（每次）进入该路由、点击浏览器的刷新按钮后”会执行该生命周期。
+  // 作用是: 实现在一个路由组件中部分数据缓存、部分数据重新加载的功能。
+  activated() {
+    // 如果跳转到该路由的时候传了参数（query）,则将这些参数保存到该组件
+    this.loadRouterParams();
   },
   methods: {
     // vue2-ace-editor代码编辑器初始化(下面的额外配置（例如主题、语言等）可以在node_modules\brace文件夹找 ,然后导入即可)
@@ -380,6 +391,29 @@ export default {
       require("brace/snippets/yaml");
       require("brace/snippets/xml");
       require("brace/snippets/html");
+    },
+    // 如果跳转到该路由的时候传了参数（params）,则将这些参数保存到该组件
+    loadRouterParams() {
+      let namespaceId = this.$route.query.namespaceId;
+      let groupName = this.$route.query.groupName;
+      let dataId = this.$route.query.dataId;
+      // console.log(namespaceId)
+      // console.log(groupName)
+      // console.log(dataId)
+      // 如果路由参数传了namespaceId
+      if (typeof namespaceId != "undefined") {
+        this.currentSelectedNamespaceId = namespaceId;
+      }
+      // 如果路由参数传了groupName
+      if (typeof groupName != "undefined") {
+        this.queryCondition.groupName = groupName;
+      }
+      // 如果路由参数传了dataId
+      if (typeof dataId != "undefined") {
+        this.queryCondition.dataId = dataId;
+      }
+      // 调用查询方法,加载表格数据
+      this.query();
     },
     // 加载dataId和groupName输入框建议的数据
     loadInputSuggestionData() {
@@ -535,7 +569,7 @@ export default {
     // 点击打开版本比较dialog
     clickOpenVersionCompareDialog() {
       // 获取表格的“版本比较”的多选框的勾选数据的“数组”
-      let versionArray =this.versionCompareMultipleSelection;
+      let versionArray = this.versionCompareMultipleSelection;
       // 如果版本比较多选框“刚好勾选了两个配置版本”,则“可以打开”版本比较dialog
       if (versionArray.length == 2) {
         // 版本比较dialog所需要的数据
@@ -548,18 +582,10 @@ export default {
           secondSelectedVersionId: versionArray[1].id,
           // 第二个勾选的版本的配置内容
           secondSelectedVersionConfigContent: versionArray[1].content,
-          // // 当前选择的版本的配置内容
-          // currentSelectedVersionConfigContent: "2",
-          // // 当前选择的版本的配置格式
-          // currentSelectedVersionConfigFormat: "json",
-          // // 最新版本的配置内容
-          // latestVersionConfigContent: "123",
-          // // 最新版本的配置格式
-          // latestVersionConfigFormat: "json",
         };
         // 打开版本比较dialog
         this.openVersionCompareDialog = true;
-      } 
+      }
       // 如果版本比较多选框“没有勾选两个配置版本”,则“不可以”打开版本比较dialog
       else {
         this.$message.warning(`必须要勾选2个配置版本才能进行比较`);

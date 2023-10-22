@@ -39,10 +39,12 @@ const router = new VueRouter({
             children:[
                 {
                     path:'/service/list',
+                    name:'serviceList',
                     component: () => import('../views/service/list/index.vue')
                 },
                 {
                     path:'/config/list',
+                    name:'configList',
                     component: () => import('../views/config/list/index.vue'),
                     meta: {
                         // 该路由组件是否可以被缓存
@@ -52,11 +54,17 @@ const router = new VueRouter({
                 {
                     // 配置版本列表路由
                     path:'/config/version/list',
-                    component: () => import('../views/config/version/list/index.vue')
+                    name:'configVersionList',
+                    component: () => import('../views/config/version/list/index.vue'),
+                    meta: {
+                        // 该路由组件是否可以被缓存
+                        keepAlive: true
+                    }
                 },
                 {
                     // 命名空间列表路由
                     path:'/namespace/list',
+                    name:'namespaceList',
                     component: () => import('../views/namespace/list/index.vue')
                 },
             ]  
@@ -64,41 +72,49 @@ const router = new VueRouter({
         {
             // 服务详情路由
             path:'/service/detail',
+            name:'serviceDetail',
             component: () => import('../views/service/detail/index.vue')
         },
         {
             // 创建配置路由
             path:'/config/create',
+            name:'configCreate',
             component: () => import('../views/config/create/index.vue')
         },
         {
             // 配置详情路由
             path:'/config/detail',
+            name:'configDetail',
             component: () => import('../views/config/detail/index.vue')
         },
         {
             // 修改配置路由
             path:'/config/modify',
+            name:'configModify',
             component: () => import('../views/config/modify/index.vue')
         },
         {
             // 配置版本详情路由
             path:'/config/version/detail',
+            name:'configVersionDetail',
             component: () => import('../views/config/version/detail/index.vue')
         },
         {
             // 配置回滚路由
             path:'/config/version/rollback',
+            name:'configVersionRollback',
             component: () => import('../views/config/version/rollback/index.vue')
         },
         {
             // 登录路由
             path:'/login',
+            name:'login',
             component: () => import('../views/login/index.vue')
         },
         {
             // 403没有权限路由
             path:'/403',
+            name:'403',
             component: () =>import('../views/error/403.vue')
         },
         {

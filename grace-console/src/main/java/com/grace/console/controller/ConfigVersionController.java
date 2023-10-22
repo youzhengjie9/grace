@@ -107,7 +107,7 @@ public class ConfigVersionController {
     /**
      * 回滚配置
      * <p>
-     * 原理是:
+     * 原理是:（有（对应的配置存在）就修改、没有（对应的配置不存在）就创建）
      *  通过配置版本（ConfigVersion）存储的namespaceId、groupName、dataId去找到配置（Config）,
      *      1: 如果找不到该配置（Config为null）则“将配置版本对象逆向构建出配置(Config)对象,”,
      *      2: 如果找到了该配置（config不为null）则“进行修改配置操作”
@@ -120,7 +120,7 @@ public class ConfigVersionController {
     public Result<Boolean> rollbackConfig(@RequestParam("configVersionId") Long configVersionId,
                                           HttpServletRequest request){
 
-        return Result.ok(false);
+        return Result.ok(configVersionService.rollbackConfig(configVersionId, request));
     }
 
 }

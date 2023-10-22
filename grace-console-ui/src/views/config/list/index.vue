@@ -375,8 +375,18 @@
             <span class="operation">更多</span>
             <!-- 点击“更多”选项,展开的下拉菜单  -->
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="1">历史版本</el-dropdown-item>
-              <el-dropdown-item command="2">监听查询</el-dropdown-item>
+              <el-dropdown-item
+                :command="
+                  customDropdownCommand(
+                    0,
+                    scope.row.namespaceId,
+                    scope.row.groupName,
+                    scope.row.dataId
+                  )
+                "
+              >
+                配置版本
+              </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -866,6 +876,10 @@ export default {
   },
   // “（第一次）进入该路由、点击浏览器的刷新按钮后”会执行该生命周期。
   created() {
+    // 加载命名空间数据
+    this.loadNamespaceData();
+    // 加载表格数据
+    this.loadTableData();
   },
   // “（每次）进入该路由、点击浏览器的刷新按钮后”会执行该生命周期。
   // 作用是: 实现在一个路由组件中部分数据缓存（比如currentSelectedNamespaceId、page、size）、部分数据重新加载的功能（比如tableData、totalCount）。
@@ -1144,20 +1158,40 @@ export default {
         }
       });
     },
+    // 自定义下拉菜单（ dropdown ）传值(也可以说是命令command)
+    customDropdownCommand(index, namespaceId, groupName,dataId) {
+      return {
+        index: index,
+        namespaceId: namespaceId,
+        groupName: groupName,
+        dataId: dataId
+      };
+    },
     // 点击“更多”选项所展开的下拉菜单项
-    clickMoreDropdownItem(command) {
-      // 点击历史版本
-      if (command == 1) {
+    clickMoreDropdownItem(customDropdownCommand) {
+      console.log(customDropdownCommand)
+      // 点击配置版本
+      if (customDropdownCommand.index == 0) {
+        // // 使用name+params进行跳转路由,特点是“url不会出现请求参数”（不会出现例如这种url格式:?groupName=aa&dataId=bb）
+        // this.$router.push({
+        //   // 路由名称
+        //   name:'configVersionList',
+        //   params: {
+        //     namespaceId: customDropdownCommand.namespaceId,
+        //     groupName: customDropdownCommand.groupName,
+        //     dataId: customDropdownCommand.dataId,
+        //   },
+        // });
+        // 使用name+params进行跳转路由,特点是“url不会出现请求参数”（不会出现例如这种url格式:?groupName=aa&dataId=bb）
         this.$router.push({
-          path: "/config/revisions/list",
+          // 路由名称
+          path:'/config/version/list',
           query: {
-            configId: configId,
+            namespaceId: customDropdownCommand.namespaceId,
+            groupName: customDropdownCommand.groupName,
+            dataId: customDropdownCommand.dataId,
           },
         });
-      }
-      // 点击监听查询
-      else if (command == 2) {
-        console.log("监听查询");
       }
     },
     // 点击打开批量删除dialog
