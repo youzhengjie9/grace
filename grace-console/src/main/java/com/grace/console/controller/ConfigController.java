@@ -5,7 +5,7 @@ import com.grace.common.constant.ParentMappingConstants;
 import com.grace.common.entity.Config;
 import com.grace.common.utils.PageData;
 import com.grace.common.utils.Result;
-import com.grace.console.dto.PublishConfigDTO;
+import com.grace.common.dto.PublishConfigDTO;
 import com.grace.console.service.ConfigService;
 import com.grace.console.vo.ConfigListItemVO;
 import org.springframework.beans.factory.annotation.Autowired;

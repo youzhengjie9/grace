@@ -10,6 +10,21 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class Constants {
 
+    /**
+     * 默认grace控制台（服务端）的ip地址
+     */
+    public static final String DEFAULT_CONSOLE_ADDR = "127.0.0.1:8848";
+
+    /**
+     * 默认帐号
+     */
+    public static final String DEFAULT_USERNAME = "grace";
+
+    /**
+     * 默认密码
+     */
+    public static final String DEFAULT_PASSWORD = "grace";
+
     public static final String NAMESPACE_ID = "namespaceId";
 
     public static final String GROUP_NAME = "groupName";

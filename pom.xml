@@ -59,11 +59,6 @@
                 <artifactId>grace-common</artifactId>
                 <version>${revision}</version>
             </dependency>
-            <dependency>
-                <groupId>com.grace.server</groupId>
-                <artifactId>grace-server</artifactId>
-                <version>${revision}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 

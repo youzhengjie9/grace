@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.grace.common.constant.Constants;
 import com.grace.common.entity.Namespace;
 import com.grace.console.core.GroupManager;
-import com.grace.console.dto.ModifyNamespaceDTO;
 import com.grace.console.mapper.ConfigMapper;
 import com.grace.console.mapper.NamespaceMapper;
 import com.grace.console.service.NamespaceService;

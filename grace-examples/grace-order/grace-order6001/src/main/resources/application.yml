@@ -1,0 +1,11 @@
+server:
+  port: 6001
+
+spring:
+  application:
+    name: grace-order6001
+
+grace:
+  # 配置grace注册中心
+  registry:
+    console-address: 127.0.0.1:8848

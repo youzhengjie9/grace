@@ -1,0 +1,6 @@
+server:
+  port: 7002
+
+spring:
+  application:
+    name: grace-user7002

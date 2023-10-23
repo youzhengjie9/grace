@@ -5,7 +5,7 @@ import com.grace.common.constant.ParentMappingConstants;
 import com.grace.common.entity.Service;
 import com.grace.common.utils.Result;
 import com.grace.console.core.GroupManager;
-import com.grace.console.dto.ServiceDTO;
+import com.grace.common.dto.ServiceDTO;
 import com.grace.console.vo.ServiceDetailVO;
 import com.grace.console.vo.ServiceListItem;
 import com.grace.console.vo.ServiceListVO;

@@ -2,7 +2,6 @@ package com.grace.console.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.grace.common.entity.Namespace;
-import com.grace.console.dto.ModifyNamespaceDTO;
 import com.grace.console.vo.NamespaceVO;
 
 import java.util.List;

@@ -1,0 +1,6 @@
+server:
+  port: 6002
+
+spring:
+  application:
+    name: grace-order6002
