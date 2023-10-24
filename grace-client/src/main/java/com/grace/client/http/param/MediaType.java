@@ -10,27 +10,15 @@ import com.grace.common.utils.StringUtils;
  * @date 2023/08/19 00:46:50
  */
 public final class MediaType {
-    
-    public static final String APPLICATION_ATOM_XML = "application/atom+xml";
 
-    // POST表单（form）提交方式
-    public static final String APPLICATION_FORM_URLENCODED = "application/x-www-form-urlencoded;charset=UTF-8";
-    
-    public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
-    
-    public static final String APPLICATION_SVG_XML = "application/svg+xml";
-    
-    public static final String APPLICATION_XHTML_XML = "application/xhtml+xml";
-    
-    public static final String APPLICATION_XML = "application/xml;charset=UTF-8";
-    
+    /**
+     * JSON类型
+     * <p>
+     * 传输数据要求:
+     * 1: 需要后端（接收方）使用@RequestBody进行接收
+     * 2: 客户端（发送方）将Map类型的请求体转成JSON再进行发送
+     */
     public static final String APPLICATION_JSON = "application/json;charset=UTF-8";
-    
-    public static final String MULTIPART_FORM_DATA = "multipart/form-data;charset=UTF-8";
-    
-    public static final String TEXT_HTML = "text/html;charset=UTF-8";
-    
-    public static final String TEXT_PLAIN = "text/plain;charset=UTF-8";
     
     private MediaType(String type, String charset) {
         this.type = type;

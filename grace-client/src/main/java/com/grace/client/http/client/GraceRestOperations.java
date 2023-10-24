@@ -21,22 +21,7 @@ public interface GraceRestOperations {
                           HttpClientConfig httpClientConfig, Class<T> responseType) throws Exception;
 
     <T> RestResult<T> getLarge(String url, RequestHeader requestHeader, RequestParam requestParam,
-                               Object requestBody, Class<T> responseType) throws Exception;
-
-    <T> RestResult<T> getLarge(String url, RequestHeader requestHeader, RequestParam requestParam,
-                               String requestBodyJson, Class<T> responseType) throws Exception;
-
-    <T> RestResult<T> getLarge(String url, RequestHeader requestHeader, RequestParam requestParam,
                                Map<String, String> requestBodyMap, Class<T> responseType) throws Exception;
-
-    <T> RestResult<T> post(String url, RequestHeader requestHeader, RequestParam requestParam,
-                           Object requestBody, Class<T> responseType) throws Exception;
-
-    <T> RestResult<T> post(String url, RequestHeader requestHeader, RequestParam requestParam,
-                           String requestBodyJson, Class<T> responseType) throws Exception;
-
-    <T> RestResult<T> post(String url, RequestHeader requestHeader, String requestBodyJson,
-                           Class<T> responseType) throws Exception;
 
     <T> RestResult<T> post(String url, RequestHeader requestHeader, RequestParam requestParam,
                            Map<String, String> requestBodyMap, Class<T> responseType) throws Exception;
@@ -46,15 +31,6 @@ public interface GraceRestOperations {
 
     <T> RestResult<T> post(String url, RequestHeader requestHeader, Map<String, String> requestBodyMap,
                            HttpClientConfig httpClientConfig, Class<T> responseType) throws Exception;
-
-    <T> RestResult<T> put(String url, RequestHeader requestHeader, RequestParam requestParam,
-                          Object requestBody, Class<T> responseType) throws Exception;
-
-    <T> RestResult<T> put(String url, RequestHeader requestHeader, RequestParam requestParam,
-                          String requestBodyJson, Class<T> responseType) throws Exception;
-
-    <T> RestResult<T> put(String url, RequestHeader requestHeader, String requestBodyJson,
-                          Class<T> responseType) throws Exception;
 
     <T> RestResult<T> put(String url, RequestHeader requestHeader, RequestParam requestParam,
                           Map<String, String> requestBodyMap, Class<T> responseType) throws Exception;
@@ -70,14 +46,6 @@ public interface GraceRestOperations {
 
     <T> RestResult<T> delete(String url, RequestHeader requestHeader, RequestParam requestParam,
                              HttpClientConfig httpClientConfig, Class<T> responseType) throws Exception;
-
-    <T> RestResult<T> exchange(String url, String requestMethod, RequestHeader requestHeader,
-                               RequestParam requestParam, Object requestBody,
-                               HttpClientConfig httpClientConfig, Class<T> responseType) throws Exception;
-
-    <T> RestResult<T> exchange(String url, String requestMethod, RequestHeader requestHeader,
-                               RequestParam requestParam, String requestBodyJson,
-                               Class<T> responseType) throws Exception;
 
     /**
      * 用于发送所有类型的请求（例如get、post、put、delete等）

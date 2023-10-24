@@ -14,7 +14,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 注册Instance DTO
+ * 注册Instance的DTO(这里缺少了ipAddr属性,需要我们通过request去获取并设置)
  *
  * @author youzhengjie
  * @date 2023/10/05 15:17:46
@@ -39,7 +39,7 @@ public class RegisterInstanceDTO implements Serializable {
     private String serviceName;
 
     /**
-     * 该实例的ip地址
+     * 该实例所属的ip
      */
     private String ipAddr;
 
@@ -69,7 +69,7 @@ public class RegisterInstanceDTO implements Serializable {
     private Boolean ephemeral;
 
     /**
-     * 该实例的元数据
+     * 该实例的元数据(json格式)
      */
     private String metadata;
 
@@ -86,7 +86,7 @@ public class RegisterInstanceDTO implements Serializable {
             throw new RuntimeException("serviceName不能为空");
         }
         // 如果ipAddr为空,则报错
-        if (StringUtils.isBlank(ipAddr)) {
+        if (ipAddr == null) {
             throw new RuntimeException("ipAddr不能为空");
         }
         // 如果port为空,则报错
@@ -149,6 +149,17 @@ public class RegisterInstanceDTO implements Serializable {
                 .build();
     }
 
+    public String getIpAddr() {
+        return ipAddr;
+    }
+
+    public void setIpAddr(String ipAddr) {
+        this.ipAddr = ipAddr;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
 
     public void setNamespaceId(String namespaceId) {
         this.namespaceId = namespaceId;
@@ -168,14 +179,6 @@ public class RegisterInstanceDTO implements Serializable {
 
     public String getGroupName() {
         return groupName;
-    }
-
-    public String getIpAddr() {
-        return ipAddr;
-    }
-
-    public void setIpAddr(String ipAddr) {
-        this.ipAddr = ipAddr;
     }
 
     public Integer getPort() {
@@ -249,7 +252,7 @@ public class RegisterInstanceDTO implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(namespaceId, groupName, serviceName, ipAddr, port, weight, healthy, ephemeral, metadata);
+        return Objects.hash(namespaceId, groupName, serviceName,ipAddr, port, weight, healthy, ephemeral, metadata);
     }
 
     @Override

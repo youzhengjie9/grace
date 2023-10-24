@@ -56,23 +56,27 @@ public class GraceRegistryService implements RegistryService {
 //        }
         final Map<String, String> requestBodyMap = new HashMap<>(32);
         requestBodyMap.put(Constants.NAMESPACE_ID, String.valueOf(registerInstanceDTO.getNamespaceId()));
-        requestBodyMap.put(Constants.SERVICE_NAME, registerInstanceDTO.getServiceName());
         requestBodyMap.put(Constants.GROUP_NAME, registerInstanceDTO.getGroupName());
+        requestBodyMap.put(Constants.SERVICE_NAME, registerInstanceDTO.getServiceName());
         requestBodyMap.put(Constants.IP_ADDR, registerInstanceDTO.getIpAddr());
         requestBodyMap.put(Constants.PORT, String.valueOf(registerInstanceDTO.getPort()));
         requestBodyMap.put(Constants.WEIGHT, String.valueOf(registerInstanceDTO.getWeight()));
         requestBodyMap.put(Constants.HEALTHY, String.valueOf(registerInstanceDTO.getHealthy()));
+        requestBodyMap.put(Constants.ONLINE, String.valueOf(registerInstanceDTO.getOnline()));
         requestBodyMap.put(Constants.EPHEMERAL, String.valueOf(registerInstanceDTO.getEphemeral()));
         requestBodyMap.put(Constants.META_DATA, JSON.toJSONString(registerInstanceDTO.getMetadata()));
 
-        String result = requestApi(ParentMappingConstants.INSTANCE_CONTROLLER + "/registerInstance",
+        RestResult<Object> result = requestApi(ParentMappingConstants.INSTANCE_CONTROLLER + "/registerInstance",
                 RequestMethodConstants.POST,
                 null,
                 requestBodyMap);
         System.out.println("======registerInstance的result=====");
         System.out.println(result);
+        System.out.println(result.getCode());
+        System.out.println(result.getMsg());
+        System.out.println(result.getData());
         System.out.println("===========================");
-        return true;
+        return (Boolean) result.getData();
     }
 
 //    /**
@@ -146,7 +150,7 @@ public class GraceRegistryService implements RegistryService {
 //        return pageData;
 //    }
 
-    public String requestApi(String api, String requestMethod , Map<String, String> requestParams) {
+    public RestResult<Object> requestApi(String api, String requestMethod , Map<String, String> requestParams) {
         return requestApi(api, requestMethod ,requestParams, Collections.EMPTY_MAP);
     }
 
@@ -159,8 +163,8 @@ public class GraceRegistryService implements RegistryService {
      * @param requestBody      请求体（没有就写null）
      * @return result
      */
-    public String requestApi(String api, String requestMethod ,Map<String, String> requestParams,
-                             Map<String, String> requestBody) {
+    public RestResult<Object> requestApi(String api, String requestMethod , Map<String, String> requestParams,
+                                         Map<String, String> requestBody) {
         // 获取grace控制台地址
         String graceConsoleAddress = graceRegistryProperties.getConsoleAddress();
         // 如果grace控制台地址为空
@@ -181,14 +185,14 @@ public class GraceRegistryService implements RegistryService {
     /**
      * 调用后端服务器接口
      *
-     * @param api       api接口地址
-     * @param requestMethod    请求方法
-     * @param requestParams    请求参数（没有就写null）
-     * @param requestBody      请求体（没有就写null）
+     * @param api                 api接口地址
+     * @param requestMethod       请求方法
+     * @param requestParams       请求参数（没有就写null）
+     * @param requestBody         请求体（没有就写null）
      * @param graceConsoleAddress 一个grace控制台地址（从graceConsoleAddressList中选出来）
      * @return result
      */
-    public String callServer(String api, String requestMethod ,Map<String, String> requestParams,
+    public RestResult<Object> callServer(String api, String requestMethod ,Map<String, String> requestParams,
                              Map<String, String> requestBody , String graceConsoleAddress) {
         // 记录开始时间
         long start = System.currentTimeMillis();
@@ -218,14 +222,11 @@ public class GraceRegistryService implements RegistryService {
             RequestParam requestParam = RequestParam.newInstance();
             requestParam.addRequestParams(requestParams);
             // 发送请求
-            RestResult<String> restResult = graceRestTemplate.exchange(url, requestMethod, requestHeader, requestParam,
-                    requestBody, String.class);
-            // 记录结束时间
+            RestResult<Object> restResult = graceRestTemplate.exchange(url, requestMethod, requestHeader, requestParam,
+                    requestBody, Object.class);
+            // TODO: 2023/10/24 记录结束时间
             end = System.currentTimeMillis();
-            if (restResult != null) {
-                return restResult.getData();
-            }
-            throw new RuntimeException("restResult为空");
+            return restResult;
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());
         }

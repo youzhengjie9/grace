@@ -203,7 +203,7 @@ public class GraceRegistryProperties {
         this.maxHeartBeatTimeout = maxHeartBeatTimeout;
     }
 
-    public boolean isEphemeral() {
+    public boolean getEphemeral() {
         return ephemeral;
     }
 

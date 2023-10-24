@@ -3,6 +3,7 @@ package com.grace.console.controller;
 import com.grace.common.constant.Constants;
 import com.grace.common.constant.ParentMappingConstants;
 import com.grace.common.entity.Instance;
+import com.grace.common.utils.IpUtils;
 import com.grace.common.utils.Result;
 import com.grace.common.dto.ModifyInstanceDTO;
 import com.grace.common.dto.RegisterInstanceDTO;
@@ -11,6 +12,8 @@ import com.grace.common.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 操作实例的控制器
@@ -36,7 +39,8 @@ public class InstanceController {
      * @return {@link Result}<{@link Boolean}>
      */
     @PostMapping(path = "/registerInstance")
-    public Result<Boolean> registerInstance(@RequestBody RegisterInstanceDTO registerInstanceDTO){
+    public Result<Boolean> registerInstance(@RequestBody RegisterInstanceDTO registerInstanceDTO, HttpServletRequest request){
+        System.out.println(registerInstanceDTO);
         // 校验InstanceDTO对象的必填属性是否为空,为空则抛出异常
         registerInstanceDTO.validateRequired();
         // 填充默认值（注意: 不会填充必填属性！）
@@ -58,6 +62,9 @@ public class InstanceController {
         String serviceName = registerInstanceDTO.getServiceName();
         // 通过RegisterInstanceDTO对象构建实例
         Instance instance = registerInstanceDTO.buildInstanceByRegisterInstanceDTO();
+        System.out.println("==============");
+        System.out.println(instance);
+        System.out.println("==============");
         return Result.ok(instanceService.registerInstance(namespaceId,groupName,serviceName,instance));
     }
 

@@ -38,6 +38,8 @@ public class Constants {
     public static final String WEIGHT = "weight";
 
     public static final String HEALTHY = "healthy";
+
+    public static final String ONLINE = "online";
     public static final String EPHEMERAL = "ephemeral";
     public static final String META_DATA = "metadata";
     public static final String ONLY_HEALTHY = "onlyHealthy";
@@ -56,6 +58,11 @@ public class Constants {
      * 默认的分组名称
      */
     public static final String DEFAULT_GROUP_NAME = "DEFAULT_GROUP";
+
+    /**
+     * 默认的客户端端口
+     */
+    public static final Integer DEFAULT_CLIENT_PORT = 8080;
 
     /**
      * 默认健康状态

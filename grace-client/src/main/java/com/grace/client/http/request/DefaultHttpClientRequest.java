@@ -52,12 +52,22 @@ public class DefaultHttpClientRequest implements HttpClientRequest {
         this.defaultRequestConfig = defaultRequestConfig;
     }
 
+    /**
+     * 发送请求
+     *
+     * @param uri              已经含有请求参数的uri（如果没有请求参数也可以）。格式为（例如https://www.baidu.com/s?wd=你好）
+     * @param requestMethod    请求方法
+     * @param requestHeader    请求头
+     * @param requestBodyMap      请求体Map（没有请求体的话可以传null值）
+     * @param httpClientConfig http客户端配置（不需要传配置则传null值）
+     * @return {@link HttpClientResponse}
+     */
     @Override
-    public HttpClientResponse sendRequest(URI uri, String requestMethod, RequestHeader requestHeader, Object requestBody, HttpClientConfig httpClientConfig) throws Exception {
+    public HttpClientResponse sendRequest(URI uri, String requestMethod, RequestHeader requestHeader, Map<String, String> requestBodyMap, HttpClientConfig httpClientConfig) throws Exception {
         // 构建一个http请求
         HttpRequestBase request = buildHttpRequest(
                 uri, requestMethod, requestHeader,
-                requestBody, httpClientConfig,
+                requestBodyMap, httpClientConfig,
                 defaultRequestConfig
         );
 
@@ -70,23 +80,17 @@ public class DefaultHttpClientRequest implements HttpClientRequest {
 
 
     static HttpRequestBase buildHttpRequest(URI uri, String requestMethod, RequestHeader requestHeader,
-                                            Object requestBody, HttpClientConfig httpClientConfig,
+                                            Map<String, String> requestBodyMap, HttpClientConfig httpClientConfig,
                                             RequestConfig defaultConfig) throws Exception {
 
         // 创建最基础的（除了uri（注意: 这个uri在上一步已经包含了请求参数了！）和请求方法外,无其他任何属性的）HttpRequestBase对象
         HttpRequestBase baseHttpRequestBase = createBaseHttpRequestBase(uri, requestMethod);
         // 初始化请求头,将请求头放到baseHttpRequestBase中
         initRequestHeader(baseHttpRequestBase, requestHeader);
-        // 如果是POST表单（form）提交方式，并且请求体格式是Map
-        if (MediaType.APPLICATION_FORM_URLENCODED.equals(requestHeader.getValue(RequestHeaderConstants.CONTENT_TYPE))
-                && requestBody instanceof Map) {
+        // 如果Content-Type是application/json;charset=UTF-8（说明是post、put等请求）
+        if (MediaType.APPLICATION_JSON.equals(requestHeader.getValue(RequestHeaderConstants.CONTENT_TYPE)) ) {
             // 设置请求体
-            setRequestBody(baseHttpRequestBase, (Map<String, String>) requestBody, requestHeader.getCharset());
-        }
-        // 不是POST表单（form）提交方式，或者请求体格式不是Map
-        else {
-            // 设置请求体
-            setRequestBody(baseHttpRequestBase, requestBody, requestHeader);
+            setRequestBody(baseHttpRequestBase, requestBodyMap, requestHeader.getCharset());
         }
         // 合并默认配置
         mergeDefaultConfig(baseHttpRequestBase, httpClientConfig, defaultConfig);
@@ -147,63 +151,10 @@ public class DefaultHttpClientRequest implements HttpClientRequest {
         // 常用的请求方法类中（HttpGetLarge、HttpDeleteLarge、HttpPut、HttpPost）“可以设置请求体”
         // 而（HttpGet、HttpDelete）“没有请求体，所以不可以设置请求体！！！”
         if (baseHttpRequestBase instanceof HttpEntityEnclosingRequest) {
-            // 存储一个请求体中所有参数的集合
-            List<NameValuePair> requestBodyParams = new ArrayList<>(requestBodyMap.size());
-            // 将请求体map（requestBodyMap）转成NameValuePair集合（一个NameValuePair相当于requestBodyMap的一个kv键值对）
-            for (Map.Entry<String, String> entry : requestBodyMap.entrySet()) {
-                // 请求体的一个参数（k-v键值对结构）
-                BasicNameValuePair oneRequestBodyParam =
-                        new BasicNameValuePair(entry.getKey(), entry.getValue());
-                requestBodyParams.add(oneRequestBodyParam);
-            }
             // 将baseHttpRequestBase强制转换成HttpEntityEnclosingRequest类对象
             HttpEntityEnclosingRequest request = (HttpEntityEnclosingRequest) baseHttpRequestBase;
-            // 将一个请求体中所有参数的集合（requestBodyParams）转成请求体（HttpEntity）
-            HttpEntity entity = new UrlEncodedFormEntity(requestBodyParams, charset);
-            // 给请求（request）设置请求体
-            request.setEntity(entity);
-        }
-
-
-    }
-
-
-    /**
-     * 前提：只有baseHttpRequestBase的类是HttpEntityEnclosingRequest的实现类才能设置请求体，
-     * 1：如果baseHttpRequestBase的类是HttpGetLarge、HttpDeleteLarge、HttpPut、HttpPost则会设置请求体（则这个方法会生效），
-     * 2：而如果baseHttpRequestBase的类是HttpGet、HttpDelete则无法设置请求体（则>>失效<<！！！）
-     *
-     * @param baseHttpRequestBase http请求
-     * @param requestBody         请求体
-     * @param requestHeader       请求头
-     */
-    private static void setRequestBody(HttpRequestBase baseHttpRequestBase, Object requestBody, RequestHeader requestHeader) {
-
-        if (requestBody == null) {
-            return;
-        }
-        // 只有baseHttpRequestBase的类是HttpEntityEnclosingRequest的实现类才设置请求体
-        // 常用的请求方法类中（HttpGetLarge、HttpDeleteLarge、HttpPut、HttpPost）“可以设置请求体”
-        // 而（HttpGet、HttpDelete）“没有请求体，所以不可以设置请求体！！！”
-        if (baseHttpRequestBase instanceof HttpEntityEnclosingRequest) {
-            // 将baseHttpRequestBase强制转换成HttpEntityEnclosingRequest类对象
-            HttpEntityEnclosingRequest request = (HttpEntityEnclosingRequest) baseHttpRequestBase;
-            MediaType mediaType = MediaType.valueOf(requestHeader.getValue(RequestHeaderConstants.CONTENT_TYPE));
-            // 通过mediaType创建ContentType对象
-            ContentType contentType = ContentType.create(mediaType.getType(), mediaType.getCharset());
-            HttpEntity entity;
-            // 如果requestBody是byte数组
-            if (requestBody instanceof byte[]) {
-                // 生成请求体
-                entity = new ByteArrayEntity((byte[]) requestBody, contentType);
-            }
-            // 如果requestBody不是byte数组（默认为字符串）
-            else {
-                // 生成请求体
-                entity = new StringEntity(requestBody instanceof String ?
-                        (String) requestBody : JSON.toJSONString(requestBody),
-                        contentType);
-            }
+            String requestBodyJSON = JSON.toJSONString(requestBodyMap);
+            StringEntity entity = new StringEntity(requestBodyJSON,"UTF-8");
             // 给请求（request）设置请求体
             request.setEntity(entity);
         }
