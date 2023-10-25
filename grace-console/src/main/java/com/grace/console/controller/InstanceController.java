@@ -2,6 +2,7 @@ package com.grace.console.controller;
 
 import com.grace.common.constant.Constants;
 import com.grace.common.constant.ParentMappingConstants;
+import com.grace.common.dto.HeartBeat;
 import com.grace.common.entity.Instance;
 import com.grace.common.utils.IpUtils;
 import com.grace.common.utils.Result;
@@ -93,6 +94,19 @@ public class InstanceController {
         Instance instance = modifyInstanceDTO.buildInstanceByModifyInstanceDTO();
         return Result.ok(instanceService.modifyInstance(namespaceId,groupName,serviceName,instance));
     }
+
+    /**
+     * 接收put类型的请求的心跳,由于会涉及到更新实例对象的“最近心跳请求时间”,所以是put请求
+     *
+     * @param heartBeat 某个实例的心跳请求
+     * @return {@link Result}<{@link Boolean}>
+     */
+    @PutMapping("/heartBeat")
+    public Result<Boolean> heartBeat(@RequestBody HeartBeat heartBeat){
+        // TODO: 2023/10/25 校验心跳必选项参数
+        return Result.ok(instanceService.processHeartBeat(heartBeat));
+    }
+
 
     /**
      * 检查权重值是否合法

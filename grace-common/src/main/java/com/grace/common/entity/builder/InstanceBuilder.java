@@ -66,6 +66,11 @@ public class InstanceBuilder {
     private LocalDateTime createTime;
 
     /**
+     * 该实例最后一次的心跳时间（在这个类不需要提供set构建方法,直接使用默认值System.currentTimeMillis()即可）
+     */
+    private long lastHeartBeatTime = System.currentTimeMillis();
+
+    /**
      * 创建建造者对象
      *
      * @return {@link InstanceBuilder}
@@ -128,7 +133,7 @@ public class InstanceBuilder {
      * 构建对象
      */
     public Instance build() {
-        return new Instance(instanceId, serviceName, ipAddr, port, weight, healthy, ephemeral, online, metadata, createTime);
+        return new Instance(instanceId, serviceName, ipAddr, port, weight, healthy, ephemeral, online, metadata, createTime,lastHeartBeatTime);
     }
 
 }

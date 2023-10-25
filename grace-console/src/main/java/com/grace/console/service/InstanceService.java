@@ -1,5 +1,6 @@
 package com.grace.console.service;
 
+import com.grace.common.dto.HeartBeat;
 import com.grace.common.entity.Instance;
 
 import java.util.List;
@@ -23,6 +24,13 @@ public interface InstanceService {
      * @return boolean
      */
     boolean registerInstance(String namespaceId,String groupName,String serviceName,Instance instance);
+
+    /**
+     * 处理心跳请求
+     *
+     * @param heartBeat
+     */
+    void processHeartBeat(HeartBeat heartBeat);
 
     /**
      * 修改实例

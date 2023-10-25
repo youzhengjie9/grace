@@ -67,11 +67,16 @@ public class Instance implements Serializable {
      */
     private LocalDateTime createTime;
 
+    /**
+     * 该实例最后一次的心跳时间（毫秒值）,用于判断该实例是否健康、是否需要删除
+     */
+    private volatile long lastHeartBeatTime = System.currentTimeMillis();
+
     public Instance() {
 
     }
 
-    public Instance(String instanceId, String serviceName, String ipAddr, int port, double weight, boolean healthy, boolean ephemeral, boolean online, Map<String, String> metadata, LocalDateTime createTime) {
+    public Instance(String instanceId, String serviceName, String ipAddr, int port, double weight, boolean healthy, boolean ephemeral, boolean online, Map<String, String> metadata, LocalDateTime createTime, long lastHeartBeatTime) {
         this.instanceId = instanceId;
         this.serviceName = serviceName;
         this.ipAddr = ipAddr;
@@ -82,6 +87,7 @@ public class Instance implements Serializable {
         this.online = online;
         this.metadata = metadata;
         this.createTime = createTime;
+        this.lastHeartBeatTime = lastHeartBeatTime;
     }
 
     public String getInstanceId() {
@@ -142,6 +148,14 @@ public class Instance implements Serializable {
 
     public boolean getOnline() {
         return online;
+    }
+
+    public void setLastHeartBeatTime(long lastHeartBeatTime) {
+        this.lastHeartBeatTime = lastHeartBeatTime;
+    }
+
+    public long getLastHeartBeatTime() {
+        return lastHeartBeatTime;
     }
 
     @Override

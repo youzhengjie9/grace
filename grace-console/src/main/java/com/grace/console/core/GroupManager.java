@@ -819,4 +819,24 @@ public class GroupManager {
         return false;
     }
 
+    /**
+     * 获取所有临时实例
+     *
+     * @return {@link List}<{@link Instance}>
+     */
+    public List<Instance> getAllEphemeralInstance() {
+        List<Instance> allEphemeralInstance = Collections.synchronizedList(new ArrayList<>());
+        Set<String> namespaceIds = groupMap.keySet();
+        for (String namespaceId : namespaceIds) {
+            Set<Group> groups = groupMap.get(namespaceId);
+            for (Group group : groups) {
+                Set<Service> services = group.getServices();
+                for (Service service : services) {
+                    Set<Instance> ephemeralInstances = service.getEphemeralInstances();
+                    allEphemeralInstance.addAll(ephemeralInstances);
+                }
+            }
+        }
+        return allEphemeralInstance;
+    }
 }

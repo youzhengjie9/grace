@@ -11,6 +11,7 @@ import com.grace.common.constant.Constants;
 import com.grace.common.constant.ParentMappingConstants;
 import com.grace.common.constant.RequestMethodConstants;
 import com.grace.common.constant.URLPrefixConstants;
+import com.grace.common.dto.HeartBeat;
 import com.grace.common.dto.RegisterInstanceDTO;
 import com.grace.common.utils.InternetAddressUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -18,10 +19,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ConcurrentReferenceHashMap;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 注册中心的服务的实现类（客户端操作注册中心就是使用这个类！）
@@ -49,12 +52,7 @@ public class GraceRegistryService implements RegistryService {
 
     @Override
     public Boolean registerInstance(RegisterInstanceDTO registerInstanceDTO) {
-        log.info("registerInstanceDTO={}",registerInstanceDTO);
-//        if (registerInstanceDTO.getEphemeral()) {
-//            throw new UnsupportedOperationException(
-//                    "不支持通过HTTP方式注册临时实例，请使用gRPC方式");
-//        }
-        final Map<String, String> requestBodyMap = new HashMap<>(32);
+        final Map<String, String> requestBodyMap = new ConcurrentReferenceHashMap<>(32);
         requestBodyMap.put(Constants.NAMESPACE_ID, String.valueOf(registerInstanceDTO.getNamespaceId()));
         requestBodyMap.put(Constants.GROUP_NAME, registerInstanceDTO.getGroupName());
         requestBodyMap.put(Constants.SERVICE_NAME, registerInstanceDTO.getServiceName());
@@ -65,90 +63,26 @@ public class GraceRegistryService implements RegistryService {
         requestBodyMap.put(Constants.ONLINE, String.valueOf(registerInstanceDTO.getOnline()));
         requestBodyMap.put(Constants.EPHEMERAL, String.valueOf(registerInstanceDTO.getEphemeral()));
         requestBodyMap.put(Constants.META_DATA, JSON.toJSONString(registerInstanceDTO.getMetadata()));
-
         RestResult<Object> result = requestApi(ParentMappingConstants.INSTANCE_CONTROLLER + "/registerInstance",
-                RequestMethodConstants.POST,
-                null,
-                requestBodyMap);
-        System.out.println("======registerInstance的result=====");
-        System.out.println(result);
-        System.out.println(result.getCode());
-        System.out.println(result.getMsg());
-        System.out.println(result.getData());
-        System.out.println("===========================");
+                RequestMethodConstants.POST, null, requestBodyMap);
         return (Boolean) result.getData();
     }
 
-//    /**
-//     * 获取所有实例
-//     *
-//     * @param serviceName 服务名称
-//     * @param groupName   分组名称
-//     * @param onlyHealthy 是否只挑选健康的实例
-//     * @return {@link List}<{@link Instance}>
-//     */
-//    @Override
-//    public List<Instance> getAllInstances(String serviceName, String groupName, boolean onlyHealthy) {
-//        log.info("namespaceId={}, serviceName={}, groupName={} , onlyHealthy={}",
-//                namespaceId, serviceName, groupName , onlyHealthy);
-//
-//        final Map<String, String> requestParamMap = new HashMap<>(32);
-//        requestParamMap.put(Constants.NAMESPACE_ID, String.valueOf(namespaceId));
-//        requestParamMap.put(Constants.SERVICE_NAME, serviceName);
-//        requestParamMap.put(Constants.GROUP_NAME, groupName);
-//        requestParamMap.put(Constants.ONLY_HEALTHY, String.valueOf(onlyHealthy));
-//
-//        requestApi(ParentMappingConstants.INSTANCE_CONTROLLER + "/getAllInstances",
-//                RequestMethodConstants.GET,
-//                requestParamMap,
-//                null);
-//
-//        // TODO: 2023/10/9 没实现
-//        return null;
-//    }
-//
-//    @Override
-//    public com.grace.common.entity.Service queryService(String serviceName, String groupName) {
-//        log.info("namespaceId={}, serviceName={}, groupName={}",
-//                namespaceId, serviceName, groupName);
-//
-//        final Map<String, String> requestParamMap = new HashMap<>(16);
-//        requestParamMap.put(ServiceConstants.NAMESPACE_ID, String.valueOf(namespaceId));
-//        requestParamMap.put(ServiceConstants.SERVICE_NAME, serviceName);
-//        requestParamMap.put(ServiceConstants.GROUP_NAME, groupName);
-//
-//        String resultData = requestApi(ParentMappingConstants.SERVICE_CONTROLLER + "/queryService",
-//                RequestMethodConstants.GET,
-//                requestParamMap,
-//                null);
-//        return JSONObject.parseObject(resultData, com.grace.common.entity.Service.class);
-//    }
-//
-//    @Override
-//    public PageData<String> getServiceNameList(String groupName, int page, int size) {
-//
-//        log.info("namespaceId={}, groupName={}, page={} , size={}",
-//                namespaceId,groupName,page,size);
-//
-//        Map<String, String> requestParamMap = new HashMap<>(16);
-//        requestParamMap.put(ServiceConstants.NAMESPACE_ID, String.valueOf(namespaceId));
-//        requestParamMap.put(ServiceConstants.GROUP_NAME, groupName);
-//        requestParamMap.put(PAGE, String.valueOf(page));
-//        requestParamMap.put(SIZE, String.valueOf(size));
-//
-//        String resultData = requestApi(ParentMappingConstants.SERVICE_CONTROLLER + "/getServiceNameList",
-//                RequestMethodConstants.GET,
-//                requestParamMap,
-//                null);
-//        // 封装分页数据
-//        PageData<String> pageData = new PageData<>();
-//        JSONObject jsonObject = JSONObject.parseObject(resultData);
-//        // 分页前数据的总记录数
-//        pageData.setTotalCount(Integer.parseInt(jsonObject.get("count").toString()));
-//        // 分页后的数据
-//        pageData.setPagedList(JSON.parseArray(jsonObject.get("data").toString(), String.class));
-//        return pageData;
-//    }
+    @Override
+    public Boolean sendHeartBeat(HeartBeat heartBeat) {
+
+        final Map<String, String> requestBodyMap = new ConcurrentHashMap<>(32);
+        requestBodyMap.put(Constants.NAMESPACE_ID, String.valueOf(heartBeat.getNamespaceId()));
+        requestBodyMap.put(Constants.GROUP_NAME, heartBeat.getGroupName());
+        requestBodyMap.put(Constants.SERVICE_NAME, heartBeat.getServiceName());
+        requestBodyMap.put(Constants.IP_ADDR, heartBeat.getIpAddr());
+        requestBodyMap.put(Constants.PORT, String.valueOf(heartBeat.getPort()));
+
+        RestResult<Object> result = requestApi(ParentMappingConstants.INSTANCE_CONTROLLER + "/heartBeat",
+                RequestMethodConstants.PUT, null, requestBodyMap);
+
+        return (Boolean) result.getData();
+    }
 
     public RestResult<Object> requestApi(String api, String requestMethod , Map<String, String> requestParams) {
         return requestApi(api, requestMethod ,requestParams, Collections.EMPTY_MAP);

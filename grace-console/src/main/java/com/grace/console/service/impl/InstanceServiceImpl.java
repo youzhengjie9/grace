@@ -1,5 +1,6 @@
 package com.grace.console.service.impl;
 
+import com.grace.common.dto.HeartBeat;
 import com.grace.common.entity.Instance;
 import com.grace.common.entity.Service;
 import com.grace.console.core.GroupManager;
@@ -50,6 +51,27 @@ public class InstanceServiceImpl implements InstanceService {
         }
         // 如果失败则返回false
         return false;
+    }
+
+    @Override
+    public void processHeartBeat(HeartBeat heartBeat) {
+        String namespaceId = heartBeat.getNamespaceId();
+        String groupName = heartBeat.getGroupName();
+        String serviceName = heartBeat.getServiceName();
+        String ipAddr = heartBeat.getIpAddr();
+        int port = heartBeat.getPort();
+        Instance instance = getInstance(namespaceId, groupName, serviceName, ipAddr, port);
+        // 如果实例不为空
+        if(instance !=null){
+            // 更新该实例最近一次发送心跳的时间(毫秒值)
+            instance.setLastHeartBeatTime(System.currentTimeMillis());
+            // 如果该实例的健康状态health为false
+            if(!instance.getHealthy()){
+                // 则将该实例标记为“健康”
+                instance.setHealthy(true);
+            }
+        }
+
     }
 
     @Override

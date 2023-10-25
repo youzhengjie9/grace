@@ -1,5 +1,6 @@
 package com.grace.client.registry;
 
+import com.grace.common.dto.HeartBeat;
 import com.grace.common.dto.RegisterInstanceDTO;
 
 /**
@@ -18,5 +19,12 @@ public interface RegistryService {
      */
     Boolean registerInstance(RegisterInstanceDTO registerInstanceDTO);
 
+    /**
+     * 发送put类型的请求的心跳
+     *
+     * @param heartBeat 某个实例的心跳请求
+     * @return {@link Boolean}
+     */
+    Boolean sendHeartBeat(HeartBeat heartBeat);
 
 }

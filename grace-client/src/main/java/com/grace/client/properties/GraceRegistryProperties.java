@@ -65,20 +65,20 @@ public class GraceRegistryProperties {
     /**
      * 客户端发送心跳请求的时间间隔,单位秒（如这里设置5,则说明每隔5秒发送一个心跳请求给grace-console）
      */
-    private Integer heartBeatInterval = 5;
+    private Integer heartBeatInterval = Constants.HEART_BEAT_INTERVAL;
     /**
      * 心跳超时时间,单位: 秒（如果在heartBeatTimeout时间范围内某个实例没有发送请求则超时）
      * <p>
      * 如果(当前时间 - 某个实例最后一次心跳时间) > heartBeatTimeout）则会把该实例的healthy修改为false
      */
-    private Integer heartBeatTimeout = 15;
+    private Integer heartBeatTimeout = Constants.HEART_BEAT_TIMEOUT;
 
     /**
      * 最大心跳超时时间,单位秒（如果在maxHeartBeatTimeout时间范围内某个实例没有发送请求则将该实例“删除”）
      * <p>
      * 如果(当前时间 - 某个实例最后一次心跳时间) > maxHeartBeatTimeout）则会把该实例“删除”
      */
-    private Integer maxHeartBeatTimeout = 30;
+    private Integer maxHeartBeatTimeout = Constants.MAX_HEART_BEAT_TIMEOUT;
 
     /**
      * 是否为临时实例
