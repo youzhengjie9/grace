@@ -63,9 +63,6 @@ public class InstanceController {
         String serviceName = registerInstanceDTO.getServiceName();
         // 通过RegisterInstanceDTO对象构建实例
         Instance instance = registerInstanceDTO.buildInstanceByRegisterInstanceDTO();
-        System.out.println("==============");
-        System.out.println(instance);
-        System.out.println("==============");
         return Result.ok(instanceService.registerInstance(namespaceId,groupName,serviceName,instance));
     }
 
@@ -104,7 +101,8 @@ public class InstanceController {
     @PutMapping("/heartBeat")
     public Result<Boolean> heartBeat(@RequestBody HeartBeat heartBeat){
         // TODO: 2023/10/25 校验心跳必选项参数
-        return Result.ok(instanceService.processHeartBeat(heartBeat));
+        instanceService.processHeartBeat(heartBeat);
+        return Result.ok(true);
     }
 
 

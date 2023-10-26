@@ -86,7 +86,7 @@ public class GroupManager {
      */
     public Set<String> getAllGroupName(String namespaceId) {
         if(hasNamespace(namespaceId)){
-            Set<String> groupNames = new CopyOnWriteArraySet<>();
+            Set<String> groupNames = Collections.synchronizedSet(new HashSet<>());
             Set<Group> groups = groupMap.get(namespaceId);
             for (Group group : groups) {
                 groupNames.add(group.getGroupName());
@@ -122,8 +122,8 @@ public class GroupManager {
      * @return {@link Set}<{@link String}>
      */
     public Set<String> getAllServiceName(String namespaceId) {
+        Set<String> serviceNames = Collections.synchronizedSet(new HashSet<>());
         if(hasNamespace(namespaceId)){
-            Set<String> serviceNames = new CopyOnWriteArraySet<>();
             // 根据namespaceId获取该命名空间下面的所有分组
             Set<Group> groups = groupMap.get(namespaceId);
             // 遍历分组集合
@@ -138,7 +138,7 @@ public class GroupManager {
             }
             return serviceNames;
         }
-        return new CopyOnWriteArraySet<>();
+        return serviceNames;
     }
 
     /**
@@ -155,10 +155,9 @@ public class GroupManager {
         boolean assignGroupName = groupName != null && !groupName.equals("");
         // 如果serviceName不为空,则说明指定了serviceName
         boolean assignServiceName = serviceName != null && !serviceName.equals("");
-
         if(hasNamespace(namespaceId)){
             // 最终需要返回的集合
-            Set<Service> services = new CopyOnWriteArraySet<>();
+            Set<Service> services = Collections.synchronizedSet(new HashSet<>());
             // 根据namespaceId获取该命名空间下面的所有分组
             Set<Group> groups = groupMap.get(namespaceId);
             // 遍历分组集合
@@ -268,7 +267,7 @@ public class GroupManager {
      */
     public Set<String> getAllServiceName(String namespaceId,String groupName) {
         if(hasNamespace(namespaceId)){
-            Set<String> serviceNames = new CopyOnWriteArraySet<>();
+            Set<String> serviceNames = Collections.synchronizedSet(new HashSet<>());
             // 根据namespaceId获取该命名空间下面的所有分组
             Set<Group> groups = groupMap.get(namespaceId);
             // 遍历分组集合
@@ -332,7 +331,7 @@ public class GroupManager {
             // 如果namespace不存在
             if(!hasNamespace(namespaceId)){
                 // 创建命名空间
-                groupMap.put(namespaceId,new CopyOnWriteArraySet<>());
+                groupMap.put(namespaceId,Collections.synchronizedSet(new HashSet<>()));
             }
             // 需要创建的service
             // 将ServiceDTO对象转成Service对象
@@ -341,8 +340,8 @@ public class GroupManager {
                     .groupName(groupName)
                     .serviceName(serviceName)
                     .protectThreshold(protectThreshold)
-                    .ephemeralInstances(new CopyOnWriteArraySet<>())
-                    .persistentInstances(new CopyOnWriteArraySet<>())
+                    .ephemeralInstances(Collections.synchronizedSet(new HashSet<>()))
+                    .persistentInstances(Collections.synchronizedSet(new HashSet<>()))
                     .metadata(newMetadataMap)
                     .createTime(LocalDateTime.now())
                     .lastUpdatedTime(LocalDateTime.now())
@@ -365,7 +364,7 @@ public class GroupManager {
                 targetGroup = new Group();
                 targetGroup.setGroupName(groupName);
                 // 创建service集合
-                Set<Service> services = new CopyOnWriteArraySet<>();
+                Set<Service> services = Collections.synchronizedSet(new HashSet<>());
                 services.add(service);
                 // 将service集合放到该分组中
                 targetGroup.setServices(services);
@@ -407,7 +406,7 @@ public class GroupManager {
             // 如果namespace不存在
             if(!hasNamespace(namespaceId)){
                 // 创建命名空间
-                groupMap.put(namespaceId,new CopyOnWriteArraySet<>());
+                groupMap.put(namespaceId,Collections.synchronizedSet(new HashSet<>()));
             }
             // 需要创建的service
             // 将ServiceDTO对象转成Service对象
@@ -416,8 +415,8 @@ public class GroupManager {
                     .groupName(groupName)
                     .serviceName(serviceName)
                     .protectThreshold(0.0F)
-                    .ephemeralInstances(new CopyOnWriteArraySet<>())
-                    .persistentInstances(new CopyOnWriteArraySet<>())
+                    .ephemeralInstances(Collections.synchronizedSet(new HashSet<>()))
+                    .persistentInstances(Collections.synchronizedSet(new HashSet<>()))
                     .metadata(new HashMap<>())
                     .createTime(LocalDateTime.now())
                     .lastUpdatedTime(LocalDateTime.now())
@@ -440,7 +439,7 @@ public class GroupManager {
                 targetGroup = new Group();
                 targetGroup.setGroupName(groupName);
                 // 创建service集合
-                Set<Service> services = new CopyOnWriteArraySet<>();
+                Set<Service> services = Collections.synchronizedSet(new HashSet<>());
                 services.add(service);
                 // 将service集合放到该分组中
                 targetGroup.setServices(services);
@@ -528,12 +527,24 @@ public class GroupManager {
      *
      * @param namespaceId namespaceId
      * @param groupName   groupName
-     * @param instance    instance
+     * @param serviceName serviceName
+     * @param ipAddr      ipAddr
+     * @param port        port
+     * @param isEphemeral 该实例是否为临时实例
      */
-    public void deleteInstance(String namespaceId, String groupName, Instance instance) {
+    public void deleteInstance(String namespaceId, String groupName, String serviceName,String ipAddr,int port,boolean isEphemeral) {
 
-        // TODO: 2023/10/7
-
+        Service service = getService(namespaceId, groupName, serviceName);
+        // 临时实例列表
+        Set<Instance> ephemeralInstances = service.getEphemeralInstances();
+        for (Instance ephemeralInstance : ephemeralInstances) {
+            // 找到想删除的临时实例
+           if(ephemeralInstance.getIpAddr().equals(ipAddr) && ephemeralInstance.getPort()==port){
+               // 从该服务的临时实例列表中删除该临时实例
+               ephemeralInstances.remove(ephemeralInstance);
+           }
+        }
+        // TODO: 2023/10/26 删除永久实例实现（永久实例是存储在磁盘中的）
     }
 
 
@@ -620,6 +631,11 @@ public class GroupManager {
                                 ? ""
                                 : JsonUtils.map2FormatedJsonStr((Map<Object, Object>)(Object)service.getMetadata())
                         );
+                        System.out.println(service);
+                        System.out.println(service.hashCode());
+                        System.out.println(service.getEphemeralInstances());
+                        System.out.println(service.getAllInstance());
+                        System.out.println(serviceDetailVO);
                         return serviceDetailVO;
                     }
                 }
@@ -838,5 +854,9 @@ public class GroupManager {
             }
         }
         return allEphemeralInstance;
+    }
+
+    public Set<Group> getGroups(String namespaceId) {
+        return groupMap.get(namespaceId);
     }
 }

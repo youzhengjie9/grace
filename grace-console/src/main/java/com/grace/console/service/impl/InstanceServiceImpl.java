@@ -42,6 +42,7 @@ public class InstanceServiceImpl implements InstanceService {
                 Set<Instance> ephemeralInstances = service.getEphemeralInstances();
                 return ephemeralInstances.add(instance);
             }
+            // TODO: 2023/10/26 赞不支持永久实例
             // 如果是永久实例
             else {
                 // 将该实例放到对应service的永久实例列表中
@@ -60,7 +61,7 @@ public class InstanceServiceImpl implements InstanceService {
         String serviceName = heartBeat.getServiceName();
         String ipAddr = heartBeat.getIpAddr();
         int port = heartBeat.getPort();
-        Instance instance = getInstance(namespaceId, groupName, serviceName, ipAddr, port);
+        Instance instance = groupManager.getInstance(namespaceId, groupName, serviceName, ipAddr, port);
         // 如果实例不为空
         if(instance !=null){
             // 更新该实例最近一次发送心跳的时间(毫秒值)
@@ -71,7 +72,6 @@ public class InstanceServiceImpl implements InstanceService {
                 instance.setHealthy(true);
             }
         }
-
     }
 
     @Override

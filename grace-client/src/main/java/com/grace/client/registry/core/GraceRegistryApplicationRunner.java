@@ -54,7 +54,6 @@ public class GraceRegistryApplicationRunner implements ApplicationRunner, Enviro
     private static final String SEND_HEART_BEAT_THREAD_POOL_NAME_PREFIX = "sendHeartBeat-";
     @Override
     public void setEnvironment(@NotNull Environment environment) {
-        log.info("environment加载成功");
         this.environment = environment;
     }
 
@@ -81,7 +80,7 @@ public class GraceRegistryApplicationRunner implements ApplicationRunner, Enviro
                 scheduledSendHeartBeatThreadPool.
                         scheduleAtFixedRate(new SendHeartBeatTask(heartBeat),
                                 graceRegistryProperties.getHeartBeatInterval(),
-                                graceRegistryProperties.getHeartBeatInterval(), TimeUnit.SECONDS);
+                                graceRegistryProperties.getHeartBeatInterval(), TimeUnit.MILLISECONDS);
 
             }
         }catch (Exception e){

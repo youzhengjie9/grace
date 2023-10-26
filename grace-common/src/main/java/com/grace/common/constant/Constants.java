@@ -103,20 +103,20 @@ public class Constants {
     public static final int DEFAULT_MAX_CONFIG_COUNT = 200;
 
     /**
-     * 客户端发送心跳请求的时间间隔,单位秒（如这里设置5,则说明每隔5秒发送一个心跳请求给grace-console）
+     * 客户端发送心跳请求的时间间隔,单位:毫秒（如这里设置5000,则说明每隔5秒发送一个心跳请求给grace-console）
      */
-    public static final Integer HEART_BEAT_INTERVAL = 5;
+    public static final Long HEART_BEAT_INTERVAL = 5000L;
     /**
-     * 心跳超时时间,单位: 秒（如果在heartBeatTimeout时间范围内某个实例没有发送请求则超时）
+     * 心跳超时时间,单位: 毫秒（如果在heartBeatTimeout时间范围内某个实例没有发送请求则超时）
      * <p>
      * 如果(当前时间 - 某个实例最后一次心跳时间) > heartBeatTimeout）则会把该实例的healthy修改为false
      */
-    public static final Integer HEART_BEAT_TIMEOUT = 15;
+    public static final Long HEART_BEAT_TIMEOUT = 15000L;
 
     /**
-     * 最大心跳超时时间,单位秒（如果在maxHeartBeatTimeout时间范围内某个实例没有发送请求则将该实例“删除”）
+     * 最大心跳超时时间,单位: 毫秒（如果在maxHeartBeatTimeout时间范围内某个实例没有发送请求则将该实例“删除”）
      * <p>
      * 如果(当前时间 - 某个实例最后一次心跳时间) > maxHeartBeatTimeout）则会把该实例“删除”
      */
-    public static final Integer MAX_HEART_BEAT_TIMEOUT = 30;
+    public static final Long MAX_HEART_BEAT_TIMEOUT = 30000L;
 }

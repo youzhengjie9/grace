@@ -155,7 +155,7 @@ public class Service implements Serializable {
      * @return {@link List}<{@link Instance}>
      */
     public List<Instance> getAllInstance(){
-        List<Instance> instanceList = new CopyOnWriteArrayList<>();
+        List<Instance> instanceList = Collections.synchronizedList(new ArrayList<>());
         // 如果临时实例集合不为空并且大小>0,则将所有“临时实例”保存到集合中
         if(ephemeralInstances != null && ephemeralInstances.size()>0) {
             instanceList.addAll(ephemeralInstances);

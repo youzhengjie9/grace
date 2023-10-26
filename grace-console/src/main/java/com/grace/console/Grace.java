@@ -23,9 +23,9 @@ public class Grace {
     private ScheduledThreadPoolExecutor checkAllEphemeralInstanceHeartBeatThreadPool;
 
     /**
-     * 检查所有临时实例心跳的时间间隔,单位秒
+     * 检查所有临时实例心跳的时间间隔,单位毫秒
      */
-    private Long checkAllEphemeralInstanceheartBeatInterval = 5L;
+    private final Long checkAllEphemeralInstanceheartBeatInterval = 5000L;
 
     /**
      * 执行检查所有实例的心跳的任务
@@ -36,10 +36,10 @@ public class Grace {
         // 初始化定时任务线程池
         this.checkAllEphemeralInstanceHeartBeatThreadPool =
                 new ScheduledThreadPoolExecutor(1,threadFactory);
-        // 定时检查所有临时实例心跳任务
+        // 定时检查所有临时实例心跳任务（默认每5秒检查一次）
         this.checkAllEphemeralInstanceHeartBeatThreadPool.
                 scheduleAtFixedRate(new CheckAllEphemeralInstanceHeartBeatTask(),
-                        checkAllEphemeralInstanceheartBeatInterval,checkAllEphemeralInstanceheartBeatInterval, TimeUnit.SECONDS);
+                        checkAllEphemeralInstanceheartBeatInterval,checkAllEphemeralInstanceheartBeatInterval, TimeUnit.MILLISECONDS);
 
     }
 

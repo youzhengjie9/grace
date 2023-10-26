@@ -63,24 +63,25 @@ public class GraceRegistryProperties {
     private boolean enableRegister = true;
 
     /**
-     * 客户端发送心跳请求的时间间隔,单位秒（如这里设置5,则说明每隔5秒发送一个心跳请求给grace-console）
+     * 客户端发送心跳请求的时间间隔,单位:毫秒（如这里设置5000,则说明每隔5秒发送一个心跳请求给grace-console）
      */
-    private Integer heartBeatInterval = Constants.HEART_BEAT_INTERVAL;
+    private Long heartBeatInterval = Constants.HEART_BEAT_INTERVAL;
     /**
-     * 心跳超时时间,单位: 秒（如果在heartBeatTimeout时间范围内某个实例没有发送请求则超时）
+     * 心跳超时时间,单位: 毫秒（如果在heartBeatTimeout时间范围内某个实例没有发送请求则超时）
      * <p>
      * 如果(当前时间 - 某个实例最后一次心跳时间) > heartBeatTimeout）则会把该实例的healthy修改为false
      */
-    private Integer heartBeatTimeout = Constants.HEART_BEAT_TIMEOUT;
+    private Long heartBeatTimeout = Constants.HEART_BEAT_TIMEOUT;
 
     /**
-     * 最大心跳超时时间,单位秒（如果在maxHeartBeatTimeout时间范围内某个实例没有发送请求则将该实例“删除”）
+     * 最大心跳超时时间,单位: 毫秒（如果在maxHeartBeatTimeout时间范围内某个实例没有发送请求则将该实例“删除”）
      * <p>
      * 如果(当前时间 - 某个实例最后一次心跳时间) > maxHeartBeatTimeout）则会把该实例“删除”
      */
-    private Integer maxHeartBeatTimeout = Constants.MAX_HEART_BEAT_TIMEOUT;
+    private Long maxHeartBeatTimeout = Constants.MAX_HEART_BEAT_TIMEOUT;
 
     /**
+     * todo 暂时只支持临时实例
      * 是否为临时实例
      * <p>
      * 如果为true,则实例为临时实例,该实例需要定时向grace控制台发送心跳包,否则会被剔除。
@@ -91,7 +92,7 @@ public class GraceRegistryProperties {
     public GraceRegistryProperties() {
     }
 
-    public GraceRegistryProperties(String consoleAddress, String username, String password, String namespaceId, String groupName, String serviceName, double weight, Map<String, String> metadata, boolean enableRegister, Integer heartBeatInterval, Integer heartBeatTimeout, Integer maxHeartBeatTimeout, boolean ephemeral) {
+    public GraceRegistryProperties(String consoleAddress, String username, String password, String namespaceId, String groupName, String serviceName, double weight, Map<String, String> metadata, boolean enableRegister, Long heartBeatInterval, Long heartBeatTimeout, Long maxHeartBeatTimeout, boolean ephemeral) {
         this.consoleAddress = consoleAddress;
         this.username = username;
         this.password = password;
@@ -179,27 +180,27 @@ public class GraceRegistryProperties {
         this.enableRegister = enableRegister;
     }
 
-    public Integer getHeartBeatInterval() {
+    public Long getHeartBeatInterval() {
         return heartBeatInterval;
     }
 
-    public void setHeartBeatInterval(Integer heartBeatInterval) {
+    public void setHeartBeatInterval(Long heartBeatInterval) {
         this.heartBeatInterval = heartBeatInterval;
     }
 
-    public Integer getHeartBeatTimeout() {
+    public Long getHeartBeatTimeout() {
         return heartBeatTimeout;
     }
 
-    public void setHeartBeatTimeout(Integer heartBeatTimeout) {
+    public void setHeartBeatTimeout(Long heartBeatTimeout) {
         this.heartBeatTimeout = heartBeatTimeout;
     }
 
-    public Integer getMaxHeartBeatTimeout() {
+    public Long getMaxHeartBeatTimeout() {
         return maxHeartBeatTimeout;
     }
 
-    public void setMaxHeartBeatTimeout(Integer maxHeartBeatTimeout) {
+    public void setMaxHeartBeatTimeout(Long maxHeartBeatTimeout) {
         this.maxHeartBeatTimeout = maxHeartBeatTimeout;
     }
 
