@@ -13,6 +13,7 @@ import com.grace.common.constant.RequestMethodConstants;
 import com.grace.common.constant.URLPrefixConstants;
 import com.grace.common.dto.HeartBeat;
 import com.grace.common.dto.RegisterInstanceDTO;
+import com.grace.common.entity.Instance;
 import com.grace.common.utils.InternetAddressUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import org.springframework.util.ConcurrentReferenceHashMap;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -82,6 +84,20 @@ public class GraceRegistryService implements RegistryService {
                 RequestMethodConstants.PUT, null, requestBodyMap);
 
         return (Boolean) result.getData();
+    }
+
+    @Override
+    public List<Instance> getAllInstance(String namespaceId, String groupName, String serviceName) {
+
+        final Map<String, String> requestParamMap = new ConcurrentHashMap<>(32);
+        requestParamMap.put(Constants.NAMESPACE_ID, namespaceId);
+        requestParamMap.put(Constants.GROUP_NAME, groupName);
+        requestParamMap.put(Constants.SERVICE_NAME, serviceName);
+
+        RestResult<Object> result = requestApi(ParentMappingConstants.INSTANCE_CONTROLLER + "/getAllInstance",
+                RequestMethodConstants.GET, requestParamMap, null);
+
+        return (List<Instance>) result.getData();
     }
 
     public RestResult<Object> requestApi(String api, String requestMethod , Map<String, String> requestParams) {

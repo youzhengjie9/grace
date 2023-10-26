@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * grace注册中心的实例
@@ -156,6 +157,26 @@ public class Instance implements Serializable {
 
     public long getLastHeartBeatTime() {
         return lastHeartBeatTime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o){
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()){
+            return false;
+        }
+        Instance instance = (Instance) o;
+        // 因为instance是存在service的集合中,所以只要ip和port相同就算是相同的实例
+        return Objects.equals(serviceName, instance.serviceName)
+                && Objects.equals(ipAddr, instance.ipAddr)
+                && Objects.equals(port, instance.port);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(serviceName, ipAddr, port);
     }
 
     @Override

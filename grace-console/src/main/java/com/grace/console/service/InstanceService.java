@@ -51,7 +51,7 @@ public interface InstanceService {
      * @param serviceName serviceName
      * @return {@link List}<{@link Instance}>
      */
-    List<Instance> getAllInstances(String namespaceId,String groupName,String serviceName);
+    List<Instance> getAllInstance(String namespaceId,String groupName,String serviceName);
 
 
     /**

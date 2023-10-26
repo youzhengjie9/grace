@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: grace-order6001
+    name: grace-order
 
 grace:
   # 配置grace注册中心

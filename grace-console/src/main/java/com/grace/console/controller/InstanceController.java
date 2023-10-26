@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 操作实例的控制器
@@ -105,6 +107,18 @@ public class InstanceController {
         return Result.ok(true);
     }
 
+    /**
+     * 获取指定服务下面的所有实例（也就是: 服务发现）
+     *
+     * @return {@link Result}<{@link List}<{@link Instance}>>
+     */
+    @GetMapping("/getAllInstance")
+    public Result<List<Instance>> getAllInstance(@RequestParam(value = "namespaceId",required = false,defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
+                                                 @RequestParam(value = "groupName",required = false,defaultValue = Constants.DEFAULT_GROUP_NAME) String groupName,
+                                                 @RequestParam(value = "serviceName") String serviceName){
+
+        return Result.ok(instanceService.getAllInstance(namespaceId, groupName, serviceName));
+    }
 
     /**
      * 检查权重值是否合法
@@ -117,7 +131,6 @@ public class InstanceController {
                             ",权重的最小值为"+Constants.MIN_WEIGHT_VALUE+
                             ",权重的最大值为"+Constants.MAX_WEIGHT_VALUE);
         }
-
     }
 
 }

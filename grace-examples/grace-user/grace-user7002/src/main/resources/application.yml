@@ -3,4 +3,10 @@ server:
 
 spring:
   application:
-    name: grace-user7002
+    name: grace-user
+
+
+grace:
+  # 配置grace注册中心
+  registry:
+    console-address: 127.0.0.1:8848

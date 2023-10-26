@@ -2,6 +2,9 @@ package com.grace.client.registry;
 
 import com.grace.common.dto.HeartBeat;
 import com.grace.common.dto.RegisterInstanceDTO;
+import com.grace.common.entity.Instance;
+
+import java.util.List;
 
 /**
  * 注册中心的服务,用于操作注册中心
@@ -26,5 +29,7 @@ public interface RegistryService {
      * @return {@link Boolean}
      */
     Boolean sendHeartBeat(HeartBeat heartBeat);
+
+    List<Instance> getAllInstance(String namespaceId,String groupName,String serviceName);
 
 }

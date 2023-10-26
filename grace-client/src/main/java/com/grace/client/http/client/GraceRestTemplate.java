@@ -51,6 +51,7 @@ public class GraceRestTemplate implements GraceRestOperations{
                                       HttpClientConfig httpClientConfig, Class<T> responseType) throws Exception {
         // 构建uri（将url和请求参数进行拼接）格式为（例如https://www.baidu.com/s?wd=你好）
         URI uri = buildUri(url, requestParam);
+        System.out.println("发送的uri="+uri);
         if (log.isDebugEnabled()) {
             log.debug("HTTP method: {}, url: {}, body: {}", requestMethod, uri, requestBodyMap);
         }
@@ -81,7 +82,7 @@ public class GraceRestTemplate implements GraceRestOperations{
      */
     static URI buildUri(String url, RequestParam requestParam) throws URISyntaxException {
         if (requestParam != null && !requestParam.isEmpty()) {
-            url = url + "?" + requestParam.toRequestParamString();
+            url = url + requestParam.toRequestParamString();
         }
         return new URI(url);
     }
@@ -265,8 +266,14 @@ public class GraceRestTemplate implements GraceRestOperations{
                                       RequestParam requestParam, Map<String, String> requestBodyMap,
                                       Class<T> responseType) throws Exception {
 
-        // 请求头（requestHeader）中的Content-Type设置为application/json;charset=UTF-8
-        requestHeader.setContentType(MediaType.APPLICATION_JSON);
+        // 只要下面这几种请求类型才需要设置请求体，其他都不需要
+        if(requestMethod.equalsIgnoreCase(RequestMethodConstants.GET_LARGE)
+                || requestMethod.equalsIgnoreCase(RequestMethodConstants.POST)
+                || requestMethod.equalsIgnoreCase(RequestMethodConstants.PUT)
+                || requestMethod.equalsIgnoreCase(RequestMethodConstants.DELETE_LARGE)) {
+            // 请求头（requestHeader）中的Content-Type设置为application/json;charset=UTF-8
+            requestHeader.setContentType(MediaType.APPLICATION_JSON);
+        }
 
         return execute(
                 url,

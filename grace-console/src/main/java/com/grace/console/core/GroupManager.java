@@ -856,6 +856,17 @@ public class GroupManager {
         return allEphemeralInstance;
     }
 
+    /**
+     * 获取所有实例
+     *
+     * @return {@link List}<{@link Instance}>
+     */
+    public List<Instance> getAllInstance(String namespaceId,String groupName, String serviceName) {
+        List<Instance> allInstance = Collections.synchronizedList(new ArrayList<>());
+        Service service = getService(namespaceId, groupName, serviceName);
+        return service.getAllInstance();
+    }
+
     public Set<Group> getGroups(String namespaceId) {
         return groupMap.get(namespaceId);
     }

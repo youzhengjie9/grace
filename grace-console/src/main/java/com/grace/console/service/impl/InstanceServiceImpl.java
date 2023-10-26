@@ -3,11 +3,14 @@ package com.grace.console.service.impl;
 import com.grace.common.dto.HeartBeat;
 import com.grace.common.entity.Instance;
 import com.grace.common.entity.Service;
+import com.grace.common.utils.Result;
 import com.grace.console.core.GroupManager;
 import com.grace.console.service.InstanceService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -93,20 +96,23 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    public List<Instance> getAllInstances(String namespaceId,String groupName, String serviceName) {
-
-      return null;
+    public List<Instance> getAllInstance(String namespaceId,String groupName, String serviceName) {
+        // 如果服务名为空
+        if(StringUtils.isBlank(serviceName)){
+            return new ArrayList<>();
+        }
+        return groupManager.getAllInstance(namespaceId,groupName,serviceName);
     }
 
     @Override
     public Instance getInstance(String namespaceId,String groupName, String serviceName, String ipAddr, int port) {
 
-      return null;
+      return groupManager.getInstance(namespaceId, groupName, serviceName, ipAddr, port);
     }
 
     @Override
     public Instance getInstance(String namespaceId, String groupName, String serviceName, String instanceId) {
-        return null;
+        return groupManager.getInstance(namespaceId, groupName, serviceName, instanceId);
     }
 
 
