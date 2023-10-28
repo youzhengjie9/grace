@@ -8,17 +8,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * 注册中心自动配置类
+ *
  * @author youzhengjie
  * @date 2023/10/24 11:20:33
  */
 @Configuration
 @EnableConfigurationProperties(GraceRegistryProperties.class)
 public class RegistryAutoConfiguration {
-
-    @Bean
-    public GraceRegistryService graceRegistryService(){
-        return new GraceRegistryService();
-    }
 
     @Bean
     public GraceRegistryApplicationRunner graceRegistryApplicationRunner(){

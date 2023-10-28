@@ -1,3 +1,9 @@
 
+
+org.springframework.cloud.bootstrap.BootstrapConfiguration =\
+  com.grace.client.config.core.GracePropertySourceLocator
+
+
 org.springframework.boot.autoconfigure.EnableAutoConfiguration = \
-  com.grace.client.autoconfigure.RegistryAutoConfiguration
+  com.grace.client.autoconfigure.RegistryAutoConfiguration,\
+  com.grace.client.autoconfigure.ConfigAutoConfiguration

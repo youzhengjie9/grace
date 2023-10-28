@@ -45,6 +45,11 @@ public class Constants {
     public static final String ONLY_HEALTHY = "onlyHealthy";
 
     /**
+     * dataId
+     */
+    public static final String DATA_ID = "dataId";
+
+    /**
      * 默认的命名空间（public）的命名空间id为空字符串
      */
     public static final String DEFAULT_NAMESPACE_ID = "";

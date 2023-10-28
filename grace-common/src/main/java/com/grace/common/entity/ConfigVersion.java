@@ -38,7 +38,8 @@ public class ConfigVersion implements Serializable {
     private String groupName;
 
     /**
-     * 配置的名称
+     * dataId。也就是配置的名称
+     * dataId的格式为 spring.application.name的值-spring.profile.active的值(没有可以不写).配置文件的类型（例如 grace-order-dev.yaml）
      */
     @TableField("data_id")
     private String dataId;

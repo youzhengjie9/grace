@@ -8,4 +8,4 @@ spring:
 grace:
   # 配置grace注册中心
   registry:
-    console-address: 127.0.0.1:8848
+    console-address: 127.0.0.1:12346

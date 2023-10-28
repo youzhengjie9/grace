@@ -42,6 +42,12 @@ public class Config implements Serializable {
 
     /**
      * dataId。也就是配置的名称（注意: 这个属性一旦放入数据库则不能修改）
+     * <p>
+     * dataId命名的格式分两种情况: <p>
+     * (1) 在application.yml（或者bootstrap.yml）“配置了”spring.profiles.active属性:  <p>
+     * 则格式为: ${spring.application.name}-${spring.profiles.active}.${grace-config.config-type}  <p>
+     * (2) 在application.yml（或者bootstrap.yml）“没有配置”spring.profiles.active属性:   <p>
+     * 则格式为: ${spring.application.name}.${grace-config.config-type}
      */
     @TableField("data_id")
     private String dataId;

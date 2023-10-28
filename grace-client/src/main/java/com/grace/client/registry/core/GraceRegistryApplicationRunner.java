@@ -2,6 +2,7 @@ package com.grace.client.registry.core;
 
 import com.grace.client.properties.GraceRegistryProperties;
 import com.grace.client.registry.RegistryService;
+import com.grace.client.registry.factory.RegistryServiceFactory;
 import com.grace.common.constant.Constants;
 import com.grace.common.dto.HeartBeat;
 import com.grace.common.dto.RegisterInstanceDTO;
@@ -33,7 +34,6 @@ public class GraceRegistryApplicationRunner implements ApplicationRunner, Enviro
     @Autowired
     private GraceRegistryProperties graceRegistryProperties;
 
-    @Autowired
     private RegistryService registryService;
 
     private Environment environment;
@@ -55,6 +55,10 @@ public class GraceRegistryApplicationRunner implements ApplicationRunner, Enviro
     @Override
     public void setEnvironment(@NotNull Environment environment) {
         this.environment = environment;
+        // 初始化RegistryService对象
+        this.registryService = RegistryServiceFactory.
+                createRegistryService(graceRegistryProperties.getConsoleAddress());
+
     }
 
     @Override
