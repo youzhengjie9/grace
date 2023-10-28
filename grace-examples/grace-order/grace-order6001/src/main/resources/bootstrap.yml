@@ -17,6 +17,6 @@ grace:
     # 配置所在的的分组名称
     group-name: DEFAULT_GROUP
     # 配置的类型
-    config-type: PROPERTIES
+    config-type: JSON
 
 

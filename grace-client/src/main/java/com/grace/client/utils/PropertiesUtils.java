@@ -9,6 +9,12 @@ import java.util.Properties;
 
 public class PropertiesUtils {
 
+    /**
+     * 将properties类型的内容转成Map类型的对象
+     *
+     * @param propertiesContent properties类型的内容
+     * @return {@link Map}<{@link String},{@link Object}>
+     */
     public static Map<String,Object> propertiesContentToMap(String propertiesContent){
         Properties properties = new Properties();
         try {

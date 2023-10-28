@@ -2,6 +2,7 @@ package com.grace.client.config.core;
 
 import com.grace.client.config.ConfigService;
 import com.grace.client.config.factory.ConfigServiceFactory;
+import com.grace.client.utils.JsonUtils;
 import com.grace.client.utils.PropertiesUtils;
 import com.grace.client.utils.YamlUtils;
 import com.grace.common.entity.Config;
@@ -14,6 +15,7 @@ import org.springframework.core.env.PropertySource;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 自定义PropertySourceLocator,用于加载自定义配置文件,并将该配置文件的属性变成bean
@@ -112,12 +114,42 @@ public class GracePropertySourceLocator implements PropertySourceLocator {
             throw new RuntimeException("从配置中心获取配置失败,"+
                     String.format("namespaceId=%s,groupName=%s,dataId=%s", namespaceId, groupName, dataId));
         }
-        String content = config.getContent();
-        System.out.println(content);
+        String configContent = config.getContent();
+        System.out.println(configContent);
 
-        Map<String, Object> configMap = PropertiesUtils.propertiesContentToMap(content);
+        Map<String, Object> configContentMap = configContentToMap(configContent);
 
-        return new MapPropertySource("my-config", configMap);
+        return new MapPropertySource("my-config", configContentMap);
     }
+
+    /**
+     * 根据不同的配置类型,将配置内容转成Map
+     *
+     * @param configContent 配置内容
+     * @return {@link Map}<{@link String},{@link Object}>
+     */
+    private Map<String,Object> configContentToMap(String configContent){
+        Map<String,Object> configContentMap = null;
+
+        // 如果配置内容是 yaml 类型
+        if (configType.equalsIgnoreCase(ConfigTypeEnum.YAML.getType())) {
+            // 将yaml格式的内容转成Map集合，并将该Map集合的key转成以"."进行分隔的key（例如: server.port）,只有这种格式的key才能让Spring识别的到
+            configContentMap = YamlUtils.yamlContentToMap(configContent);
+        }
+        // 如果配置内容是 properties 类型
+        else if(configType.equalsIgnoreCase(ConfigTypeEnum.PROPERTIES.getType())){
+            configContentMap = PropertiesUtils.propertiesContentToMap(configContent);
+        }
+        // 如果配置内容是 json 类型
+        else if(configType.equalsIgnoreCase(ConfigTypeEnum.JSON.getType())){
+            configContentMap = JsonUtils.jsonContentToMap(configContent);
+        }
+        // 不支持这种配置类型，直接抛出异常
+        else {
+            throw new UnsupportedOperationException("不支持这种配置类型:"+configType);
+        }
+        return configContentMap;
+    }
+
 }
 
