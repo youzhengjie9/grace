@@ -11,6 +11,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(Product.class)
 public class GraceOrder6001Application {
+
     public static void main(String[] args) {
         ConfigurableApplicationContext applicationContext = SpringApplication.run(GraceOrder6001Application.class);
     }

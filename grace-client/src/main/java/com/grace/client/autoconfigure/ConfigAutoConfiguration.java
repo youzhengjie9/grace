@@ -1,6 +1,6 @@
 package com.grace.client.autoconfigure;
 
-import com.grace.client.config.GraceConfigService;
+import com.grace.client.config.core.GraceConfigApplicationRunner;
 import com.grace.client.properties.GraceConfigProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -16,10 +16,10 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(GraceConfigProperties.class)
 public class ConfigAutoConfiguration {
 
-//    @Bean
-//    public GraceConfigService graceConfigService(){
-//        return new GraceConfigService();
-//    }
+    @Bean
+    public GraceConfigApplicationRunner graceConfigApplicationRunner(){
+        return new GraceConfigApplicationRunner();
+    }
 
 
 }

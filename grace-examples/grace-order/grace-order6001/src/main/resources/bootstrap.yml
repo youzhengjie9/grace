@@ -18,5 +18,3 @@ grace:
     group-name: DEFAULT_GROUP
     # 配置的类型
     config-type: JSON
-
-
