@@ -115,8 +115,8 @@ public class GraceRegistryApplicationRunner implements ApplicationRunner, Enviro
         registerInstanceDTO.setMetadata("");
         // 注册实例
         Boolean registerInstanceResult = registryService.registerInstance(registerInstanceDTO);
-        log.info("注册实例的信息: {}",registerInstanceDTO);
-        log.info("注册实例是否成功: {}",registerInstanceResult);
+//        log.info("注册实例的信息: {}",registerInstanceDTO);
+//        log.info("注册实例是否成功: {}",registerInstanceResult);
         return registerInstanceResult;
     }
 
@@ -142,13 +142,13 @@ public class GraceRegistryApplicationRunner implements ApplicationRunner, Enviro
             try {
                 // 发送一次心跳请求
                 Boolean sendHeartBeatResult = registryService.sendHeartBeat(heartBeat);
-                log.info("发送一次心跳请求。{}",heartBeat);
-                log.info("心跳请求是否发送成功: {}",sendHeartBeatResult);
+//                log.info("发送一次心跳请求。{}",heartBeat);
+                log.info("发送心跳请求是否成功: {}",sendHeartBeatResult);
                 // 如果发送心跳请求失败,则再发送一次（重试操作）
                 if(!sendHeartBeatResult){
                     // 重新发送一次心跳请求
                     Boolean retrySendHeartBeatResult = registryService.sendHeartBeat(heartBeat);
-                    log.info("第2次心跳请求是否发送成功: {}",sendHeartBeatResult);
+                    log.info("尝试第2次发送心跳请求是否成功: {}",sendHeartBeatResult);
                 }
             }catch (Exception e){
                 e.printStackTrace();

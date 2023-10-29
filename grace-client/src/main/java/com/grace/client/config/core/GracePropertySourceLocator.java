@@ -1,6 +1,7 @@
 package com.grace.client.config.core;
 
 import com.grace.client.config.ConfigService;
+import com.grace.client.config.cache.CacheConfigManager;
 import com.grace.client.config.factory.ConfigServiceFactory;
 import com.grace.client.config.properties.GracePropertySourceLocatorProperties;
 import com.grace.client.utils.JsonUtils;
@@ -140,11 +141,15 @@ public class GracePropertySourceLocator implements PropertySourceLocator {
             throw new RuntimeException("从配置中心获取配置失败,"+
                     String.format("namespaceId=%s,groupName=%s,dataId=%s", namespaceId, groupName, dataId));
         }
+        // 配置内容
         String configContent = config.getContent();
-        // TODO: 2023/10/29 将当前配置中心的配置内容的md5保存到GraceConfigApplicationRunner
-
+        // 配置内容的md5值
+        String configContentMd5 = config.getMd5();
+        CacheConfigManager cacheConfigManager = CacheConfigManager.getSingleton();
+        // 缓存我们 “从配置中心获取并加载”到PropertySource的自定义配置
+        cacheConfigManager.putCacheConfig(namespaceId,groupName,dataId,configContent,configContentMd5);
+        // 根据不同的配置类型,将配置内容转成Map
         Map<String, Object> configContentMap = configContentToMap(configContent);
-
         // 将我们自定义的配置加载到Spring的propertySource中
         return new MapPropertySource("my-config", configContentMap);
     }

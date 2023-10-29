@@ -1,6 +1,8 @@
 package com.grace.client.config.core;
 
 import com.grace.client.config.ConfigService;
+import com.grace.client.config.cache.CacheConfigManager;
+import com.grace.client.config.cache.entity.CacheConfig;
 import com.grace.client.config.factory.ConfigServiceFactory;
 import com.grace.client.properties.GraceConfigProperties;
 import com.grace.common.entity.Config;
@@ -34,14 +36,11 @@ public class GraceConfigApplicationRunner implements ApplicationRunner, Environm
 
     private Environment environment;
 
+    private final CacheConfigManager cacheConfigManager = CacheConfigManager.getSingleton();
+
     @Autowired
     @Qualifier("legacyContextRefresher")
     private ContextRefresher contextRefresher;
-
-    /**
-     * 当前加载的配置中心的配置内容的md5
-     */
-    private volatile String currentConfigMD5;
 
     /**
      * 定时从配置中心拉取配置（并刷新当前的配置）的线程池(pull模式)
@@ -66,10 +65,6 @@ public class GraceConfigApplicationRunner implements ApplicationRunner, Environm
                 createConfigService(graceConfigProperties.getConsoleAddress());
     }
 
-    public void setCurrentConfigMD5(String currentConfigMD5) {
-        this.currentConfigMD5 = currentConfigMD5;
-    }
-
     @Override
     public void run(ApplicationArguments args) throws Exception {
         // “守护线程”的线程工厂
@@ -86,7 +81,7 @@ public class GraceConfigApplicationRunner implements ApplicationRunner, Environm
     }
 
     /**
-     * 从配置中心拉取配置（并刷新当前的配置）的任务
+     * 拉模式。从配置中心拉取配置（并刷新当前的配置）的任务
      *
      * @author youzhengjie
      * @date 2023-10-29 00:36:55
@@ -99,11 +94,23 @@ public class GraceConfigApplicationRunner implements ApplicationRunner, Environm
                 String namespaceId = graceConfigProperties.getNamespaceId();
                 String groupName = graceConfigProperties.getGroupName();
                 String dataId = getDataId();
-                // 从配置中心拉取指定的配置
-                Config config = configService.getConfig(namespaceId, groupName, dataId);
-                // TODO: 2023/10/29 如果从配置中心拉取的最新配置的md5和当前配置的md5不一样,则需要刷新配置
-                // 刷新
-                contextRefresher.refresh();
+                // 从配置中心上面拉取指定的配置(最新的配置)
+                Config latestConfig = configService.getConfig(namespaceId, groupName, dataId);
+                // 获取指定缓存的配置（也可以说该配置是“旧配置”）
+                CacheConfig cacheConfig =
+                        cacheConfigManager.getCacheConfig(namespaceId, groupName, dataId);
+                // 获取最新配置的md5
+                String latestConfigMd5 = latestConfig.getMd5();
+                // 获取缓存配置的md5值
+                String cacheConfigMd5 = cacheConfig.getMd5();
+                // 如果从配置中心拉取的最新配置的md5和缓存配置的md5不一样
+                if(!latestConfigMd5.equals(cacheConfigMd5)){
+                    log.info("拉模式。检测到当前使用的配置中心的配置发生修改,准备进行刷新配置的操作.");
+                    // 则调用contextRefresher.refresh()方法进行“动态（不需要重启项目）刷新配置,
+                    // 和刷新所有加了@RefreshScope注解的类”
+                    contextRefresher.refresh();
+                }
+                // 如果从配置中心拉取的最新配置的md5和缓存配置的md5一样,则不刷新配置
             }catch (Exception e){
                 e.printStackTrace();
             }
