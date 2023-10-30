@@ -1,5 +1,6 @@
 package com.grace.client.config;
 
+import com.grace.common.dto.ClientAddressBindConfigDTO;
 import com.grace.common.entity.Config;
 
 /**
@@ -16,5 +17,12 @@ public interface ConfigService {
      * @return {@link Config}
      */
     Config getConfig(String namespaceId,String groupName,String dataId);
+
+    /**
+     * 客户端地址绑定配置
+     *
+     * @return {@link Boolean}
+     */
+    Boolean clientAddressBindConfig(ClientAddressBindConfigDTO clientAddressBindConfigDTO);
 
 }

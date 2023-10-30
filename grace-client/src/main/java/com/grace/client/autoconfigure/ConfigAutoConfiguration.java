@@ -1,6 +1,8 @@
 package com.grace.client.autoconfigure;
 
-import com.grace.client.config.core.GraceConfigApplicationRunner;
+import com.grace.client.config.core.ClientAddressBindConfig;
+import com.grace.client.config.core.SchedulePullConfig;
+import com.grace.client.config.endpoint.DynamicRefreshConfigEndpoint;
 import com.grace.client.properties.GraceConfigProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -17,9 +19,18 @@ import org.springframework.context.annotation.Configuration;
 public class ConfigAutoConfiguration {
 
     @Bean
-    public GraceConfigApplicationRunner graceConfigApplicationRunner(){
-        return new GraceConfigApplicationRunner();
+    public SchedulePullConfig schedulePullConfig(){
+        return new SchedulePullConfig();
     }
 
+    @Bean
+    public DynamicRefreshConfigEndpoint dynamicRefreshConfigEndpoint(){
+        return new DynamicRefreshConfigEndpoint();
+    }
+
+    @Bean
+    public ClientAddressBindConfig clientAddressBindConfig(){
+        return new ClientAddressBindConfig();
+    }
 
 }

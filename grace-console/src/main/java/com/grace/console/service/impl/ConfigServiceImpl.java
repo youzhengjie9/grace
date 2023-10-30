@@ -11,11 +11,16 @@ import com.grace.common.enums.ConfigOperationTypeEnum;
 import com.grace.common.utils.IpUtils;
 import com.grace.common.utils.MD5Utils;
 import com.grace.common.utils.SnowId;
+import com.grace.console.event.ConfigModifiedEvent;
 import com.grace.console.mapper.ConfigMapper;
 import com.grace.console.mapper.ConfigVersionMapper;
 import com.grace.console.service.ConfigService;
 import com.grace.console.vo.ConfigListItemVO;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,13 +36,20 @@ import java.util.List;
  */
 @Service
 @Transactional // 开启单体事务
-public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> implements ConfigService {
+public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> implements ConfigService, ApplicationContextAware {
 
     @Autowired
     private ConfigMapper configMapper;
 
     @Autowired
     private ConfigVersionMapper configVersionMapper;
+
+    private ApplicationContext applicationContext;
+
+    @Override
+    public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 
     @Override
     public Boolean publishConfig(Config config, HttpServletRequest request) {
@@ -100,6 +112,11 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
                     // 生成类型为“修改”的配置版本
                     int insertConfigVersionResult = configVersionMapper.insert(configVersion);
                     if (insertConfigVersionResult > 0) {
+                        // 创建配置被修改事件
+                        ConfigModifiedEvent configModifiedEvent =
+                                new ConfigModifiedEvent(this,namespaceId,groupName,dataId);
+                        // 发布配置被修改事件
+                        applicationContext.publishEvent(configModifiedEvent);
                         return true;
                     }else {
                         // 如果生成配置版本失败则直接抛出异常,让MySQL事务进行回滚（主要是回滚这步configMapper.update(null,updateWrapper)）
@@ -180,7 +197,6 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
         }
         return currentVersionId;
     }
-
 
 }
 

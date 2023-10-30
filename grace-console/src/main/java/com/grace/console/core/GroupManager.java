@@ -747,7 +747,7 @@ public class GroupManager {
 
         boolean hasNamespace = groupMap.containsKey(namespaceId);
         if(!hasNamespace){
-            log.warn("namespaceId为 {} 的命名空间不存在",namespaceId);
+//            log.warn("namespaceId为 {} 的命名空间不存在",namespaceId);
         }
         return hasNamespace;
     }

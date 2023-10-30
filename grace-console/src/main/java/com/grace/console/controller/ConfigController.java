@@ -2,10 +2,12 @@ package com.grace.console.controller;
 
 import com.grace.common.constant.Constants;
 import com.grace.common.constant.ParentMappingConstants;
+import com.grace.common.dto.ClientAddressBindConfigDTO;
 import com.grace.common.entity.Config;
 import com.grace.common.utils.PageData;
 import com.grace.common.utils.Result;
 import com.grace.common.dto.PublishConfigDTO;
+import com.grace.console.cache.CacheConfigClientAddress;
 import com.grace.console.service.ConfigService;
 import com.grace.console.vo.ConfigListItemVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,26 @@ public class ConfigController {
 
     @Autowired
     private ConfigService configService;
+
+    private final CacheConfigClientAddress cacheConfigClientAddress = CacheConfigClientAddress.getSingleton();
+
+    /**
+     * 客户端地址绑定配置
+     *
+     * @return {@link Result}<{@link Boolean}>
+     */
+    @PostMapping("/clientAddressBindConfig")
+    public Result<Boolean> clientAddressBindConfig(
+            @RequestBody ClientAddressBindConfigDTO clientAddressBindConfigDTO){
+        String namespaceId = clientAddressBindConfigDTO.getNamespaceId();
+        String groupName = clientAddressBindConfigDTO.getGroupName();
+        String dataId = clientAddressBindConfigDTO.getDataId();
+        String clientAddress = clientAddressBindConfigDTO.getClientAddress();
+        // 将客户端地址绑定配置
+        Boolean bindResult = cacheConfigClientAddress.
+                clientAddressBindConfig(namespaceId, groupName, dataId, clientAddress);
+        return Result.ok(bindResult);
+    }
 
     /**
      * 发布配置（创建配置和修改配置都是调用这个接口）

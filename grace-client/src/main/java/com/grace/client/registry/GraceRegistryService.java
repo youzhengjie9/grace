@@ -11,8 +11,6 @@ import com.grace.common.dto.RegisterInstanceDTO;
 import com.grace.common.entity.Instance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.ConcurrentReferenceHashMap;
 
 import java.util.List;
 import java.util.Map;
@@ -45,7 +43,7 @@ public class GraceRegistryService implements RegistryService {
 
     @Override
     public Boolean registerInstance(RegisterInstanceDTO registerInstanceDTO) {
-        final Map<String, String> requestBodyMap = new ConcurrentReferenceHashMap<>(32);
+        final Map<String, String> requestBodyMap = new ConcurrentHashMap<>(32);
         requestBodyMap.put(Constants.NAMESPACE_ID, String.valueOf(registerInstanceDTO.getNamespaceId()));
         requestBodyMap.put(Constants.GROUP_NAME, registerInstanceDTO.getGroupName());
         requestBodyMap.put(Constants.SERVICE_NAME, registerInstanceDTO.getServiceName());

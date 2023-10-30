@@ -43,7 +43,6 @@ public class InstanceController {
      */
     @PostMapping(path = "/registerInstance")
     public Result<Boolean> registerInstance(@RequestBody RegisterInstanceDTO registerInstanceDTO, HttpServletRequest request){
-        System.out.println(registerInstanceDTO);
         // 校验InstanceDTO对象的必填属性是否为空,为空则抛出异常
         registerInstanceDTO.validateRequired();
         // 填充默认值（注意: 不会填充必填属性！）

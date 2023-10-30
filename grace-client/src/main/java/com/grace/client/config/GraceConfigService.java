@@ -1,13 +1,14 @@
 package com.grace.client.config;
 
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.grace.client.http.Requester;
 import com.grace.client.http.RestResult;
 import com.grace.common.constant.Constants;
 import com.grace.common.constant.ParentMappingConstants;
 import com.grace.common.constant.RequestMethodConstants;
+import com.grace.common.dto.ClientAddressBindConfigDTO;
 import com.grace.common.entity.Config;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 import java.util.Properties;
@@ -42,5 +43,17 @@ public class GraceConfigService implements ConfigService {
                 RequestMethodConstants.GET, requestParamMap, null);
         JSONObject jsonObject = (JSONObject) result.getData();
         return JSONObject.parseObject(jsonObject.toJSONString(), Config.class);
+    }
+
+    @Override
+    public Boolean clientAddressBindConfig(ClientAddressBindConfigDTO clientAddressBindConfigDTO) {
+        final Map<String, String> requestBodyMap = new ConcurrentHashMap<>(32);
+        requestBodyMap.put(Constants.NAMESPACE_ID, String.valueOf(clientAddressBindConfigDTO.getNamespaceId()));
+        requestBodyMap.put(Constants.GROUP_NAME, clientAddressBindConfigDTO.getGroupName());
+        requestBodyMap.put(Constants.DATA_ID, clientAddressBindConfigDTO.getDataId());
+        requestBodyMap.put("clientAddress", clientAddressBindConfigDTO.getClientAddress());
+        RestResult<Object> result = requester.requestApi(ParentMappingConstants.CONFIG_CONTROLLER + "/clientAddressBindConfig",
+                RequestMethodConstants.POST, null, requestBodyMap);
+        return (Boolean) result.getData();
     }
 }

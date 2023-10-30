@@ -23,12 +23,14 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * 定时拉取配置（pull模式动态刷新配置）
+ *
  * @author youzhengjie
  * @date 2023/10/29 00:36:59
  */
-public class GraceConfigApplicationRunner implements ApplicationRunner, EnvironmentAware {
+public class SchedulePullConfig implements ApplicationRunner, EnvironmentAware {
 
-    private static final Logger log = LoggerFactory.getLogger(GraceConfigApplicationRunner.class);
+    private static final Logger log = LoggerFactory.getLogger(SchedulePullConfig.class);
     @Autowired
     private GraceConfigProperties graceConfigProperties;
 
@@ -73,11 +75,11 @@ public class GraceConfigApplicationRunner implements ApplicationRunner, Environm
         // 初始化线程池
         this.scheduledPullConfigThreadPool =
                 new ScheduledThreadPoolExecutor(PULL_CONFIG_THREAD_POOL_COUNT,threadFactory);
-        // 开始定时从配置中心拉取配置（并刷新当前的配置）,默认每5秒就去配置中心拉取一次配置
-        scheduledPullConfigThreadPool.
-                scheduleAtFixedRate(new PullConfigTask(),
-                        5000,
-                        5000, TimeUnit.MILLISECONDS);
+//        // 开始定时从配置中心拉取配置（并刷新当前的配置）,默认每5秒就去配置中心拉取一次配置
+//        scheduledPullConfigThreadPool.
+//                scheduleAtFixedRate(new PullConfigTask(),
+//                        5000,
+//                        5000, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -96,6 +98,7 @@ public class GraceConfigApplicationRunner implements ApplicationRunner, Environm
                 String dataId = getDataId();
                 // 从配置中心上面拉取指定的配置(最新的配置)
                 Config latestConfig = configService.getConfig(namespaceId, groupName, dataId);
+
                 // 获取指定缓存的配置（也可以说该配置是“旧配置”）
                 CacheConfig cacheConfig =
                         cacheConfigManager.getCacheConfig(namespaceId, groupName, dataId);

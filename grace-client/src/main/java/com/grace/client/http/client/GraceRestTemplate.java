@@ -51,11 +51,10 @@ public class GraceRestTemplate implements GraceRestOperations{
                                       HttpClientConfig httpClientConfig, Class<T> responseType) throws Exception {
         // 构建uri（将url和请求参数进行拼接）格式为（例如https://www.baidu.com/s?wd=你好）
         URI uri = buildUri(url, requestParam);
-        System.out.println("发送的uri="+uri);
+//        System.out.println("发送的uri="+uri);
         if (log.isDebugEnabled()) {
             log.debug("HTTP method: {}, url: {}, body: {}", requestMethod, uri, requestBodyMap);
         }
-
         // 发送请求,接收apache httpclient的响应结果（httpClientResponse）
         HttpClientResponse httpClientResponse =
                 getHttpClientRequest().sendRequest(uri, requestMethod, requestHeader, requestBodyMap, httpClientConfig);
