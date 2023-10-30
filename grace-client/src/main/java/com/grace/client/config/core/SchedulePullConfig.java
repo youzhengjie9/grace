@@ -75,11 +75,11 @@ public class SchedulePullConfig implements ApplicationRunner, EnvironmentAware {
         // 初始化线程池
         this.scheduledPullConfigThreadPool =
                 new ScheduledThreadPoolExecutor(PULL_CONFIG_THREAD_POOL_COUNT,threadFactory);
-//        // 开始定时从配置中心拉取配置（并刷新当前的配置）,默认每5秒就去配置中心拉取一次配置
-//        scheduledPullConfigThreadPool.
-//                scheduleAtFixedRate(new PullConfigTask(),
-//                        5000,
-//                        5000, TimeUnit.MILLISECONDS);
+        // 开始定时从配置中心拉取配置（并刷新当前的配置）,默认每5秒就去配置中心拉取一次配置
+        scheduledPullConfigThreadPool.
+                scheduleAtFixedRate(new PullConfigTask(),
+                        5000,
+                        5000, TimeUnit.MILLISECONDS);
     }
 
     /**

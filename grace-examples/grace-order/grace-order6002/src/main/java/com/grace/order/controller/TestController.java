@@ -39,7 +39,7 @@ public class TestController {
     @GetMapping("/getProduct")
     public String getProduct(){
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("application","grace-order6001");
+        jsonObject.put("application","grace-order6002");
         jsonObject.put("id",product.getId());
         jsonObject.put("productName",product.getProductName());
         jsonObject.put("price",product.getPrice());
