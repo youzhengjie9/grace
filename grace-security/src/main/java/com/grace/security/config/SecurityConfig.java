@@ -41,15 +41,6 @@ public class SecurityConfig {
     private final String[] PERMIT_ALL={
             "/user/login",
             "/refreshToken",
-            "/register/**",
-            "/swagger-ui.html",
-            "/swagger-ui/**",
-            "/swagger-resources/**",
-            "/v2/api-docs",
-            "/v3/api-docs",
-            "/webjars/**",
-            "/doc.html",
-            "/captcha",
             "/druid/**"
     };
 

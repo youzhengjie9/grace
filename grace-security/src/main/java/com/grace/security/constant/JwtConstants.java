@@ -1,4 +1,4 @@
-package com.grace.security;
+package com.grace.security.constant;
 
 /**
  * jwt常量

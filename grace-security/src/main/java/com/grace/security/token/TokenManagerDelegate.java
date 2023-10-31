@@ -74,6 +74,11 @@ public class TokenManagerDelegate implements TokenManager {
     }
 
     @Override
+    public Boolean deleteAccessToken(String accessToken) {
+        return getTokenManager().deleteAccessToken(accessToken);
+    }
+
+    @Override
     public long getUserIdByAccessToken(String accessToken) {
         return getTokenManager().getUserIdByAccessToken(accessToken);
     }
@@ -86,6 +91,11 @@ public class TokenManagerDelegate implements TokenManager {
     @Override
     public Claims parseRefreshToken(String refreshToken) {
         return getTokenManager().parseRefreshToken(refreshToken);
+    }
+
+    @Override
+    public Boolean deleteRefreshToken(String refreshToken) {
+        return getTokenManager().deleteRefreshToken(refreshToken);
     }
 
     @Override

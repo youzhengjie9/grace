@@ -37,6 +37,14 @@ public interface TokenManager {
     Claims parseAccessToken(String accessToken);
 
     /**
+     * 删除accessToken（只有当实现类为CachedJwtTokenManager时生效）
+     *
+     * @param accessToken accessToken
+     * @return {@link Boolean}
+     */
+    Boolean deleteAccessToken(String accessToken);
+
+    /**
      * 根据accessToken获取用户id（通过用户id存储在Claims的subject中,如果不是则获取不到）
      *
      * @param accessToken accessToken
@@ -59,6 +67,14 @@ public interface TokenManager {
      * @return 获取Claims，失败返回null
      */
     Claims parseRefreshToken(String refreshToken);
+
+    /**
+     * 删除refreshToken（只有当实现类为CachedJwtTokenManager时生效）
+     *
+     * @param refreshToken refreshToken
+     * @return {@link Boolean}
+     */
+    Boolean deleteRefreshToken(String refreshToken);
 
     /**
      * 根据refreshToken获取用户id（通过用户id存储在Claims的subject中,如果不是则获取不到）

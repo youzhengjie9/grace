@@ -1,9 +1,6 @@
 <template>
   <div id="app">
 
-    <!-- <router-view /> -->
-
-
     <!-- 展示 “可以被缓存” 的路由组件  -->
     <keep-alive>
       <router-view v-if="$route.meta.keepAlive"></router-view>

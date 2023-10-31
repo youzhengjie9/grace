@@ -25,6 +25,9 @@ public class UserLoginDTO implements Serializable {
     @Length(min = 5,max = 20,message = "密码长度要在5-20位之间")
     private String password;
 
+    public UserLoginDTO() {
+    }
+
     public UserLoginDTO(String username, String password) {
         this.username = username;
         this.password = password;

@@ -3,7 +3,7 @@ package com.grace.security.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.grace.common.enums.ResultType;
 import com.grace.common.utils.Result;
-import com.grace.security.JwtConstants;
+import com.grace.security.constant.JwtConstants;
 import com.grace.security.dto.UserLoginDTO;
 import com.grace.security.entity.User;
 import com.grace.security.mapper.UserMapper;
@@ -11,6 +11,7 @@ import com.grace.security.service.UserService;
 import com.grace.security.token.TokenManagerDelegate;
 import com.grace.security.users.GraceUser;
 import com.grace.security.vo.TokenVO;
+import com.grace.security.vo.UserInfoVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,22 +35,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
+    @Autowired
     private TokenManagerDelegate tokenManagerDelegate;
 
+    @Autowired
     private AuthenticationManager authenticationManager;
 
-    @Autowired
-    public void setTokenManagerDelegate(TokenManagerDelegate tokenManagerDelegate) {
-        this.tokenManagerDelegate = tokenManagerDelegate;
-    }
-
-    @Autowired
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
-
     @Override
-    public Result<TokenVO> login(UserLoginDTO userLoginDTO, HttpServletRequest request) throws Throwable {
+    public TokenVO login(UserLoginDTO userLoginDTO, HttpServletRequest request) throws Throwable {
         // 前端传来的帐号
         String username = userLoginDTO.getUsername();
         // 前端传来的密码
@@ -80,6 +73,30 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         TokenVO tokenVO = new TokenVO();
         tokenVO.setAccessToken(accessToken);
         tokenVO.setRefreshToken(refreshToken);
-        return Result.build(ResultType.LOGIN_SUCCESS,tokenVO);
+        return tokenVO;
+    }
+
+    @Override
+    public Boolean logout(String accessToken,String refreshToken) {
+
+        try {
+            // 删除accessToken
+            tokenManagerDelegate.deleteAccessToken(accessToken);
+            // 删除refreshToken
+            tokenManagerDelegate.deleteRefreshToken(refreshToken);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+    @Override
+    public UserInfoVO getCurrentUserInfo() {
+        // 从SpringSecurity中获取当前用户的UserDetails对象
+        GraceUser graceUser=(GraceUser) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        return new UserInfoVO(graceUser.getUsername());
     }
 }

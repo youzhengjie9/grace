@@ -1,8 +1,9 @@
 package com.grace.security.token.impl;
 
-import com.grace.security.JwtConstants;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.grace.security.constant.JwtConstants;
 import com.grace.security.entity.User;
-import com.grace.security.service.MenuService;
+import com.grace.security.mapper.UserMapper;
 import com.grace.security.service.UserService;
 import com.grace.security.token.TokenManager;
 import com.grace.security.users.GraceUser;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -60,10 +60,7 @@ public class JwtTokenManager implements TokenManager {
     private String issuer;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
-    private MenuService menuService;
+    private UserMapper userMapper;
 
     /**
      * @return 随机的id
@@ -104,6 +101,11 @@ public class JwtTokenManager implements TokenManager {
     }
 
     @Override
+    public Boolean deleteAccessToken(String accessToken) {
+        throw new UnsupportedOperationException("删除accessToken只有当实现类为CachedJwtTokenManager时生效");
+    }
+
+    @Override
     public long getUserIdByAccessToken(String accessToken) {
         return Long.parseLong(parseAccessToken(accessToken)
                 .getSubject());
@@ -138,6 +140,11 @@ public class JwtTokenManager implements TokenManager {
                 .setSigningKey(refreshTokenSecret)
                 .parseClaimsJws(refreshToken)
                 .getBody();
+    }
+
+    @Override
+    public Boolean deleteRefreshToken(String refreshToken) {
+        throw new UnsupportedOperationException("删除refreshToken只有当实现类为CachedJwtTokenManager时生效");
     }
 
     @Override
@@ -190,46 +197,36 @@ public class JwtTokenManager implements TokenManager {
             // 根据accessToken获取userId
             long userId = getUserIdByAccessToken(token);
             // 根据userId查询用户信息
-            User user = userService.lambdaQuery()
+            LambdaQueryWrapper<User> getUserByUserId = new LambdaQueryWrapper<User>()
                     .select(
-                            User::getUserName,
-                            User::getStatus,
-                            User::getDelFlag
+                            User::getUsername,
+                            User::getStatus
                     )
-                    .eq(User::getId, userId)
-                    .one();
-            // 根据userId查询权限列表
-            List<String> permissions = menuService.getAllPermissionsByUserId(userId);
+                    .eq(User::getId, userId);
+            User user = userMapper.selectOne(getUserByUserId);
             // 给user对象设置userId
             user.setId(userId);
             // 封装GraceUser对象
-            GraceUser graceUser = new GraceUser(user,permissions);
-            // 获取用户的权限列表
-            Collection<? extends GrantedAuthority> authorities = graceUser.getAuthorities();
+            GraceUser graceUser = new GraceUser(user);
             // 创建Authentication对象
-            return new UsernamePasswordAuthenticationToken(graceUser,"",authorities);
+            return new UsernamePasswordAuthenticationToken(graceUser,"",null);
         }else if (tokenType.equalsIgnoreCase("refreshToken")) {
             // 根据refreshToken获取userId
             long userId = getUserIdByRefreshToken(token);
             // 根据userId查询用户信息
-            User user = userService.lambdaQuery()
+            LambdaQueryWrapper<User> getUserByUserId = new LambdaQueryWrapper<User>()
                     .select(
-                            User::getUserName,
-                            User::getStatus,
-                            User::getDelFlag
+                            User::getUsername,
+                            User::getStatus
                     )
-                    .eq(User::getId, userId)
-                    .one();
-            // 根据userId查询权限列表
-            List<String> permissions = menuService.getAllPermissionsByUserId(userId);
+                    .eq(User::getId, userId);
+            User user = userMapper.selectOne(getUserByUserId);
             // 给user对象设置userId
             user.setId(userId);
             // 封装GraceUser对象
-            GraceUser graceUser = new GraceUser(user,permissions);
-            // 获取用户的权限列表
-            Collection<? extends GrantedAuthority> authorities = graceUser.getAuthorities();
+            GraceUser graceUser = new GraceUser(user);
             // 创建Authentication对象
-            return new UsernamePasswordAuthenticationToken(graceUser,"",authorities);
+            return new UsernamePasswordAuthenticationToken(graceUser,"",null);
         }
         return null;
     }

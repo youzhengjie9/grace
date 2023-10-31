@@ -1,13 +1,12 @@
 package com.grace.security.users;
 
-import com.alibaba.fastjson2.annotation.JSONField;
 import com.grace.security.entity.User;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.io.Serializable;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * 自定义spring security所需要的UserDetails实现类
@@ -21,44 +20,22 @@ public class GraceUser implements UserDetails, Serializable {
 
     private final User user;
 
-    /**
-     * 权限列表。
-     */
-    private final List<String> permissons;
-
-
-    /**
-     * 框架所需要的权限集合
-     */
-    @JSONField(serialize = false) //禁止序列化该属性
-    private Set<SimpleGrantedAuthority> grantedAuthoritySet;
-
-    public GraceUser(User user, List<String> permissons) {
+    public GraceUser(User user) {
         this.user=user;
-        //loadUserByUsername方法中从数据库查询出来的权限列表
-        this.permissons=permissons;
     }
     public User getUser() {
         return user;
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        //如果grantedAuthoritySet为null才去生成GrantedAuthority类型的权限集合
-        if(Objects.isNull(grantedAuthoritySet)){
-            this.grantedAuthoritySet=permissons
-                    .stream()
-                    .distinct()
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toSet());
-            return grantedAuthoritySet;
-        }
-        return grantedAuthoritySet;
+        return new ArrayList<>();
     }
 
     @Override
     public String getPassword() {
-        // 密码在这里没有作用,返回空即可
-        return "";
+        // 这个是存储在数据库并且使用BCrypt算法加密过的密码。
+        // DaoAuthenticationProvider.additionalAuthenticationChecks方法需要通过这个密码和前端传来的密码进行比对
+        return user.getPassword();
     }
 
     /**
@@ -77,7 +54,7 @@ public class GraceUser implements UserDetails, Serializable {
      */
     @Override
     public String getUsername() {
-        return user.getUserName();
+        return user.getUsername();
     }
 
     @Override
@@ -98,6 +75,6 @@ public class GraceUser implements UserDetails, Serializable {
     @Override
     public boolean isEnabled() {
 
-        return ((user.getDelFlag())==0 && user.getStatus()==0);
+        return user.getStatus()==0;
     }
 }

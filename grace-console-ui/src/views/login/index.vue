@@ -17,6 +17,7 @@
 
 <script>
 import LoginForm from "@/components/LoginForm/index.vue";
+import { login } from "@/api/user";
 
 export default {
   components: {
@@ -70,6 +71,44 @@ export default {
       this.$refs["loginFormComponent"].$refs[loginForm].validate((valid) => {
         // 如果前端表单格式校验通过
         if (valid) {
+          let username = this.loginForm.username;
+          let password = this.loginForm.password;
+          // 调用登录接口
+          login(username, password)
+            .then((response) => {
+              let result = response.data;
+              if (result.code == 600) {
+                // 将登录成功后用户的数据存储到Vuex和localstorage中
+                this.$store.dispatch("loginSuccess", result.data);
+                this.$message({
+                  showClose: true,
+                  message: result.msg,
+                  type: "success",
+                  duration: 1000,
+                });
+
+                //登录成功后跳转到首页
+                this.$router.push({
+                  path: "/",
+                });
+                
+              } else {
+                this.$message({
+                  showClose: true,
+                  message: result.msg,
+                  type: "error",
+                  duration: 1000,
+                });
+              }
+            })
+            .catch((err) => {
+              this.$message({
+                showClose: true,
+                message: "系统故障,登录失败",
+                type: "error",
+                duration: 1000,
+              });
+            });
         } else {
           return false;
         }
@@ -80,9 +119,7 @@ export default {
 </script>
 
 <style scoped>
-
-.login-box{
-
+.login-box {
   /* 让div的大小刚好铺满整个屏幕 */
   width: 100%;
   height: 100%;
@@ -90,23 +127,21 @@ export default {
   top: 0;
   position: fixed;
   /* 背景图片 */
-  /* background: url("@/assets/login-page.jpg"); */
+  background: url("@/assets/login-page.jpg");
   /* 背景图片大小铺满整个屏幕 */
-  /* background-size: 100% 100%; */
-
+  background-size: 100% 100%;
 }
 
 .login-card {
   width: 33%;
-  
+
   /* 水平居中 + 垂直移动一部分距离 */
   position: absolute;
   top: 35%;
   left: 50%;
   transform: translate(-50%, -50%);
-  
+
   /* 边距 */
   padding-top: 30px;
 }
-
 </style>

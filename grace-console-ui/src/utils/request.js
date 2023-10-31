@@ -47,11 +47,10 @@ export function 自定义的方法名(){
 
 //添加axios请求拦截器（在发送axios请求前自动执行）
 service.interceptors.request.use(function (config) {
-    // //如果有accessToken，则每一次发送请求之前都要在localStorage中拿到accessToken并放到请求头Authorization中
-    // if (store.state.user.accessToken) {
-
-    // 	config.headers['Authorization'] = 'Bearer '+store.state.user.accessToken
-    // }
+    //如果有accessToken，则每一次发送请求之前都要在localStorage中拿到accessToken并放到请求头accessToken中
+    if (store.state.user.accessToken) {
+        config.headers['accessToken'] = store.state.user.accessToken
+    }
     return config;
 }, function (error) {
     // 对请求错误做些什么

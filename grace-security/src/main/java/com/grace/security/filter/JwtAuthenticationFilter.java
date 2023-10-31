@@ -1,10 +1,11 @@
 package com.grace.security.filter;
 
-import com.grace.security.JwtConstants;
+import com.grace.security.constant.JwtConstants;
 import com.grace.security.service.UserService;
 import com.grace.security.token.TokenManagerDelegate;
 import io.jsonwebtoken.Claims;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,13 +41,10 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+    private final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Autowired
     private TokenManagerDelegate tokenManagerDelegate;
-
-    @Autowired
-    private UserService userService;
 
     /**
      * 实现过程（逻辑）: <br/>
@@ -68,7 +66,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * @param filterChain filterChain
      */
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NotNull HttpServletRequest request,
+                                    @NotNull HttpServletResponse response,
+                                    @NotNull FilterChain filterChain) throws ServletException, IOException {
 
         // 从request中获取accessToken
         String accessToken = getTokenFromRequest(request, JwtConstants.ACCESS_TOKEN);
@@ -78,12 +78,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // 校验accessToken（例如accessToken格式是否正确、accessToken是否过期等）,异常不需要进行捕获,直接让它抛出即可,
             // 这里抛出的异常会自动进入CustomAuthenticationEntryPoint类或CustomAccessDeniedHandler类中,在这两个类中处理异常
-            Claims claims = tokenManagerDelegate.parseAccessToken(accessToken);
+            tokenManagerDelegate.parseAccessToken(accessToken);
 
             // 校验accessToken成功之后,根据accessToken从accessTokenMap缓存中获取Authentication对象
             Authentication authentication =
                     tokenManagerDelegate.getAuthentication(accessToken, JwtConstants.ACCESS_TOKEN);
-            log.info("authentication="+authentication);
+
             // 将Authentication对象设置到SecurityContextHolder的上下文（context）中,
             // 告诉spring security我们已经成功登录了。（前提是获取到的authentication对象不为null）
             // 这里注意: 如果获取到的authentication对象为null,则说明用户没有登录,同时如果访问的接口不在SecurityConfig类中的
@@ -99,7 +99,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     /**
      * 从request中获取token
      *
-     * @param request
      * @return {@link String}
      */
     private String getTokenFromRequest(HttpServletRequest request,String tokenType) {
@@ -111,7 +110,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if(StringUtils.isNotBlank(accessToken)){
                 return accessToken;
             }
-
             // 如果请求头没有accessToken,则去请求参数中获取accessToken
             accessToken = request.getParameter(JwtConstants.ACCESS_TOKEN);
             if(StringUtils.isNotBlank(accessToken)) {
@@ -124,7 +122,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if(StringUtils.isNotBlank(refreshToken)){
                 return refreshToken;
             }
-
             // 如果请求头没有refreshToken,则去请求参数中获取refreshToken
             refreshToken = request.getParameter(JwtConstants.REFRESH_TOKEN);
             if(StringUtils.isNotBlank(refreshToken)){

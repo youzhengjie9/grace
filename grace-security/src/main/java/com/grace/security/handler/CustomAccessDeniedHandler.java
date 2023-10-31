@@ -29,8 +29,8 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
-        log.error("request="+request);
-        log.error("accessDeniedException="+accessDeniedException);
+//        log.error("request="+request);
+//        log.error("accessDeniedException="+accessDeniedException);
 
         Result<Object> result = Result.build(ResultType.NOT_PERMISSION);
         String jsonString = JSON.toJSONString(result);

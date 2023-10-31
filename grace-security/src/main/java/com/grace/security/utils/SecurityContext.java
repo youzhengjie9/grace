@@ -1,4 +1,4 @@
-package com.grace.security;
+package com.grace.security.utils;
 
 import com.grace.security.entity.User;
 import com.grace.security.users.GraceUser;
@@ -54,8 +54,8 @@ public class SecurityContext {
      *
      * @return {@link String}
      */
-    public static String getCurrentUserName(){
-        return SecurityContext.getCurrentUser().getUserName();
+    public static String getCurrentUsername(){
+        return SecurityContext.getCurrentUser().getUsername();
     }
 
 }

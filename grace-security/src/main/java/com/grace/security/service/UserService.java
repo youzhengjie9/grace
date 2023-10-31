@@ -1,10 +1,11 @@
 package com.grace.security.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.grace.common.utils.Result;
 import com.grace.security.dto.UserLoginDTO;
 import com.grace.security.entity.User;
 import com.grace.security.vo.TokenVO;
+import com.grace.security.vo.UserInfoVO;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,7 +17,26 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface UserService extends IService<User> {
 
-    Result<TokenVO> login(UserLoginDTO userLoginDTO, HttpServletRequest request) throws Throwable;
+    /**
+     * 登录
+     */
+    TokenVO login(UserLoginDTO userLoginDTO, HttpServletRequest request) throws Throwable;
+
+    /**
+     * 退出登录
+     *
+     * @param accessToken  accessToken
+     * @param refreshToken refreshToken
+     * @return {@link Boolean}
+     */
+    Boolean logout(String accessToken,String refreshToken);
+
+    /**
+     * 获取当前用户信息(请求头要携带accessToken)
+     *
+     * @return {@link UserInfoVO}
+     */
+    UserInfoVO getCurrentUserInfo();
 
 
 }

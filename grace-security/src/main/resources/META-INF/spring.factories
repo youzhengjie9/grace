@@ -1,4 +1,4 @@
 
 
-#org.springframework.boot.autoconfigure.EnableAutoConfiguration = \
-#  com.grace.security.autoconfigure.GraceSecurityAutoConfigure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration = \
+  com.grace.security.autoconfigure.GraceSecurityAutoConfiguration

@@ -45,11 +45,11 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
 
-        log.error("request="+request);
-        log.error("authException="+authException);
+//        log.error("request="+request);
+//        log.error("authException="+authException);
 
         Result<Object> result = null;
-        //第一种情况：如果用户名或密码不正确，则会进来这里
+        // 第一种情况：如果用户名或密码不正确，则会进来这里
         if(authException instanceof BadCredentialsException ||
                 authException instanceof InternalAuthenticationServiceException){
             result = Result.build(ResultType.USERNAME_PASSWORD_ERROR);

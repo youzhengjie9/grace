@@ -1,6 +1,6 @@
 package com.grace.security.token.impl;
 
-import com.grace.security.JwtConstants;
+import com.grace.security.constant.JwtConstants;
 import com.grace.security.token.TokenManager;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +80,12 @@ public class CachedJwtTokenManager implements TokenManager {
     }
 
     @Override
+    public Boolean deleteAccessToken(String accessToken) {
+        accessTokenMap.remove(accessToken);
+        return true;
+    }
+
+    @Override
     public long getUserIdByAccessToken(String accessToken) {
         return jwtTokenManager.getUserIdByAccessToken(accessToken);
     }
@@ -107,6 +113,12 @@ public class CachedJwtTokenManager implements TokenManager {
     @Override
     public Claims parseRefreshToken(String refreshToken) {
         return jwtTokenManager.parseRefreshToken(refreshToken);
+    }
+
+    @Override
+    public Boolean deleteRefreshToken(String refreshToken) {
+        refreshTokenMap.remove(refreshToken);
+        return true;
     }
 
     @Override
