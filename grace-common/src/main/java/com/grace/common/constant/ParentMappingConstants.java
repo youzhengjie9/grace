@@ -17,26 +17,31 @@ public final class ParentMappingConstants {
     /**
      * InstanceController接口的顶层路径
      */
-    public static final String INSTANCE_CONTROLLER= GRACE_SERVER_BASE_URL+"/instance";
+    public static final String INSTANCE_CONTROLLER = GRACE_SERVER_BASE_URL+"/instance";
 
     /**
      * NamespaceController接口的顶层路径
      */
-    public static final String NAMESPACE_CONTROLLER= GRACE_SERVER_BASE_URL+"/namespace";
+    public static final String NAMESPACE_CONTROLLER = GRACE_SERVER_BASE_URL+"/namespace";
 
     /**
      * ServiceController接口的顶层路径
      */
-    public static final String SERVICE_CONTROLLER= GRACE_SERVER_BASE_URL+"/service";
+    public static final String SERVICE_CONTROLLER = GRACE_SERVER_BASE_URL+"/service";
 
     /**
      * ConfigController接口的顶层路径
      */
-    public static final String CONFIG_CONTROLLER= GRACE_SERVER_BASE_URL+"/config";
+    public static final String CONFIG_CONTROLLER = GRACE_SERVER_BASE_URL+"/config";
 
     /**
      * ConfigVersionController接口的顶层路径
      */
-    public static final String CONFIG_VERSION_CONTROLLER= GRACE_SERVER_BASE_URL+"/config/version";
+    public static final String CONFIG_VERSION_CONTROLLER = GRACE_SERVER_BASE_URL+"/config/version";
+
+    /**
+     * UserController接口的顶层路径
+     */
+    public static final String USER_CONTROLLER = GRACE_SERVER_BASE_URL+"/user";
 
 }

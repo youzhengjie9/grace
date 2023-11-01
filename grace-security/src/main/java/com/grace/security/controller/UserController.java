@@ -1,21 +1,16 @@
 package com.grace.security.controller;
 
-import cn.hutool.core.bean.BeanUtil;
-import com.alibaba.fastjson2.JSON;
+import com.grace.common.constant.ParentMappingConstants;
 import com.grace.common.enums.ResultType;
 import com.grace.common.utils.Result;
-import com.grace.security.dto.UserLoginDTO;
+import com.grace.common.vo.TokenVO;
+import com.grace.common.vo.UserInfoVO;
+import com.grace.common.dto.UserLoginDTO;
 import com.grace.security.service.UserService;
-import com.grace.security.users.GraceUser;
-import com.grace.security.vo.TokenVO;
-import com.grace.security.vo.UserInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * 用户控制器
@@ -24,7 +19,7 @@ import java.util.List;
  * @date 2023/09/06 19:43:30
  */
 @RestController
-@RequestMapping(path = "/user")
+@RequestMapping(path = ParentMappingConstants.USER_CONTROLLER)
 public class UserController {
 
     private UserService userService;
@@ -37,16 +32,12 @@ public class UserController {
     /**
      * 登录
      *
-     * @param userLoginDTO
-     * @param request
      * @return {@link Result}<{@link TokenVO}>
-     * @throws Throwable
      */
     @PostMapping("/login")
-    public Result<TokenVO> login(@RequestBody @Valid UserLoginDTO userLoginDTO,
-                                 HttpServletRequest request) throws Throwable {
+    public Result<TokenVO> login(@RequestBody @Valid UserLoginDTO userLoginDTO) throws Throwable {
         // 调用登录方法
-        TokenVO tokenVO = userService.login(userLoginDTO, request);
+        TokenVO tokenVO = userService.login(userLoginDTO);
         return Result.build(ResultType.LOGIN_SUCCESS,tokenVO);
     }
 

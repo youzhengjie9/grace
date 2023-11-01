@@ -3,6 +3,7 @@ package com.grace.client.registry;
 import com.alibaba.fastjson2.JSON;
 import com.grace.client.http.Requester;
 import com.grace.client.http.RestResult;
+import com.grace.client.misc.TokenStorage;
 import com.grace.common.constant.Constants;
 import com.grace.common.constant.ParentMappingConstants;
 import com.grace.common.constant.RequestMethodConstants;
@@ -27,11 +28,9 @@ public class GraceRegistryService implements RegistryService {
 
     private static final Logger log = LoggerFactory.getLogger(GraceRegistryService.class);
 
-    private static final String PAGE = "page";
-
-    private static final String SIZE = "size";
-
     private final Requester requester;
+
+    private final TokenStorage tokenStorage = TokenStorage.getSingleton();
 
     public GraceRegistryService(String consoleAddress) {
         this.requester = new Requester(consoleAddress);
@@ -43,6 +42,11 @@ public class GraceRegistryService implements RegistryService {
 
     @Override
     public Boolean registerInstance(RegisterInstanceDTO registerInstanceDTO) {
+
+        final Map<String, String> requestHeaderMap = new ConcurrentHashMap<>(32);
+        // 往请求头中放入我们刚刚登录成功后拿到的accessToken（没有这个token则无法访问目标接口）
+        requestHeaderMap.put("accessToken",tokenStorage.getAccessToken());
+
         final Map<String, String> requestBodyMap = new ConcurrentHashMap<>(32);
         requestBodyMap.put(Constants.NAMESPACE_ID, String.valueOf(registerInstanceDTO.getNamespaceId()));
         requestBodyMap.put(Constants.GROUP_NAME, registerInstanceDTO.getGroupName());
@@ -55,12 +59,16 @@ public class GraceRegistryService implements RegistryService {
         requestBodyMap.put(Constants.EPHEMERAL, String.valueOf(registerInstanceDTO.getEphemeral()));
         requestBodyMap.put(Constants.META_DATA, JSON.toJSONString(registerInstanceDTO.getMetadata()));
         RestResult<Object> result = requester.requestApi(ParentMappingConstants.INSTANCE_CONTROLLER + "/registerInstance",
-                RequestMethodConstants.POST, null, requestBodyMap);
+                RequestMethodConstants.POST, requestHeaderMap,null, requestBodyMap);
         return (Boolean) result.getData();
     }
 
     @Override
     public Boolean sendHeartBeat(HeartBeat heartBeat) {
+
+        final Map<String, String> requestHeaderMap = new ConcurrentHashMap<>(32);
+        // 往请求头中放入我们刚刚登录成功后拿到的accessToken（没有这个token则无法访问目标接口）
+        requestHeaderMap.put("accessToken",tokenStorage.getAccessToken());
 
         final Map<String, String> requestBodyMap = new ConcurrentHashMap<>(32);
         requestBodyMap.put(Constants.NAMESPACE_ID, String.valueOf(heartBeat.getNamespaceId()));
@@ -70,7 +78,7 @@ public class GraceRegistryService implements RegistryService {
         requestBodyMap.put(Constants.PORT, String.valueOf(heartBeat.getPort()));
 
         RestResult<Object> result = requester.requestApi(ParentMappingConstants.INSTANCE_CONTROLLER + "/heartBeat",
-                RequestMethodConstants.PUT, null, requestBodyMap);
+                RequestMethodConstants.PUT, requestHeaderMap,null, requestBodyMap);
 
         return (Boolean) result.getData();
     }
@@ -78,13 +86,17 @@ public class GraceRegistryService implements RegistryService {
     @Override
     public List<Instance> getAllInstance(String namespaceId, String groupName, String serviceName) {
 
+        final Map<String, String> requestHeaderMap = new ConcurrentHashMap<>(32);
+        // 往请求头中放入我们刚刚登录成功后拿到的accessToken（没有这个token则无法访问目标接口）
+        requestHeaderMap.put("accessToken",tokenStorage.getAccessToken());
+
         final Map<String, String> requestParamMap = new ConcurrentHashMap<>(32);
         requestParamMap.put(Constants.NAMESPACE_ID, namespaceId);
         requestParamMap.put(Constants.GROUP_NAME, groupName);
         requestParamMap.put(Constants.SERVICE_NAME, serviceName);
 
         RestResult<Object> result = requester.requestApi(ParentMappingConstants.INSTANCE_CONTROLLER + "/getAllInstance",
-                RequestMethodConstants.GET, requestParamMap, null);
+                RequestMethodConstants.GET,requestHeaderMap, requestParamMap, null);
 
         return (List<Instance>) result.getData();
     }

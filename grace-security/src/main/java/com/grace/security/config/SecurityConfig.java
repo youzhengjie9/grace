@@ -39,8 +39,8 @@ public class SecurityConfig {
      * 下面这些请求《不用登录》（也就是不用携带Token）都可以访问。
      */
     private final String[] PERMIT_ALL={
-            "/user/login",
-            "/refreshToken",
+            "/grace/server/user/login",
+            "/grace/server/refreshToken",
             "/druid/**"
     };
 

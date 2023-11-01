@@ -5,6 +5,7 @@ import com.grace.client.config.cache.CacheConfigManager;
 import com.grace.client.config.cache.entity.CacheConfig;
 import com.grace.client.config.factory.ConfigServiceFactory;
 import com.grace.client.properties.GraceConfigProperties;
+import com.grace.client.properties.GraceProperties;
 import com.grace.common.entity.Config;
 import com.grace.common.executor.NameThreadFactory;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +32,10 @@ import java.util.concurrent.TimeUnit;
 public class SchedulePullConfig implements ApplicationRunner, EnvironmentAware {
 
     private static final Logger log = LoggerFactory.getLogger(SchedulePullConfig.class);
+
+    @Autowired
+    private GraceProperties graceProperties;
+
     @Autowired
     private GraceConfigProperties graceConfigProperties;
 
@@ -64,7 +69,7 @@ public class SchedulePullConfig implements ApplicationRunner, EnvironmentAware {
         this.environment = environment;
         // 初始化ConfigService
         this.configService = ConfigServiceFactory.
-                createConfigService(graceConfigProperties.getConsoleAddress());
+                createConfigService(graceProperties.getConsoleAddress());
     }
 
     @Override

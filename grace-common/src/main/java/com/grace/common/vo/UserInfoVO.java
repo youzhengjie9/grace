@@ -1,4 +1,4 @@
-package com.grace.security.vo;
+package com.grace.common.vo;
 
 import java.io.Serializable;
 

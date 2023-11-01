@@ -7,6 +7,23 @@ spring:
 
 
 grace:
+  # grace控制台（服务端）的ip地址
+  console-address: 127.0.0.1:8848
+  # 登录grace控制台的用户名
+  username: grace
+  # 登录grace控制台的密码
+  password: grace
   # 配置grace注册中心
   registry:
-    console-address: 127.0.0.1:8848
+    # 命名空间id（将该服务的实例注册到哪个命名空间上）
+    namespace-id:
+    # 分组名称（将该服务的实例注册到哪个分组上）
+    group-name: DEFAULT_GROUP
+  # 配置grace配置中心
+  config:
+    # 配置所在的的命名空间id
+    namespace-id:
+    # 配置所在的的分组名称
+    group-name: DEFAULT_GROUP
+    # 配置的类型
+    config-type: YAML

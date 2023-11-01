@@ -4,11 +4,16 @@ import com.grace.client.config.ConfigService;
 import com.grace.client.config.cache.CacheConfigManager;
 import com.grace.client.config.factory.ConfigServiceFactory;
 import com.grace.client.config.properties.GracePropertySourceLocatorProperties;
+import com.grace.client.exception.GraceClientLoginException;
+import com.grace.client.misc.LoginService;
+import com.grace.client.misc.factory.LoginServiceFactory;
 import com.grace.client.utils.JsonUtils;
 import com.grace.client.utils.PropertiesUtils;
 import com.grace.client.utils.YamlUtils;
+import com.grace.common.dto.UserLoginDTO;
 import com.grace.common.entity.Config;
 import com.grace.common.enums.ConfigTypeEnum;
+import com.grace.common.vo.TokenVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.bootstrap.config.PropertySourceLocator;
@@ -52,16 +57,14 @@ public class GracePropertySourceLocator implements PropertySourceLocator {
      *
      * @param environment environment
      */
-    public void initVariable(Environment environment){
-        // 将Environment转成ConfigurableEnvironment
-        ConfigurableEnvironment configurableEnvironment = (ConfigurableEnvironment) environment;
+    public void initVariable(ConfigurableEnvironment configurableEnvironment){
         // 因为在这里所有bean都没有创建,不能使用@Autowired注入,但是本地配置文件application.yml和bootstrap.yml却已经加载成功
         // 所以我们可以通过ConfigurableEnvironment对象获取本地配置文件的属性（比如:grace配置中心地址）
 
         // 如果 consoleAddress 为null
         if(properties.getConsoleAddress() == null) {
             // 从本地配置文件bootstrap.yml(或者application.yml)中获取配置中心地址
-            properties.setConsoleAddress(configurableEnvironment.getProperty("grace.config.console-address"));
+            properties.setConsoleAddress(configurableEnvironment.getProperty("grace.console-address"));
         }
         // 如果 namespaceId 为null
         if(properties.getNamespaceId() == null) {
@@ -83,6 +86,11 @@ public class GracePropertySourceLocator implements PropertySourceLocator {
         if(properties.getConfigService() == null) {
             // 创建ConfigService对象,用于从配置中心拿到对应的配置内容
             properties.setConfigService(ConfigServiceFactory.createConfigService(properties.getConsoleAddress()));
+        }
+        // 如果 loginService 为null
+        if(properties.getLoginService() == null ){
+            // 创建loginService
+            properties.setLoginService(LoginServiceFactory.createLoginService(properties.getConsoleAddress()));
         }
         // 如果 springApplicationName 为null
         if(properties.getSpringApplicationName() == null) {
@@ -128,9 +136,28 @@ public class GracePropertySourceLocator implements PropertySourceLocator {
      */
     @Override
     public PropertySource<?> locate(Environment environment) {
-        log.info("GracePropertySourceLocator.locate加载");
+//        log.info("GracePropertySourceLocator.locate加载");
+        // 将Environment转成ConfigurableEnvironment
+        ConfigurableEnvironment configurableEnvironment = (ConfigurableEnvironment) environment;
         // 初始化变量
-        initVariable(environment);
+        initVariable(configurableEnvironment);
+        try {
+            // 构建LoginService
+            LoginService loginService = properties.getLoginService();
+            // 获取登录grace控制台的用户名
+            String username = configurableEnvironment.getProperty("grace.username");
+            // 登录grace控制台的密码
+            String password = configurableEnvironment.getProperty("grace.password");
+            // 登录grace客户端(由于这个类是由BootstrapConfiguration加载,所以容器刚启动就会进行加载,此时就可以进行登录)
+            TokenVO tokenVO = loginService.login(new UserLoginDTO(username, password));
+            // 保存accessToken到本地
+            properties.getTokenStorage().setAccessToken(tokenVO.getAccessToken());
+            // 保存refreshToken到本地
+            properties.getTokenStorage().setRefreshToken(tokenVO.getRefreshToken());
+        }catch (Exception e){
+            // grace客户端登录失败异常
+            throw new GraceClientLoginException();
+        }
         ConfigService configService = properties.getConfigService();
         String namespaceId = properties.getNamespaceId();
         String groupName = properties.getGroupName();

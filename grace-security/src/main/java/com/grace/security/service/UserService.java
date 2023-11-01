@@ -1,13 +1,10 @@
 package com.grace.security.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.grace.security.dto.UserLoginDTO;
+import com.grace.common.vo.TokenVO;
+import com.grace.common.vo.UserInfoVO;
+import com.grace.common.dto.UserLoginDTO;
 import com.grace.security.entity.User;
-import com.grace.security.vo.TokenVO;
-import com.grace.security.vo.UserInfoVO;
-import org.springframework.web.bind.annotation.RequestHeader;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * user service
@@ -20,7 +17,7 @@ public interface UserService extends IService<User> {
     /**
      * 登录
      */
-    TokenVO login(UserLoginDTO userLoginDTO, HttpServletRequest request) throws Throwable;
+    TokenVO login(UserLoginDTO userLoginDTO) throws Throwable;
 
     /**
      * 退出登录

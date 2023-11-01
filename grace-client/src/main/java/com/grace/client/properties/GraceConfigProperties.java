@@ -16,21 +16,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class GraceConfigProperties {
 
     /**
-     * grace控制台（服务端）的ip地址（格式例如:127.0.0.1:8848）
-     */
-    private String consoleAddress = Constants.DEFAULT_CONSOLE_ADDR;
-
-    /**
-     * grace用户名
-     */
-    private String username = Constants.DEFAULT_USERNAME;
-
-    /**
-     * grace密码
-     */
-    private String password = Constants.DEFAULT_PASSWORD;
-
-    /**
      * 命名空间id（该配置中心的配置在哪个命名空间上）
      */
     private String namespaceId = Constants.DEFAULT_NAMESPACE_ID;
@@ -46,30 +31,6 @@ public class GraceConfigProperties {
     private ConfigTypeEnum configType = ConfigTypeEnum.YAML;
 
     public GraceConfigProperties() {
-    }
-
-    public String getConsoleAddress() {
-        return consoleAddress;
-    }
-
-    public void setConsoleAddress(String consoleAddress) {
-        this.consoleAddress = consoleAddress;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getNamespaceId() {
@@ -94,5 +55,14 @@ public class GraceConfigProperties {
 
     public void setConfigType(ConfigTypeEnum configType) {
         this.configType = configType;
+    }
+
+    @Override
+    public String toString() {
+        return "GraceConfigProperties{" +
+                "namespaceId='" + namespaceId + '\'' +
+                ", groupName='" + groupName + '\'' +
+                ", configType=" + configType +
+                '}';
     }
 }

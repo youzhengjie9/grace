@@ -85,8 +85,6 @@
             <el-radio label="yaml">yaml</el-radio>
             <el-radio label="properties">properties</el-radio>
             <el-radio label="json">json</el-radio>
-            <el-radio label="text">text</el-radio>
-            <el-radio label="xml">xml</el-radio>
           </el-radio-group>
         </el-col>
       </el-form-item>

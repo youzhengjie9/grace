@@ -1,6 +1,8 @@
 package com.grace.client.config.properties;
 
 import com.grace.client.config.ConfigService;
+import com.grace.client.misc.LoginService;
+import com.grace.client.misc.TokenStorage;
 
 /**
  * 由于使用ContextRefresher.refresh方法会重新加载GracePropertySourceLocator类,
@@ -13,6 +15,10 @@ import com.grace.client.config.ConfigService;
 public class GracePropertySourceLocatorProperties {
 
     private ConfigService configService;
+
+    private LoginService loginService;
+
+    private final TokenStorage tokenStorage = TokenStorage.getSingleton();
 
     private String consoleAddress;
 
@@ -48,6 +54,18 @@ public class GracePropertySourceLocatorProperties {
 
     public void setConfigService(ConfigService configService) {
         gracePropertySourceLocatorProperties.configService = configService;
+    }
+
+    public LoginService getLoginService() {
+        return loginService;
+    }
+
+    public TokenStorage getTokenStorage() {
+        return tokenStorage;
+    }
+
+    public void setLoginService(LoginService loginService) {
+        this.loginService = loginService;
     }
 
     public String getConsoleAddress() {

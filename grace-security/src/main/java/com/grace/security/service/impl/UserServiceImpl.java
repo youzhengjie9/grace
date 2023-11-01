@@ -1,17 +1,15 @@
 package com.grace.security.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.grace.common.enums.ResultType;
-import com.grace.common.utils.Result;
+import com.grace.common.vo.TokenVO;
+import com.grace.common.vo.UserInfoVO;
 import com.grace.security.constant.JwtConstants;
-import com.grace.security.dto.UserLoginDTO;
+import com.grace.common.dto.UserLoginDTO;
 import com.grace.security.entity.User;
 import com.grace.security.mapper.UserMapper;
 import com.grace.security.service.UserService;
 import com.grace.security.token.TokenManagerDelegate;
 import com.grace.security.users.GraceUser;
-import com.grace.security.vo.TokenVO;
-import com.grace.security.vo.UserInfoVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -42,7 +39,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private AuthenticationManager authenticationManager;
 
     @Override
-    public TokenVO login(UserLoginDTO userLoginDTO, HttpServletRequest request) throws Throwable {
+    public TokenVO login(UserLoginDTO userLoginDTO) throws Throwable {
         // 前端传来的帐号
         String username = userLoginDTO.getUsername();
         // 前端传来的密码

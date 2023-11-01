@@ -3,6 +3,7 @@ package com.grace.client.config.core;
 import com.grace.client.config.ConfigService;
 import com.grace.client.config.factory.ConfigServiceFactory;
 import com.grace.client.properties.GraceConfigProperties;
+import com.grace.client.properties.GraceProperties;
 import com.grace.common.constant.Constants;
 import com.grace.common.dto.ClientAddressBindConfigDTO;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +30,9 @@ public class ClientAddressBindConfig implements ApplicationRunner, EnvironmentAw
     private ConfigurableEnvironment configurableEnvironment;
 
     @Autowired
+    private GraceProperties graceProperties;
+
+    @Autowired
     private GraceConfigProperties graceConfigProperties;
 
     @Override
@@ -38,7 +42,7 @@ public class ClientAddressBindConfig implements ApplicationRunner, EnvironmentAw
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        String consoleAddress = graceConfigProperties.getConsoleAddress();
+        String consoleAddress = graceProperties.getConsoleAddress();
         configService = ConfigServiceFactory.createConfigService(consoleAddress);
         String namespaceId = graceConfigProperties.getNamespaceId();
         String groupName = graceConfigProperties.getGroupName();

@@ -3,7 +3,7 @@ import request from '../utils/request.js'
 export function login(username,password){
     return request({
         method:'post',
-        url:'/user/login',
+        url:'/grace/server/user/login',
         data:{
             username:username,
             password:password
@@ -14,7 +14,7 @@ export function login(username,password){
 export function logout(accessToken,refreshToken){
     return request({
         method:'post',
-        url:'/user/logout',
+        url:'/grace/server/user/logout',
         headers:{
             accessToken:accessToken,
             refreshToken:refreshToken
@@ -25,7 +25,7 @@ export function logout(accessToken,refreshToken){
 export function getCurrentUserInfo(){
     return request({
         method:'get',
-        url:'/user/getCurrentUserInfo'
+        url:'/grace/server/user/getCurrentUserInfo'
     })
 }
 

@@ -6,4 +6,5 @@ org.springframework.cloud.bootstrap.BootstrapConfiguration =\
 
 org.springframework.boot.autoconfigure.EnableAutoConfiguration = \
   com.grace.client.autoconfigure.RegistryAutoConfiguration,\
-  com.grace.client.autoconfigure.ConfigAutoConfiguration
+  com.grace.client.autoconfigure.ConfigAutoConfiguration,\
+  com.grace.client.misc.core.GraceClientAutoLogin

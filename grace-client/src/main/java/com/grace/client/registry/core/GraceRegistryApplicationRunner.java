@@ -1,5 +1,6 @@
 package com.grace.client.registry.core;
 
+import com.grace.client.properties.GraceProperties;
 import com.grace.client.properties.GraceRegistryProperties;
 import com.grace.client.registry.RegistryService;
 import com.grace.client.registry.factory.RegistryServiceFactory;
@@ -31,6 +32,10 @@ import java.util.concurrent.TimeUnit;
 public class GraceRegistryApplicationRunner implements ApplicationRunner, EnvironmentAware {
 
     private static final Logger log = LoggerFactory.getLogger(GraceRegistryApplicationRunner.class);
+
+    @Autowired
+    private GraceProperties graceProperties;
+
     @Autowired
     private GraceRegistryProperties graceRegistryProperties;
 
@@ -57,7 +62,7 @@ public class GraceRegistryApplicationRunner implements ApplicationRunner, Enviro
         this.environment = environment;
         // 初始化RegistryService对象
         this.registryService = RegistryServiceFactory.
-                createRegistryService(graceRegistryProperties.getConsoleAddress());
+                createRegistryService(graceProperties.getConsoleAddress());
 
     }
 
@@ -83,8 +88,8 @@ public class GraceRegistryApplicationRunner implements ApplicationRunner, Enviro
                 // 开始定时发送心跳请求,当springboot启动后5秒才发送第一个心跳请求,之后每5秒发送一个心跳请求
                 scheduledSendHeartBeatThreadPool.
                         scheduleAtFixedRate(new SendHeartBeatTask(heartBeat),
-                                graceRegistryProperties.getHeartBeatInterval(),
-                                graceRegistryProperties.getHeartBeatInterval(), TimeUnit.MILLISECONDS);
+                                Constants.HEART_BEAT_INTERVAL,
+                                Constants.HEART_BEAT_INTERVAL, TimeUnit.MILLISECONDS);
 
             }
         }catch (Exception e){

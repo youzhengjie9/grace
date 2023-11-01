@@ -17,27 +17,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GraceRegistryProperties {
 
     /**
-     * grace控制台（服务端）的ip地址（格式例如:127.0.0.1:8848）
-     */
-    private String consoleAddress = Constants.DEFAULT_CONSOLE_ADDR;
-
-    /**
-     * grace用户名
-     */
-    private String username = Constants.DEFAULT_USERNAME;
-
-    /**
-     * grace密码
-     */
-    private String password = Constants.DEFAULT_PASSWORD;
-
-    /**
      * 命名空间id（将该服务的实例注册到哪个命名空间上）
      */
     private String namespaceId = Constants.DEFAULT_NAMESPACE_ID;
 
     /**
-     * 分组名称
+     * 分组名称（将该服务的实例注册到哪个分组上）
      */
     private String groupName = Constants.DEFAULT_GROUP_NAME;
 
@@ -63,24 +48,6 @@ public class GraceRegistryProperties {
     private boolean enableRegister = true;
 
     /**
-     * 客户端发送心跳请求的时间间隔,单位:毫秒（如这里设置5000,则说明每隔5秒发送一个心跳请求给grace-console）
-     */
-    private Long heartBeatInterval = Constants.HEART_BEAT_INTERVAL;
-    /**
-     * 心跳超时时间,单位: 毫秒（如果在heartBeatTimeout时间范围内某个实例没有发送请求则超时）
-     * <p>
-     * 如果(当前时间 - 某个实例最后一次心跳时间) > heartBeatTimeout）则会把该实例的healthy修改为false
-     */
-    private Long heartBeatTimeout = Constants.HEART_BEAT_TIMEOUT;
-
-    /**
-     * 最大心跳超时时间,单位: 毫秒（如果在maxHeartBeatTimeout时间范围内某个实例没有发送请求则将该实例“删除”）
-     * <p>
-     * 如果(当前时间 - 某个实例最后一次心跳时间) > maxHeartBeatTimeout）则会把该实例“删除”
-     */
-    private Long maxHeartBeatTimeout = Constants.MAX_HEART_BEAT_TIMEOUT;
-
-    /**
      * todo 暂时只支持临时实例
      * 是否为临时实例
      * <p>
@@ -90,46 +57,6 @@ public class GraceRegistryProperties {
     private boolean ephemeral = Constants.DEFAULT_EPHEMERAL;
 
     public GraceRegistryProperties() {
-    }
-
-    public GraceRegistryProperties(String consoleAddress, String username, String password, String namespaceId, String groupName, String serviceName, double weight, Map<String, String> metadata, boolean enableRegister, Long heartBeatInterval, Long heartBeatTimeout, Long maxHeartBeatTimeout, boolean ephemeral) {
-        this.consoleAddress = consoleAddress;
-        this.username = username;
-        this.password = password;
-        this.namespaceId = namespaceId;
-        this.groupName = groupName;
-        this.serviceName = serviceName;
-        this.weight = weight;
-        this.metadata = metadata;
-        this.enableRegister = enableRegister;
-        this.heartBeatInterval = heartBeatInterval;
-        this.heartBeatTimeout = heartBeatTimeout;
-        this.maxHeartBeatTimeout = maxHeartBeatTimeout;
-        this.ephemeral = ephemeral;
-    }
-
-    public String getConsoleAddress() {
-        return consoleAddress;
-    }
-
-    public void setConsoleAddress(String consoleAddress) {
-        this.consoleAddress = consoleAddress;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getNamespaceId() {
@@ -180,30 +107,6 @@ public class GraceRegistryProperties {
         this.enableRegister = enableRegister;
     }
 
-    public Long getHeartBeatInterval() {
-        return heartBeatInterval;
-    }
-
-    public void setHeartBeatInterval(Long heartBeatInterval) {
-        this.heartBeatInterval = heartBeatInterval;
-    }
-
-    public Long getHeartBeatTimeout() {
-        return heartBeatTimeout;
-    }
-
-    public void setHeartBeatTimeout(Long heartBeatTimeout) {
-        this.heartBeatTimeout = heartBeatTimeout;
-    }
-
-    public Long getMaxHeartBeatTimeout() {
-        return maxHeartBeatTimeout;
-    }
-
-    public void setMaxHeartBeatTimeout(Long maxHeartBeatTimeout) {
-        this.maxHeartBeatTimeout = maxHeartBeatTimeout;
-    }
-
     public boolean getEphemeral() {
         return ephemeral;
     }
@@ -215,18 +118,12 @@ public class GraceRegistryProperties {
     @Override
     public String toString() {
         return "GraceRegistryProperties{" +
-                "consoleAddress='" + consoleAddress + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", namespaceId='" + namespaceId + '\'' +
+                "namespaceId='" + namespaceId + '\'' +
                 ", groupName='" + groupName + '\'' +
                 ", serviceName='" + serviceName + '\'' +
                 ", weight=" + weight +
                 ", metadata=" + metadata +
                 ", enableRegister=" + enableRegister +
-                ", heartBeatInterval=" + heartBeatInterval +
-                ", heartBeatTimeout=" + heartBeatTimeout +
-                ", maxHeartBeatTimeout=" + maxHeartBeatTimeout +
                 ", ephemeral=" + ephemeral +
                 '}';
     }

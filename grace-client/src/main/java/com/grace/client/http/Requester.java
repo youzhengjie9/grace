@@ -47,28 +47,26 @@ public class Requester {
         this.graceConsoleAddress = properties.getProperty("graceConsoleAddress");
     }
 
-    public RestResult<Object> requestApi(String api, String requestMethod , Map<String, String> requestParams) {
-        return requestApi(api, requestMethod ,requestParams, Collections.EMPTY_MAP);
-    }
-
     /**
      * 请求api接口（推荐使用这个方法）
      *
      * @param api       api接口地址
      * @param requestMethod    请求方法
-     * @param requestParams    请求参数（没有就写null）
-     * @param requestBody      请求体（没有就写null）
+     * @param requestHeaderMap       请求头（没有就写null）
+     * @param requestParamMap    请求参数（没有就写null）
+     * @param requestBodyMap      请求体（没有就写null）
      * @return result
      */
-    public RestResult<Object> requestApi(String api, String requestMethod , Map<String, String> requestParams,
-                                         Map<String, String> requestBody) {
+    public RestResult<Object> requestApi(String api, String requestMethod ,Map<String, String> requestHeaderMap,
+                                         Map<String, String> requestParamMap, Map<String, String> requestBodyMap) {
         // 如果grace控制台地址为空
         if (StringUtils.isBlank(graceConsoleAddress)) {
             throw new RuntimeException("grace控制台地址列表为空");
         }
         try {
             // 调用刚刚选出来的grace控制台地址所在的服务器的controller接口
-            return callServer(api, requestMethod , requestParams, requestBody, graceConsoleAddress);
+            return callServer(api, requestMethod , requestHeaderMap, requestParamMap,
+                    requestBodyMap,graceConsoleAddress);
         } catch (Exception e) {
             log.error("请求api接口: {} 失败, grace控制台地址: {}, 错误内容: {}",
                     api, graceConsoleAddress, e.getMessage());
@@ -82,13 +80,15 @@ public class Requester {
      *
      * @param api                 api接口地址
      * @param requestMethod       请求方法
-     * @param requestParams       请求参数（没有就写null）
-     * @param requestBody         请求体（没有就写null）
+     * @param requestHeaderMap       请求头（没有就写null）
+     * @param requestParamMap       请求参数（没有就写null）
+     * @param requestBodyMap         请求体（没有就写null）
      * @param graceConsoleAddress 一个grace控制台地址（从graceConsoleAddressList中选出来）
      * @return result
      */
-    public RestResult<Object> callServer(String api, String requestMethod ,Map<String, String> requestParams,
-                                         Map<String, String> requestBody , String graceConsoleAddress) {
+    public RestResult<Object> callServer(String api, String requestMethod , Map<String, String> requestHeaderMap,
+                                         Map<String, String> requestParamMap, Map<String, String> requestBodyMap ,
+                                         String graceConsoleAddress) {
         // 记录开始时间
         long start = System.currentTimeMillis();
         long end = 0;
@@ -113,12 +113,17 @@ public class Requester {
         try {
             // 请求头
             RequestHeader requestHeader = RequestHeader.newInstance();
+            if(requestHeaderMap != null && requestHeaderMap.size() > 0) {
+                requestHeader.addAll(requestHeaderMap);
+            }
             // 请求参数
             RequestParam requestParam = RequestParam.newInstance();
-            requestParam.addRequestParams(requestParams);
+            if(requestParamMap != null && requestParamMap.size() > 0) {
+                requestParam.addRequestParams(requestParamMap);
+            }
             // 发送请求
             RestResult<Object> restResult = graceRestTemplate.exchange(url, requestMethod, requestHeader, requestParam,
-                    requestBody, Object.class);
+                    requestBodyMap, Object.class);
             // TODO: 2023/10/24 记录结束时间
             end = System.currentTimeMillis();
             return restResult;
