@@ -3,6 +3,7 @@ package com.grace.console.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.grace.common.entity.Config;
 import com.grace.console.vo.ConfigListItemVO;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -42,11 +43,12 @@ public interface ConfigService extends IService<Config> {
      * @param namespaceId namespaceId（"精确"搜索）
      * @param groupName   groupName（模糊搜素）
      * @param dataId      dataId（模糊搜索）
-     * @param page page
-     * @param size size
+     * @param page        page
+     * @param size        size
+     * @param fuzzySearch 是否为模糊查询
      * @return {@link List}<{@link ConfigListItemVO}>
      */
-    List<ConfigListItemVO> getConfigListItemVOByPage(String namespaceId, String groupName, String dataId, Integer page, Integer size);
+    List<ConfigListItemVO> getConfigListItemVOByPage(String namespaceId, String groupName, String dataId, Integer page, Integer size,Boolean fuzzySearch);
 
     /**
      * 获取配置总数
@@ -56,7 +58,7 @@ public interface ConfigService extends IService<Config> {
      * @param dataId dataId（模糊搜索）
      * @return int
      */
-    int getConfigTotalCount(String namespaceId, String groupName, String dataId);
+    int getConfigTotalCount(String namespaceId, String groupName, String dataId,Boolean fuzzySearch);
 
     /**
      * 删除配置
@@ -79,4 +81,9 @@ public interface ConfigService extends IService<Config> {
      */
     long getCurrentVersionId(String namespaceId, String groupName, String dataId);
 
+    Boolean importConfig(String namespaceId,String groupName,
+                         MultipartFile configFile,String configConflictPolicy,
+                         HttpServletRequest request);
+
+    Boolean batchDeleteConfig(List<String> batchDeleteConfigList,HttpServletRequest request);
 }

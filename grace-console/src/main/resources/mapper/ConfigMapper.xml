@@ -11,8 +11,14 @@
         FROM
             sys_config
         WHERE namespace_id = #{namespaceId}
-        AND group_name LIKE CONCAT('%',#{groupName},'%')
-        AND data_id LIKE CONCAT('%',#{dataId},'%')
+        <if test="fuzzySearch == true">
+            AND group_name LIKE CONCAT('%',#{groupName},'%')
+            AND data_id LIKE CONCAT('%',#{dataId},'%')
+        </if>
+        <if test="fuzzySearch == false">
+            AND group_name = #{groupName}
+            AND data_id #{dataId}
+        </if>
         ORDER BY last_update_time DESC
         LIMIT #{page},#{size}
     </select>
@@ -31,8 +37,14 @@
         FROM
             sys_config
         WHERE namespace_id = #{namespaceId}
-        AND group_name LIKE CONCAT('%',#{groupName},'%')
-        AND data_id LIKE CONCAT('%',#{dataId},'%')
+        <if test="fuzzySearch == true">
+            AND group_name LIKE CONCAT('%',#{groupName},'%')
+            AND data_id LIKE CONCAT('%',#{dataId},'%')
+        </if>
+        <if test="fuzzySearch == false">
+            AND group_name = #{groupName}
+            AND data_id #{dataId}
+        </if>
     </select>
 
     <delete id="deleteConfig">

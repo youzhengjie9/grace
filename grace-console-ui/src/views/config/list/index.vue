@@ -77,7 +77,7 @@
         >
         <el-input
           v-model="queryCondition.dataId"
-          placeholder="已开启默认模糊查询"
+          placeholder="请输入Data ID"
           style="width: 168px; height: 30px"
         ></el-input>
       </el-col>
@@ -95,7 +95,7 @@
         >
         <el-input
           v-model="queryCondition.groupName"
-          placeholder="已开启默认模糊查询"
+          placeholder="请输入分组名称"
           style="width: 168px; height: 30px"
         ></el-input>
       </el-col>
@@ -106,7 +106,7 @@
           >模糊匹配</span
         >
         <el-switch
-          v-model="queryCondition.openFuzzyQuery"
+          v-model="queryCondition.openFuzzySearch"
           active-color="#209bfa"
           inactive-color="#f5f5f5"
           :width="58"
@@ -167,17 +167,25 @@
       <el-row :gutter="24" style="margin-left: 30px">
         <!-- 目标空间 -->
         <el-col :span="24" style="margin-bottom: 10px">
-          目标空间: <span style="color: rgb(73, 210, 231)">public</span>
+          目标空间id:
+          <span style="color: rgb(73, 210, 231)">{{
+            currentSelectedNamespaceId
+          }}</span>
+          目标分组名称:
+          <el-input
+            v-model="importConfigDialogData.groupName"
+            placeholder="请输入目标分组"
+            style="width: 198px; height: 30px"
+          ></el-input>
         </el-col>
         <!-- 选择一个如果当前导入的配置已存在后对该配置处理的策略（方式） -->
         <el-col :span="24" style="margin-bottom: 10px">
           如果当前导入的配置已存在则
           <el-select
-            v-model="importConfigIfExistPolicy"
+            v-model="importConfigDialogData.configConflictPolicy"
             size="small"
             style="width: 150px"
           >
-            <el-option label="终止导入" value="abort"></el-option>
             <el-option label="跳过" value="skip"></el-option>
             <el-option label="覆盖" value="cover"></el-option>
           </el-select>
@@ -187,24 +195,40 @@
             class="el-icon-warning-outline"
             style="color: #f1c826; font-size: 23px; margin-right: 5px"
           ></i>
-          文件上传后将直接导入配置，请务必谨慎操作！
+          请选择需要导入的配置文件
         </el-col>
 
         <!-- 上传配置文件 -->
         <el-col :span="24" style="margin-bottom: 10px">
+          <!-- accept 指定文件类型 -->
+          <!-- multiple 选择文件时是否支持多选 -->
+          <!-- file-lset 选择的文件列表 -->
+          <!-- before-upload 文件上传之前执行的操作  -->
+          <!-- http-request 自定义文件上传操作,手动上传需要调用upload组件的submit方法 -->
           <el-upload
-            action="https://jsonplaceholder.typicode.com/posts/"
-            name="configFile"
+            ref="upload"
+            accept=".yaml,.properties,.json"
+            action="#"
+            :auto-upload="false"
+            :multiple="false"
+            :limit="1"
             :headers="requestHeaders"
-            :multiple="true"
+            :file-list="importConfigDialogData.fileList"
             :before-upload="beforeUploadConfigFile"
-            :on-success="configFileUploadSuccess"
-            :on-error="configFileUploadError"
-            list-type="text"
-            :auto-upload="true"
+            :http-request="uploadConfigFileHttpRequest"
           >
-            <el-button size="small" type="primary">点击上传</el-button>
+            <el-button size="small">选择文件</el-button>
           </el-upload>
+        </el-col>
+
+        <el-col :span="24" style="margin-bottom: 20px">
+          <el-button
+            style="width: 350px"
+            size="medium"
+            type="primary"
+            @click="clickImport"
+            >导入</el-button
+          >
         </el-col>
       </el-row>
     </el-dialog>
@@ -422,10 +446,8 @@
             导出<i class="el-icon-arrow-down el-icon--right"></i>
           </el-button>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="1">导出查询结果</el-dropdown-item>
-            <el-dropdown-item command="2">新版导出查询结果</el-dropdown-item>
-            <el-dropdown-item command="3">导出选中的配置</el-dropdown-item>
-            <el-dropdown-item command="4">新版导出选中的配置</el-dropdown-item>
+            <el-dropdown-item command="1">导出选中的配置</el-dropdown-item>
+            <el-dropdown-item command="2">导出当前页的配置</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </el-col>
@@ -632,13 +654,16 @@
         <el-row :gutter="24" style="margin-left: 30px">
           <!-- 源空间(需要克隆的配置来自于哪个命名空间) -->
           <el-col :span="24" style="margin-bottom: 10px">
-            源命名空间: <span style="color: rgb(73, 210, 231)">public</span>
+            源命名空间:
+            <span style="color: rgb(73, 210, 231)">{{
+              currentSelectedNamespaceId
+            }}</span>
           </el-col>
 
           <!-- 展示克隆数量 -->
           <el-col :span="24" style="margin-bottom: 10px">
             已选中需要进行克隆的配置数量为:
-            <span style="color: rgb(73, 210, 231)">6</span>
+            <span style="color: rgb(73, 210, 231)">-1</span>
           </el-col>
 
           <!-- 克隆配置的目标命名空间(也就是指定将配置克隆到哪个命名空间上) -->
@@ -646,7 +671,7 @@
             <el-form-item prop="cloneTargetNamespace">
               目标命名空间
               <el-select
-                v-model="cloneConfigDialogForm.cloneTargetNamespace"
+                v-model="cloneConfigDialogForm.targetNamespaceId"
                 size="small"
                 style="width: 355px"
                 placeholder="请选择命名空间"
@@ -744,7 +769,7 @@
 // 引入vue2-ace-editor代码编辑器
 import Editor from "vue2-ace-editor";
 import { getNamespaceList } from "@/api/namespace";
-import { getConfigList, deleteConfig } from "@/api/config";
+import { getConfigList, deleteConfig, importConfig } from "@/api/config";
 
 export default {
   name: "ConfigList",
@@ -764,7 +789,7 @@ export default {
         // 分组名称
         groupName: "",
         // 是否开启模糊查询
-        openFuzzyQuery: true,
+        openFuzzySearch: true,
         // 高级查询条件
         advancedQueryCondition: {
           // 归属应用
@@ -779,11 +804,20 @@ export default {
       showAdvancedQueryCondition: false,
       // 是否打开导入配置dialog
       openImportConfigDialog: false,
-      // 当前导入的配置如果已存在后对该配置处理的策略（方式）
-      importConfigIfExistPolicy: "abort",
+      // 导入配置dialog所需要的数据
+      importConfigDialogData: {
+        // 导入目标的分组
+        groupName: "DEFAULT_GROUP",
+        // 当前导入的配置如果已存在后对该配置处理的策略（方式）
+        configConflictPolicy: "skip",
+        // 上传成功后的文件列表
+        fileList: [
+          
+        ],
+      },
       // 请求头
       requestHeaders: {
-        accessToken: "123456789",
+        accessToken: localStorage.getItem("accessToken"),
       },
       // 多选框中勾选的所有数据
       multipleSelectionData: [],
@@ -936,13 +970,16 @@ export default {
         let page = this.page;
         // 每页展示的数量
         let size = this.size;
+        // 是否打开模糊搜索
+        let fuzzySearch = this.openFuzzySearch;
         // 从后端分页的获取配置列表的数据
         getConfigList(
           currentSelectedNamespaceId,
           groupName,
           dataId,
           page,
-          size
+          size,
+          fuzzySearch
         ).then((response) => {
           // 后端返回给前端的result对象
           let result = response.data;
@@ -1043,11 +1080,11 @@ export default {
     // 上传配置文件之前的回调（作用是校验上传的文件）
     beforeUploadConfigFile(configFile) {
       // 上传的配置文件大小的校验
-      if (configFile.size > 1024 * 1024 * 1) {
+      if (configFile.size > 1024 * 1024 * 5) {
         this.$message({
           type: "error",
           message:
-            "你上传的 “" + configFile.name + "” 文件过大,请上传小于1M的文件。",
+            "你上传的 “" + configFile.name + "” 文件过大,请上传小于5M的文件。",
         });
         return false;
       }
@@ -1055,41 +1092,43 @@ export default {
       let index = configFile.name.lastIndexOf(".");
       let fileType = configFile.name.substr(index + 1, configFile.name.length);
       if (
-        ["txt", "json", "properties", "yaml", "yml", "xml", "html"].indexOf(
-          fileType.toLowerCase()
-        ) === -1
+        ["json", "properties", "yaml"].indexOf(fileType.toLowerCase()) === -1
       ) {
         this.$message({
           type: "error",
-          message:
-            "请上传的配置文件的后缀名为txt、json、properties、yaml、yml、xml、html的附件",
+          message: "请上传的配置文件的后缀名为json、properties、yaml的附件",
         });
         return false;
       }
     },
-    // 配置文件上传成功回调
-    configFileUploadSuccess(response, file, fileList) {
-      console.log("===========");
-      console.log(response);
-      console.log(file);
-      console.log(fileList);
-      console.log("===========");
-      this.$message({
-        type: "success",
-        message: "上传成功",
-      });
+    // 点击导入按钮
+    clickImport() {
+      this.$refs.upload.submit();
     },
-    // 配置文件上传失败回调
-    configFileUploadError(response, file, fileList) {
-      console.log("===========");
-      console.log(response);
-      console.log(file);
-      console.log(fileList);
-      console.log("===========");
-      this.$message({
-        type: "error",
-        message: "上传失败",
-      });
+    // 自定义上传方法，调用clickImport方法时就会触发。param是默认参数，可以取得file文件信息
+    uploadConfigFileHttpRequest(param) {
+      let namespaceId = this.currentSelectedNamespaceId;
+      let groupName = this.importConfigDialogData.groupName;
+      let configFile = param.file;
+      let configConflictPolicy = this.importConfigDialogData.configConflictPolicy;
+      importConfig(namespaceId,groupName,configFile,configConflictPolicy).then((response) => {
+        let result = response.data;
+        if(result.code == 200){
+          this.$message.success('导入成功');
+          // 关闭导入配置dialog
+          this.openImportConfigDialog = false;
+          // 重新加载tableData数据（记住要保留当前分页）
+          this.loadTableData();
+          // 还原importConfigDialogData数据
+          this.importConfigDialogData={
+            groupName: 'DEFAULT_GROUP',
+            configConflictPolicy: 'skip',
+            fileList: []
+          }
+        }else{
+          this.$message.error('导入失败');
+        }
+      })
     },
     // 当多选框被勾选（或被取消勾选）,curMultipleSelectionData是最新的多选框被勾选的所有数据
     multipleSelection(curMultipleSelectionData) {
@@ -1234,19 +1273,11 @@ export default {
     clickExportDropdownItem(command) {
       // 点击查询结果
       if (command == 1) {
-        console.log("导出查询结果");
+        console.log("导出当前选中的配置");
       }
       // 点击新版导出查询结果
       else if (command == 2) {
-        console.log("新版导出查询结果");
-      }
-      // 点击导出选中的配置
-      else if (command == 3) {
-        console.log("导出选中的配置");
-      }
-      // 点击新版导出选中的配置
-      else if (command == 4) {
-        console.log("新版导出选中的配置");
+        console.log("导出当前页的配置");
       }
     },
     // page（当前页）改变时触发

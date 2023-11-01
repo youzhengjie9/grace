@@ -12,8 +12,10 @@ import com.grace.console.service.ConfigService;
 import com.grace.console.vo.ConfigListItemVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 配置中心控制器
@@ -70,10 +72,11 @@ public class ConfigController {
      * 模糊获取配置列表
      *
      * @param namespaceId namespaceId（精确搜索）
-     * @param groupName groupName（模糊搜素）
-     * @param dataId dataId（模糊搜索）
-     * @param page 当前页（最小页是: 1）
-     * @param size 每一页的大小（最小值为: 1）
+     * @param groupName   groupName
+     * @param dataId      dataId
+     * @param page        当前页（最小页是: 1）
+     * @param size        每一页的大小（最小值为: 1）
+     * @param fuzzySearch 是否为模糊查询
      * @return {@link Result}<{@link PageData}<{@link ConfigListItemVO}>>
      */
     @GetMapping("/getConfigList")
@@ -82,7 +85,8 @@ public class ConfigController {
             @RequestParam(value = "groupName", required = false, defaultValue = "") String groupName,
             @RequestParam(value = "dataId",required = false, defaultValue = "") String dataId,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size) {
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
+            @RequestParam(value = "fuzzySearch",required = false,defaultValue = "true") Boolean fuzzySearch) {
         // 如果 page < 1 ,则要把page恢复成 1 ,因为page的最小值就为 1
         if(page < 1){
             page = 1;
@@ -96,10 +100,33 @@ public class ConfigController {
         // 对size的大小进行限制,防止一次性获取太多的数据（下面的代码意思是一次“最多”获取500条记录,如果size的值小于500,则size还是原来的值不变）
         size = Math.min(size,500);
         PageData<ConfigListItemVO> pageData = new PageData<>();
-        pageData.setPagedList(configService.getConfigListItemVOByPage(namespaceId, groupName, dataId, page, size));
-        pageData.setTotalCount(configService.getConfigTotalCount(namespaceId, groupName, dataId));
+        pageData.setPagedList(configService.getConfigListItemVOByPage(namespaceId, groupName, dataId, page, size,fuzzySearch));
+        pageData.setTotalCount(configService.getConfigTotalCount(namespaceId, groupName, dataId,fuzzySearch));
         
         return Result.ok(pageData);
+    }
+
+    /**
+     * 导入配置
+     *
+     * @param configConflictPolicy 配置冲突策略
+     * @param configFile 单个配置文件
+     * @return {@link Result}<{@link Boolean}>
+     */
+    @PostMapping("/importConfig")
+    public Result<Boolean> importConfig(String namespaceId,String groupName,
+                                        MultipartFile configFile,String configConflictPolicy,
+                                        HttpServletRequest request){
+
+        return Result.ok(configService.importConfig(namespaceId,groupName,configFile, configConflictPolicy,request));
+    }
+
+    @PostMapping("/cloneConfig")
+    public Result<Boolean> cloneConfig(String sourceNamespaceId){
+        // 导出选中的配置
+
+        // 导出当前页的配置
+        return Result.ok();
     }
 
     @GetMapping("/getConfig")
@@ -129,6 +156,12 @@ public class ConfigController {
 
 
         return Result.ok(configService.deleteConfig(namespaceId,groupName,dataId,request));
+    }
+
+    @DeleteMapping("/batchDeleteConfig")
+    public Result<Boolean> batchDeleteConfig(List<String> batchDeleteConfigList,HttpServletRequest request){
+
+        return Result.ok(configService.batchDeleteConfig(batchDeleteConfigList, request));
     }
 
 }

@@ -25,15 +25,16 @@ public interface ConfigMapper extends BaseMapper<Config> {
      * @param namespaceId namespaceId（精确搜索）
      * @param groupName   groupName（模糊搜素）
      * @param dataId      dataId（模糊搜索）
-     * @param page page
-     * @param size size
+     * @param page        page
+     * @param size        size
      * @return {@link List}<{@link ConfigListItemVO}>
      */
     List<ConfigListItemVO> getConfigListItemVOByPage(@Param("namespaceId") String namespaceId,
-                             @Param("groupName") String groupName,
-                             @Param("dataId") String dataId,
-                             @Param("page") Integer page,
-                             @Param("size") Integer size);
+                                                     @Param("groupName") String groupName,
+                                                     @Param("dataId") String dataId,
+                                                     @Param("page") Integer page,
+                                                     @Param("size") Integer size,
+                                                     @Param("fuzzySearch") Boolean fuzzySearch);
 
     /**
      * 获取指定命名空间下的配置总数
@@ -47,26 +48,27 @@ public interface ConfigMapper extends BaseMapper<Config> {
      * 获取配置总数
      *
      * @param namespaceId namespaceId（精确搜索）
-     * @param groupName groupName（模糊搜素）
-     * @param dataId dataId（模糊搜索）
+     * @param groupName   groupName（模糊搜素）
+     * @param dataId      dataId（模糊搜索）
      * @return int
      */
     int getConfigTotalCount(@Param("namespaceId") String namespaceId,
                             @Param("groupName") String groupName,
-                            @Param("dataId") String dataId);
+                            @Param("dataId") String dataId,
+                            @Param("fuzzySearch") Boolean fuzzySearch);
 
 
     /**
      * 删除配置
      *
      * @param namespaceId namespaceId（“精确”搜索）
-     * @param groupName groupName（“精确”搜索素）
-     * @param dataId dataId（“精确”搜索）
+     * @param groupName   groupName（“精确”搜索素）
+     * @param dataId      dataId（“精确”搜索）
      * @return {@link Boolean}
      */
     int deleteConfig(@Param("namespaceId") String namespaceId,
-                         @Param("groupName") String groupName,
-                         @Param("dataId") String dataId);
+                     @Param("groupName") String groupName,
+                     @Param("dataId") String dataId);
 
     /**
      * 获取当前配置的版本id

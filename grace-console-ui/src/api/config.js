@@ -17,7 +17,7 @@ export function publishConfig(publishConfigDTO){
     })
 }
 
-export function getConfigList(namespaceId,groupName,dataId,page,size){
+export function getConfigList(namespaceId,groupName,dataId,page,size,fuzzySearch){
     return request({
         method:'get',
         url:'/grace/server/config/getConfigList',
@@ -26,7 +26,8 @@ export function getConfigList(namespaceId,groupName,dataId,page,size){
             groupName:groupName,
             dataId:dataId,
             page:page,
-            size:size
+            size:size,
+            fuzzySearch:fuzzySearch
         }
     })
 }
@@ -53,6 +54,23 @@ export function deleteConfig(namespaceId,groupName,dataId){
             namespaceId:namespaceId,
             groupName:groupName,
             dataId:dataId,
+        }
+    })
+}
+
+export function importConfig(namespaceId,groupName,configFile,configConflictPolicy){
+    return request({
+        method:'post',
+        url:'/grace/server/config/importConfig',
+        headers:{
+            // 文件上传一定要设置这个请求头
+            "Content-Type":"multipart/form-data"
+        },
+        data:{
+            namespaceId: namespaceId,
+            groupName: groupName,
+            configFile: configFile,
+            configConflictPolicy: configConflictPolicy,
         }
     })
 }
