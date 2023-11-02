@@ -74,3 +74,24 @@ export function importConfig(namespaceId,groupName,configFile,configConflictPoli
         }
     })
 }
+
+export function exportSelectedConfig(exportConfigIdListJSON){
+    return request({
+        method:'post',
+        url:'/grace/server/config/exportSelectedConfig',
+        // 文件下载（）
+        responseType: 'blob',
+        data:{
+            exportConfigIdListJSON:exportConfigIdListJSON
+        }
+    })
+}
+
+// export function exportSelectedConfig(){
+//     return request({
+//         method:'get',
+//         url:'/grace/server/config/exportSelectedConfig',
+//         // 文件下载（）
+//         responseType: 'blob',
+//     })
+// }

@@ -82,5 +82,6 @@ public interface ConfigMapper extends BaseMapper<Config> {
                              @Param("groupName") String groupName,
                              @Param("dataId") String dataId);
 
+    List<Config> getConfigList(@Param("exportConfigIdList") List<String> exportConfigIdList);
 
 }

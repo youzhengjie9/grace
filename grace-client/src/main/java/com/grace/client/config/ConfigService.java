@@ -3,6 +3,8 @@ package com.grace.client.config;
 import com.grace.common.dto.ClientAddressBindConfigDTO;
 import com.grace.common.entity.Config;
 
+import java.util.List;
+
 /**
  * 配置中心
  *

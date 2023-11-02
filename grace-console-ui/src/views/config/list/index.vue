@@ -119,23 +119,25 @@
         <el-button type="primary" @click="query" size="medium">查询</el-button>
       </el-col>
 
-      <!-- 高级查询按钮 -->
-      <el-col :span="3" style="margin-top: 10px">
-        <el-button size="medium" @click="oppositeShowAdvancedQueryCondition"
-          >高级查询
-          <!-- 向下的箭头(如果高级查询条件“没有展示”的话则触发这个) -->
-          <i
-            v-if="showAdvancedQueryCondition == false"
-            class="el-icon-arrow-down"
-          ></i>
+      <!-- 使用IDEA编译器可以解除注释！ -->
 
-          <!-- 向上的箭头(如果高级查询条件“正在展示”的话则触发这个) -->
-          <i
-            v-if="showAdvancedQueryCondition == true"
-            class="el-icon-arrow-up"
-          ></i>
-        </el-button>
-      </el-col>
+      <!--      &lt;!&ndash; 高级查询按钮 &ndash;&gt;-->
+      <!--      <el-col :span="3" style="margin-top: 10px">-->
+      <!--        <el-button size="medium" @click="oppositeShowAdvancedQueryCondition"-->
+      <!--          >高级查询-->
+      <!--          &lt;!&ndash; 向下的箭头(如果高级查询条件“没有展示”的话则触发这个) &ndash;&gt;-->
+      <!--          <i-->
+      <!--            v-if="showAdvancedQueryCondition == false"-->
+      <!--            class="el-icon-arrow-down"-->
+      <!--          ></i>-->
+
+      <!--          &lt;!&ndash; 向上的箭头(如果高级查询条件“正在展示”的话则触发这个) &ndash;&gt;-->
+      <!--          <i-->
+      <!--            v-if="showAdvancedQueryCondition == true"-->
+      <!--            class="el-icon-arrow-up"-->
+      <!--          ></i>-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
 
       <!-- 导入配置按钮 -->
       <el-col :span="2" style="margin-top: 10px; margin-right: 30px">
@@ -233,62 +235,64 @@
       </el-row>
     </el-dialog>
 
-    <!-- 高级查询条件（默认是隐藏的） -->
-    <el-row :gutter="24" v-if="showAdvancedQueryCondition == true">
-      <!-- 输入归属应用 -->
-      <el-col :span="6" style="margin-top: 15px">
-        <span
-          style="
-            font-size: 14px;
-            color: #666;
-            font-weight: bold;
-            margin-right: 9px;
-          "
-          >归属应用</span
-        >
-        <el-input
-          v-model="queryCondition.advancedQueryCondition.formApplication"
-          placeholder="请输入归属应用"
-          style="width: 198px; height: 30px"
-        ></el-input>
-      </el-col>
+    <!-- 使用IDEA可以解除注释 -->
 
-      <!-- 输入标签 -->
-      <el-col :span="5" style="margin-top: 15px">
-        <span
-          style="
-            font-size: 14px;
-            color: #666;
-            font-weight: bold;
-            margin-right: 9px;
-          "
-          >标签</span
-        >
-        <el-input
-          v-model="queryCondition.advancedQueryCondition.tag"
-          placeholder="请输入标签"
-          style="width: 200px; height: 30px"
-        ></el-input>
-      </el-col>
+    <!--    &lt;!&ndash; 高级查询条件（默认是隐藏的） &ndash;&gt;-->
+    <!--    <el-row :gutter="24" v-if="showAdvancedQueryCondition == true">-->
+    <!--      &lt;!&ndash; 输入归属应用 &ndash;&gt;-->
+    <!--      <el-col :span="6" style="margin-top: 15px">-->
+    <!--        <span-->
+    <!--          style="-->
+    <!--            font-size: 14px;-->
+    <!--            color: #666;-->
+    <!--            font-weight: bold;-->
+    <!--            margin-right: 9px;-->
+    <!--          "-->
+    <!--          >归属应用</span-->
+    <!--        >-->
+    <!--        <el-input-->
+    <!--          v-model="queryCondition.advancedQueryCondition.formApplication"-->
+    <!--          placeholder="请输入归属应用"-->
+    <!--          style="width: 198px; height: 30px"-->
+    <!--        ></el-input>-->
+    <!--      </el-col>-->
 
-      <!-- 输入配置项 -->
-      <el-col :span="6" style="margin-top: 15px">
-        <span
-          style="
-            font-size: 14px;
-            color: #666;
-            font-weight: bold;
-            margin-right: 9px;
-          "
-          >配置项搜索</span
-        >
-        <el-input
-          v-model="queryCondition.advancedQueryCondition.configItem"
-          placeholder="搜索具体配置项"
-          style="width: 198px; height: 30px"
-        ></el-input>
-      </el-col>
-    </el-row>
+    <!--      &lt;!&ndash; 输入标签 &ndash;&gt;-->
+    <!--      <el-col :span="5" style="margin-top: 15px">-->
+    <!--        <span-->
+    <!--          style="-->
+    <!--            font-size: 14px;-->
+    <!--            color: #666;-->
+    <!--            font-weight: bold;-->
+    <!--            margin-right: 9px;-->
+    <!--          "-->
+    <!--          >标签</span-->
+    <!--        >-->
+    <!--        <el-input-->
+    <!--          v-model="queryCondition.advancedQueryCondition.tag"-->
+    <!--          placeholder="请输入标签"-->
+    <!--          style="width: 200px; height: 30px"-->
+    <!--        ></el-input>-->
+    <!--      </el-col>-->
+
+    <!--      &lt;!&ndash; 输入配置项 &ndash;&gt;-->
+    <!--      <el-col :span="6" style="margin-top: 15px">-->
+    <!--        <span-->
+    <!--          style="-->
+    <!--            font-size: 14px;-->
+    <!--            color: #666;-->
+    <!--            font-weight: bold;-->
+    <!--            margin-right: 9px;-->
+    <!--          "-->
+    <!--          >配置项搜索</span-->
+    <!--        >-->
+    <!--        <el-input-->
+    <!--          v-model="queryCondition.advancedQueryCondition.configItem"-->
+    <!--          placeholder="搜索具体配置项"-->
+    <!--          style="width: 198px; height: 30px"-->
+    <!--        ></el-input>-->
+    <!--      </el-col>-->
+    <!--    </el-row>-->
 
     <!-- 查询结果文字说明 -->
     <el-row :gutter="24">
@@ -321,15 +325,22 @@
       <!-- 分组名称 -->
       <el-table-column prop="groupName" label="分组名称" width="250" sortable>
       </el-table-column>
-      <!-- 归属应用 -->
+      <!-- 配置类型 -->
+      <el-table-column prop="type" label="配置类型" width="175" sortable>
+      </el-table-column>
+      <!-- 最后一次修改时间 -->
       <el-table-column
-        prop="formApplication"
-        label="归属应用"
+        prop="lastUpdateTime"
+        label="最后一次修改时间"
         width="204"
         sortable
       >
+        <template slot-scope="scope">
+          <span>{{
+            scope.row.lastUpdateTime | dateformat("YYYY-MM-DD HH:mm:ss")
+          }}</span>
+        </template>
       </el-table-column>
-
       <!-- 操作 -->
       <el-table-column label="操作" min-width="180">
         <template slot-scope="scope">
@@ -348,7 +359,7 @@
           <span style="margin-right: 5px">|</span>
 
           <!-- 示例代码 -->
-          <span
+          <!-- <span
             class="operation"
             @click="
               sampleCode(
@@ -359,7 +370,7 @@
             "
             >示例代码</span
           >
-          <span style="margin-right: 5px">|</span>
+          <span style="margin-right: 5px">|</span> -->
 
           <!-- 修改/编辑配置 -->
           <span
@@ -769,7 +780,12 @@
 // 引入vue2-ace-editor代码编辑器
 import Editor from "vue2-ace-editor";
 import { getNamespaceList } from "@/api/namespace";
-import { getConfigList, deleteConfig, importConfig } from "@/api/config";
+import {
+  getConfigList,
+  deleteConfig,
+  importConfig,
+  exportSelectedConfig,
+} from "@/api/config";
 
 export default {
   name: "ConfigList",
@@ -811,9 +827,7 @@ export default {
         // 当前导入的配置如果已存在后对该配置处理的策略（方式）
         configConflictPolicy: "skip",
         // 上传成功后的文件列表
-        fileList: [
-          
-        ],
+        fileList: [],
       },
       // 请求头
       requestHeaders: {
@@ -971,7 +985,7 @@ export default {
         // 每页展示的数量
         let size = this.size;
         // 是否打开模糊搜索
-        let fuzzySearch = this.openFuzzySearch;
+        let fuzzySearch = this.queryCondition.openFuzzySearch;
         // 从后端分页的获取配置列表的数据
         getConfigList(
           currentSelectedNamespaceId,
@@ -1007,13 +1021,16 @@ export default {
         this.page = 1;
         // 每页展示的数量
         let size = this.size;
+        // 是否打开模糊搜索
+        let fuzzySearch = this.queryCondition.openFuzzySearch;
         // 从后端分页的获取配置列表的数据
         getConfigList(
           this.currentSelectedNamespaceId,
           groupName,
           dataId,
           this.page,
-          size
+          size,
+          fuzzySearch
         ).then((response) => {
           // 后端返回给前端的result对象
           let result = response.data;
@@ -1051,13 +1068,17 @@ export default {
         let page = this.page;
         // 每页展示的数量
         let size = this.size;
+        // 是否打开模糊搜索
+        let fuzzySearch = this.queryCondition.openFuzzySearch;
+        console.log(fuzzySearch);
         // 从后端分页的获取配置列表的数据
         getConfigList(
           currentSelectedNamespaceId,
           groupName,
           dataId,
           page,
-          size
+          size,
+          fuzzySearch
         ).then((response) => {
           // 后端返回给前端的result对象
           let result = response.data;
@@ -1110,25 +1131,31 @@ export default {
       let namespaceId = this.currentSelectedNamespaceId;
       let groupName = this.importConfigDialogData.groupName;
       let configFile = param.file;
-      let configConflictPolicy = this.importConfigDialogData.configConflictPolicy;
-      importConfig(namespaceId,groupName,configFile,configConflictPolicy).then((response) => {
+      let configConflictPolicy =
+        this.importConfigDialogData.configConflictPolicy;
+      importConfig(
+        namespaceId,
+        groupName,
+        configFile,
+        configConflictPolicy
+      ).then((response) => {
         let result = response.data;
-        if(result.code == 200){
-          this.$message.success('导入成功');
+        if (result.code == 200) {
+          this.$message.success("导入成功");
           // 关闭导入配置dialog
           this.openImportConfigDialog = false;
           // 重新加载tableData数据（记住要保留当前分页）
           this.loadTableData();
           // 还原importConfigDialogData数据
-          this.importConfigDialogData={
-            groupName: 'DEFAULT_GROUP',
-            configConflictPolicy: 'skip',
-            fileList: []
-          }
-        }else{
-          this.$message.error('导入失败');
+          this.importConfigDialogData = {
+            groupName: "DEFAULT_GROUP",
+            configConflictPolicy: "skip",
+            fileList: [],
+          };
+        } else {
+          this.$message.error("导入失败");
         }
-      })
+      });
     },
     // 当多选框被勾选（或被取消勾选）,curMultipleSelectionData是最新的多选框被勾选的所有数据
     multipleSelection(curMultipleSelectionData) {
@@ -1272,12 +1299,33 @@ export default {
     // 点击“导出”选项所展开的下拉菜单项
     clickExportDropdownItem(command) {
       // 点击查询结果
+      // 导出当前选中的配置
       if (command == 1) {
-        console.log("导出当前选中的配置");
+        let multipleSelectionData = this.multipleSelectionData;
+        if (multipleSelectionData.length == 0) {
+          this.$message.error("您还没有选择需要导出的配置");
+        } else {
+          let exportConfigIdList = [];
+          for (let index = 0; index < multipleSelectionData.length; index++) {
+            exportConfigIdList.push(multipleSelectionData[index].id);
+          }
+          let exportConfigIdListJSON = JSON.stringify(exportConfigIdList);
+          exportSelectedConfig(exportConfigIdListJSON)
+            .then((response) => {
+              let result = response.data;
+              this.$message.success("导出成功,请去 C 盘查看");
+            })
+            .catch((err) => {
+              this.$message.error("导出失败");
+            });
+        }
       }
-      // 点击新版导出查询结果
+      // 导出当前页的配置
       else if (command == 2) {
-        console.log("导出当前页的配置");
+        let page = this.page;
+        let size = this.size;
+        console.log(page);
+        console.log(size);
       }
     },
     // page（当前页）改变时触发
@@ -1295,13 +1343,16 @@ export default {
         let dataId = this.queryCondition.dataId;
         // 每页展示的数量
         let size = this.size;
+        // 是否打开模糊搜索
+        let fuzzySearch = this.queryCondition.openFuzzySearch;
         // 从后端分页的获取配置列表的数据
         getConfigList(
           currentSelectedNamespaceId,
           groupName,
           dataId,
           page,
-          size
+          size,
+          fuzzySearch
         ).then((response) => {
           // 后端返回给前端的result对象
           let result = response.data;
@@ -1328,13 +1379,16 @@ export default {
         let dataId = this.queryCondition.dataId;
         // 当前页
         let page = this.page;
+        // 是否打开模糊搜索
+        let fuzzySearch = this.queryCondition.openFuzzySearch;
         // 从后端分页的获取配置列表的数据
         getConfigList(
           currentSelectedNamespaceId,
           groupName,
           dataId,
           page,
-          size
+          size,
+          fuzzySearch
         ).then((response) => {
           // 后端返回给前端的result对象
           let result = response.data;

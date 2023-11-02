@@ -21,6 +21,12 @@
     </properties>
 
     <dependencies>
+        <!--      压缩包（或解压缩包）库   -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.21</version>
+        </dependency>
         <!--        web    -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

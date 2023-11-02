@@ -7,7 +7,9 @@
             id,
             namespace_id,
             group_name,
-            data_id
+            data_id,
+            type,
+            last_update_time
         FROM
             sys_config
         WHERE namespace_id = #{namespaceId}
@@ -17,7 +19,7 @@
         </if>
         <if test="fuzzySearch == false">
             AND group_name = #{groupName}
-            AND data_id #{dataId}
+            AND data_id = #{dataId}
         </if>
         ORDER BY last_update_time DESC
         LIMIT #{page},#{size}
@@ -43,7 +45,7 @@
         </if>
         <if test="fuzzySearch == false">
             AND group_name = #{groupName}
-            AND data_id #{dataId}
+            AND data_id =  #{dataId}
         </if>
     </select>
 
@@ -64,6 +66,18 @@
         WHERE namespace_id = #{namespaceId}
         AND group_name = #{groupName}
         AND data_id = #{dataId}
+    </select>
+    <select id="getConfigList" resultType="com.grace.common.entity.Config">
+        SELECT
+            data_id,
+            content,
+            type
+        FROM
+            sys_config
+        WHERE id in
+        <foreach item="configId" collection="exportConfigIdList" open="(" separator="," close=")">
+            #{configId}
+        </foreach>
     </select>
 
 </mapper>

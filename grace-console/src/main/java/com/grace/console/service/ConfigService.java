@@ -3,9 +3,13 @@ package com.grace.console.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.grace.common.entity.Config;
 import com.grace.console.vo.ConfigListItemVO;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -86,4 +90,15 @@ public interface ConfigService extends IService<Config> {
                          HttpServletRequest request);
 
     Boolean batchDeleteConfig(List<String> batchDeleteConfigList,HttpServletRequest request);
+
+    /**
+     * 根据配置的id列表来导出配置
+     *
+     * @param exportConfigIdList 配置的id列表
+     * @param response
+     * @return {@link ResponseEntity}<{@link FileSystemResource}>
+     */
+    ResponseEntity<FileSystemResource> exportSelectedConfig(List<String> exportConfigIdList, HttpServletResponse response) throws IOException;
+
+
 }

@@ -1,5 +1,7 @@
 package com.grace.console.controller;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.grace.common.constant.Constants;
 import com.grace.common.constant.ParentMappingConstants;
 import com.grace.common.dto.ClientAddressBindConfigDTO;
@@ -11,10 +13,15 @@ import com.grace.console.cache.CacheConfigClientAddress;
 import com.grace.console.service.ConfigService;
 import com.grace.console.vo.ConfigListItemVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -120,6 +127,34 @@ public class ConfigController {
 
         return Result.ok(configService.importConfig(namespaceId,groupName,configFile, configConflictPolicy,request));
     }
+
+    /**
+     * 导出被选择的配置
+     *
+     * @param exportConfigIdListJSON 导出的配置的id集合的JSON字符串（前端要先使用JSON.stringify进行序列化集合）
+     * @return {@link Result}<{@link Boolean}>
+     */
+    @PostMapping("/exportSelectedConfig")
+    public ResponseEntity<FileSystemResource> exportSelectedConfig(@RequestBody String exportConfigIdListJSON, HttpServletResponse response) throws IOException {
+        // exportConfigIdListJSON拿到的格式为: {"exportConfigIdListJSON":"[\"7592611645883397\"]"}
+        // 转成JSONObject对象
+        JSONObject jsonObject = JSONObject.parseObject(exportConfigIdListJSON);
+        List<String> exportConfigIdList =
+                JSON.parseArray(jsonObject.get("exportConfigIdListJSON").toString(), String.class);
+
+        // 导出配置
+        return configService.exportSelectedConfig(exportConfigIdList, response);
+    }
+
+
+//    @GetMapping("/exportSelectedConfig")
+//    public ResponseEntity<FileSystemResource> exportSelectedConfig(HttpServletResponse response) throws IOException {
+//        List<String> exportConfigIdList = new ArrayList<>();
+//        exportConfigIdList.add("7573148522120197");
+//
+//        // 导出配置
+//        return configService.exportSelectedConfig(exportConfigIdList, response);
+//    }
 
     @PostMapping("/cloneConfig")
     public Result<Boolean> cloneConfig(String sourceNamespaceId){

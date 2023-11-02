@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * 配置列表项vo
@@ -36,14 +37,26 @@ public class ConfigListItemVO implements Serializable {
      */
     private String dataId;
 
+    /**
+     * 配置类型
+     */
+    private String type;
+
+    /**
+     * 最后一次修改该配置的时间
+     */
+    private LocalDateTime lastUpdateTime;
+
     public ConfigListItemVO() {
     }
 
-    public ConfigListItemVO(Long id, String namespaceId, String groupName, String dataId) {
+    public ConfigListItemVO(Long id, String namespaceId, String groupName, String dataId, String type, LocalDateTime lastUpdateTime) {
         this.id = id;
         this.namespaceId = namespaceId;
         this.groupName = groupName;
         this.dataId = dataId;
+        this.type = type;
+        this.lastUpdateTime = lastUpdateTime;
     }
 
     public Long getId() {
@@ -78,6 +91,22 @@ public class ConfigListItemVO implements Serializable {
         this.dataId = dataId;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public LocalDateTime getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
+    public void setLastUpdateTime(LocalDateTime lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
+    }
+
     @Override
     public String toString() {
         return "ConfigListItemVO{" +
@@ -85,6 +114,8 @@ public class ConfigListItemVO implements Serializable {
                 ", namespaceId='" + namespaceId + '\'' +
                 ", groupName='" + groupName + '\'' +
                 ", dataId='" + dataId + '\'' +
+                ", type='" + type + '\'' +
+                ", lastUpdateTime=" + lastUpdateTime +
                 '}';
     }
 }
