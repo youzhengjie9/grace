@@ -1,4 +1,4 @@
-package com.grace.common.config.mp;
+package com.grace.common.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;

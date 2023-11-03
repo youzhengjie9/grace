@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.grace.common.constant.Constants;
+import com.grace.common.dto.CloneConfigDTO;
+import com.grace.common.dto.CloneConfigItem;
 import com.grace.common.entity.Config;
 import com.grace.common.entity.ConfigVersion;
 import com.grace.common.entity.builder.ConfigBuilder;
@@ -40,7 +42,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -292,15 +293,14 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
     }
 
     @Override
-    public Boolean batchDeleteConfig(List<String> batchDeleteConfigList, HttpServletRequest request) {
+    public Boolean batchDeleteConfig(List<String> batchDeleteConfigIdList, HttpServletRequest request) {
 
         try {
-            batchDeleteConfigList.forEach(batchDeleteConfig -> {
-                String[] config = batchDeleteConfig.split("@@");
-                String namespaceId = config[0];
-                String groupName = config[1];
-                String dataId = config[2];
-                this.deleteConfig(namespaceId, groupName, dataId, request);
+            batchDeleteConfigIdList.forEach(configId -> {
+                // 根据配置id进行删除配置
+                LambdaQueryWrapper<Config> deleteConfigByIdWrapper = new LambdaQueryWrapper<>();
+                deleteConfigByIdWrapper.eq(Config::getId,configId);
+                configMapper.delete(deleteConfigByIdWrapper);
             });
             return true;
         } catch (Exception e) {
@@ -309,40 +309,6 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
         }
 
     }
-
-//    @Override
-//    public ResponseEntity<FileSystemResource> exportSelectedConfig(List<String> exportConfigIdList, HttpServletResponse response) throws IOException {
-//
-//        ArrayList<File> files = new ArrayList<>();
-//        //文件路径
-//        files.add(new File("C:\\Users\\youzhengjie666\\Desktop\\test\\asd.properties"));
-//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-//        // 导出zip的目录
-//        String zipDir = "C:\\";
-//        // 导出zip的压缩包名
-//        String zipName = "导出配置-"+simpleDateFormat.format(new Date()) + ".zip";
-//        File zipFile = new File(zipDir + zipName);
-//        try (ZipArchiveOutputStream zipOutputStream = new ZipArchiveOutputStream(new FileOutputStream(zipFile))) {
-//            for (File file : files) {
-//                ZipArchiveEntry entry = new ZipArchiveEntry(file.getName());
-//                zipOutputStream.putArchiveEntry(entry);
-//
-//                try (FileInputStream fileInputStream = new FileInputStream(file)) {
-//                    byte[] buffer = new byte[1024];
-//                    int length;
-//                    while ((length = fileInputStream.read(buffer)) > 0) {
-//                        zipOutputStream.write(buffer, 0, length);
-//                    }
-//                }
-//                zipOutputStream.closeArchiveEntry();
-//            }
-//        }
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-//        headers.setContentDispositionFormData("attachment", zipFile.getName());
-//
-//        return new ResponseEntity<>(new FileSystemResource(zipFile), headers, HttpStatus.OK);
-//    }
 
     @Override
     public ResponseEntity<FileSystemResource> exportSelectedConfig(List<String> exportConfigIdList, HttpServletResponse response) throws IOException {
@@ -425,6 +391,86 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
             }
         }
 
+    }
+
+    @Override
+    public Boolean cloneConfig(CloneConfigDTO cloneConfigDTO, HttpServletRequest request) {
+        try {
+            String targetNamespaceId = cloneConfigDTO.getTargetNamespaceId();
+            List<CloneConfigItem> cloneConfigItemList = cloneConfigDTO.getCloneConfigItemList();
+            // 配置冲突策略
+            String configConflictPolicy = cloneConfigDTO.getConfigConflictPolicy();
+
+            // 开始克隆
+            for (CloneConfigItem cloneConfigItem : cloneConfigItemList) {
+                String groupName = cloneConfigItem.getGroupName();
+                String dataId = cloneConfigItem.getDataId();
+                // 如果目标命名空间（targetNamespaceId）存在当前需要克隆的配置(说明发生了配置冲突)
+                if(hasConfig(targetNamespaceId,groupName,dataId)){
+                    // 如果配置冲突策略是覆盖（cover）
+                    if(configConflictPolicy.equals("cover")){
+                        // 删除目标命名空间上的冲突的配置
+                        deleteConfig(targetNamespaceId,groupName,dataId,request);
+                        // 通过配置的id获取配置
+                        LambdaQueryWrapper<Config> getConfigWrapper = new LambdaQueryWrapper<>();
+                        getConfigWrapper
+                                .select(
+                                        Config::getContent,
+                                        Config::getConfigDesc,
+                                        Config::getType
+                                )
+                                .eq(Config::getId,cloneConfigItem.getId());
+                        Config config = configMapper.selectOne(getConfigWrapper);
+                        // 克隆后的配置的命名空间id
+                        config.setNamespaceId(targetNamespaceId);
+                        // 克隆后的配置的分组名称
+                        config.setGroupName(groupName);
+                        // 克隆后的配置的dataId
+                        config.setDataId(dataId);
+                        // 发布克隆后的配置
+                        publishConfig(config,request);
+                    }
+                    // 如果配置冲突策略是跳过（skip）,则不用管
+                }
+                // 如果目标命名空间（targetNamespaceId）不存在当前需要克隆的配置(说明没有发生配置冲突)
+                else{
+                    // 通过配置的id获取配置
+                    LambdaQueryWrapper<Config> getConfigWrapper = new LambdaQueryWrapper<>();
+                    getConfigWrapper
+                            .select(
+                                    Config::getContent,
+                                    Config::getConfigDesc,
+                                    Config::getType
+                            )
+                            .eq(Config::getId,cloneConfigItem.getId());
+                    Config config = configMapper.selectOne(getConfigWrapper);
+                    // 克隆后的配置的命名空间id
+                    config.setNamespaceId(targetNamespaceId);
+                    // 克隆后的配置的分组名称
+                    config.setGroupName(groupName);
+                    // 克隆后的配置的dataId
+                    config.setDataId(dataId);
+                    // 发布克隆后的配置
+                    publishConfig(config,request);
+                }
+
+            }
+
+            return true;
+        }catch (Exception e){
+            // 回滚
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public Boolean hasConfig(String namespaceId, String groupName, String dataId) {
+
+        LambdaQueryWrapper<Config> lambdaQueryWrapper = new LambdaQueryWrapper<Config>()
+                .eq(Config::getNamespaceId, namespaceId)
+                .eq(Config::getGroupName, groupName)
+                .eq(Config::getDataId, dataId);
+        return this.configMapper.selectCount(lambdaQueryWrapper) > 0 ;
     }
 
     /**

@@ -75,23 +75,37 @@ export function importConfig(namespaceId,groupName,configFile,configConflictPoli
     })
 }
 
-export function exportSelectedConfig(exportConfigIdListJSON){
+export function exportSelectedConfig(exportConfigIdArray){
     return request({
-        method:'post',
+        method:'get',
         url:'/grace/server/config/exportSelectedConfig',
         // 文件下载（）
         responseType: 'blob',
-        data:{
-            exportConfigIdListJSON:exportConfigIdListJSON
+        params:{
+            exportConfigIdArray:exportConfigIdArray
         }
     })
 }
 
-// export function exportSelectedConfig(){
-//     return request({
-//         method:'get',
-//         url:'/grace/server/config/exportSelectedConfig',
-//         // 文件下载（）
-//         responseType: 'blob',
-//     })
-// }
+
+export function batchDeleteConfig(batchDeleteConfigIdArray){
+    return request({
+        method:'delete',
+        url:'/grace/server/config/batchDeleteConfig',
+        params:{
+            batchDeleteConfigIdArray: batchDeleteConfigIdArray
+        }
+    })
+}
+
+export function cloneConfig(targetNamespaceId,cloneConfigItemList,configConflictPolicy){
+    return request({
+        method:'post',
+        url:'/grace/server/config/cloneConfig',
+        data:{
+            targetNamespaceId:targetNamespaceId,
+            cloneConfigItemList:cloneConfigItemList,
+            configConflictPolicy:configConflictPolicy
+        }
+    })
+}

@@ -1,10 +1,9 @@
 package com.grace.console.controller;
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import com.grace.common.constant.Constants;
 import com.grace.common.constant.ParentMappingConstants;
 import com.grace.common.dto.ClientAddressBindConfigDTO;
+import com.grace.common.dto.CloneConfigDTO;
 import com.grace.common.entity.Config;
 import com.grace.common.utils.PageData;
 import com.grace.common.utils.Result;
@@ -21,8 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * 配置中心控制器
@@ -131,37 +129,16 @@ public class ConfigController {
     /**
      * 导出被选择的配置
      *
-     * @param exportConfigIdListJSON 导出的配置的id集合的JSON字符串（前端要先使用JSON.stringify进行序列化集合）
+     * @param exportConfigIdArray 导出的配置的id数组
      * @return {@link Result}<{@link Boolean}>
      */
-    @PostMapping("/exportSelectedConfig")
-    public ResponseEntity<FileSystemResource> exportSelectedConfig(@RequestBody String exportConfigIdListJSON, HttpServletResponse response) throws IOException {
-        // exportConfigIdListJSON拿到的格式为: {"exportConfigIdListJSON":"[\"7592611645883397\"]"}
-        // 转成JSONObject对象
-        JSONObject jsonObject = JSONObject.parseObject(exportConfigIdListJSON);
-        List<String> exportConfigIdList =
-                JSON.parseArray(jsonObject.get("exportConfigIdListJSON").toString(), String.class);
+    @GetMapping("/exportSelectedConfig")
+    public ResponseEntity<FileSystemResource> exportSelectedConfig(
+            @RequestParam("exportConfigIdArray[]") String[] exportConfigIdArray,
+            HttpServletResponse response) throws IOException {
 
         // 导出配置
-        return configService.exportSelectedConfig(exportConfigIdList, response);
-    }
-
-
-//    @GetMapping("/exportSelectedConfig")
-//    public ResponseEntity<FileSystemResource> exportSelectedConfig(HttpServletResponse response) throws IOException {
-//        List<String> exportConfigIdList = new ArrayList<>();
-//        exportConfigIdList.add("7573148522120197");
-//
-//        // 导出配置
-//        return configService.exportSelectedConfig(exportConfigIdList, response);
-//    }
-
-    @PostMapping("/cloneConfig")
-    public Result<Boolean> cloneConfig(String sourceNamespaceId){
-        // 导出选中的配置
-
-        // 导出当前页的配置
-        return Result.ok();
+        return configService.exportSelectedConfig(Arrays.asList(exportConfigIdArray), response);
     }
 
     @GetMapping("/getConfig")
@@ -193,10 +170,30 @@ public class ConfigController {
         return Result.ok(configService.deleteConfig(namespaceId,groupName,dataId,request));
     }
 
+    /**
+     * 批量删除配置
+     *
+     * @param batchDeleteConfigIdArray 批量删除的配置的id数组
+     * @return {@link Result}<{@link Boolean}>
+     */
     @DeleteMapping("/batchDeleteConfig")
-    public Result<Boolean> batchDeleteConfig(List<String> batchDeleteConfigList,HttpServletRequest request){
+    public Result<Boolean> batchDeleteConfig(
+            @RequestParam("batchDeleteConfigIdArray[]") String[] batchDeleteConfigIdArray,
+            HttpServletRequest request){
 
-        return Result.ok(configService.batchDeleteConfig(batchDeleteConfigList, request));
+        return Result.ok(configService.batchDeleteConfig(Arrays.asList(batchDeleteConfigIdArray), request));
     }
+
+    /**
+     * 克隆配置
+     *
+     * @param cloneConfigDTO 克隆配置DTO
+     * @return {@link Result}<{@link Boolean}>
+     */
+    @PostMapping("/cloneConfig")
+    public Result<Boolean> cloneConfig(@RequestBody CloneConfigDTO cloneConfigDTO,HttpServletRequest request){
+        return Result.ok(configService.cloneConfig(cloneConfigDTO,request));
+    }
+
 
 }

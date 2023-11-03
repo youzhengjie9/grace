@@ -663,7 +663,7 @@
       >
         <!-- 内容 -->
         <el-row :gutter="24" style="margin-left: 30px">
-          <!-- 源空间(需要克隆的配置来自于哪个命名空间) -->
+          <!-- 源命名空间(需要克隆的配置来自于哪个命名空间) -->
           <el-col :span="24" style="margin-bottom: 10px">
             源命名空间:
             <span style="color: rgb(73, 210, 231)">{{
@@ -679,7 +679,7 @@
 
           <!-- 克隆配置的目标命名空间(也就是指定将配置克隆到哪个命名空间上) -->
           <el-col :span="24" style="margin-bottom: 0px; height: 50px">
-            <el-form-item prop="cloneTargetNamespace">
+            <el-form-item prop="targetNamespaceId">
               目标命名空间
               <el-select
                 v-model="cloneConfigDialogForm.targetNamespaceId"
@@ -687,12 +687,12 @@
                 style="width: 355px"
                 placeholder="请选择命名空间"
               >
-                <!-- 遍历所有命名空间 -->
+                <!-- 遍历所有可选的命名空间 -->
                 <el-option
-                  v-for="ns in namespaceData"
-                  :key="ns.id"
+                  v-for="ns in cloneConfigTargetNamespaceList"
+                  :key="ns.namespaceId"
                   :label="ns.namespaceName"
-                  :value="ns.id"
+                  :value="ns.namespaceId"
                 >
                 </el-option>
               </el-select>
@@ -707,7 +707,6 @@
               size="small"
               style="width: 160px"
             >
-              <el-option label="终止导入" value="abort"></el-option>
               <el-option label="跳过" value="skip"></el-option>
               <el-option label="覆盖" value="cover"></el-option>
             </el-select>
@@ -785,6 +784,8 @@ import {
   deleteConfig,
   importConfig,
   exportSelectedConfig,
+  batchDeleteConfig,
+  cloneConfig,
 } from "@/api/config";
 
 export default {
@@ -867,16 +868,18 @@ export default {
       openBatchDeleteDialog: false,
       // 是否打开克隆dialog
       openCloneDialog: false,
+      // 克隆配置可选择目标命名空间列表（要排除掉当前所在的（源）命名空间）
+      cloneConfigTargetNamespaceList: [],
       // 克隆配置dialog的表单
       cloneConfigDialogForm: {
-        // 克隆配置的目标命名空间(也就是指定将配置克隆到哪个命名空间上)
-        cloneTargetNamespace: "",
+        // 克隆配置的目标命名空间id(也就是指定将配置克隆到哪个命名空间上)
+        targetNamespaceId: "",
         // 选择一个如果当前克隆的配置已存在目标命名空间后对该配置处理的策略（方式）
-        cloneConfigIfExistPolicy: "abort",
+        cloneConfigIfExistPolicy: "skip",
       },
       // 克隆配置dialog的表单校验规则
       cloneConfigDialogFormRules: {
-        cloneTargetNamespace: [
+        targetNamespaceId: [
           { required: true, message: "请选择命名空间", trigger: "change" },
         ],
       },
@@ -1272,26 +1275,85 @@ export default {
     batchDeleteConfig() {
       // 获取所有多选的数据
       let multipleSelectionData = this.multipleSelectionData;
-      // 根据所有多选的数据去后端进行批量删除
-
-      // 重新加载tableData数据
-      this.loadData();
-      // 关闭批量删除dialog
-      this.openBatchDeleteDialog = false;
+      if (multipleSelectionData.length == 0) {
+        this.$message.error("您还没有选择需要批量删除的配置");
+      } else {
+        let batchDeleteConfigIdArray = [];
+        for (let index = 0; index < multipleSelectionData.length; index++) {
+          batchDeleteConfigIdArray.push(multipleSelectionData[index].id);
+        }
+        // 根据所有多选的数据调用后端接口进行批量删除
+        batchDeleteConfig(batchDeleteConfigIdArray).then((response) => {
+          let result = response.data;
+          if (result.data == true) {
+            // 重新加载tableData数据
+            this.loadTableData();
+            // 取消多选数据
+            this.multipleSelectionData = [];
+            // 关闭批量删除dialog
+            this.openBatchDeleteDialog = false;
+          }
+        });
+      }
     },
     // 点击打开克隆dialog
     clickOpenCloneDialog() {
-      this.openCloneDialog = true;
-      // 将multipleSelectionData对象深拷贝到cloneConfigTableData对象,深拷贝的作用是避免在修改克隆表格数据的时候影响到tableData对象的数据
-      this.cloneConfigTableData = this.deepCopy(this.multipleSelectionData);
+      // 获取所有多选的数据
+      let multipleSelectionData = this.multipleSelectionData;
+      if (multipleSelectionData.length == 0) {
+        this.$message.error("您还没有选择需要克隆的配置");
+      } else {
+        let multipleSelectionData = this.multipleSelectionData;
+        // 清空克隆配置表单数据
+        this.cloneConfigTableData = [];
+        for(let i =0;i<multipleSelectionData.length;i++){
+          this.cloneConfigTableData.push({
+            id: multipleSelectionData[i].id,
+            groupName: multipleSelectionData[i].groupName,
+            dataId: multipleSelectionData[i].dataId,
+          })
+        }
+
+        let namespaceData = this.namespaceData;
+        // 初始化克隆配置可选择目标命名空间列表（要排除掉当前所在的（源）命名空间）
+        this.cloneConfigTargetNamespaceList = [];
+        for (let i = 0; i < namespaceData.length; i++) {
+          // 排除掉当前所在的（源）命名空间
+          if (namespaceData[i].namespaceId != this.currentSelectedNamespaceId) {
+            // 放入集合
+            this.cloneConfigTargetNamespaceList.push({
+              namespaceId: namespaceData[i].namespaceId,
+              namespaceName: namespaceData[i].namespaceName,
+            });
+          }
+        }
+        // 打开dialog
+        this.openCloneDialog = true;
+      }
     },
     // 开始克隆
     clone(cloneConfigDialogForm) {
       this.$refs[cloneConfigDialogForm].validate((valid) => {
         if (valid) {
-          alert("克隆成功");
+          let targetNamespaceId = this.cloneConfigDialogForm.targetNamespaceId;
+          let cloneConfigItemList = this.cloneConfigTableData;
+          let configConflictPolicy = this.cloneConfigDialogForm.cloneConfigIfExistPolicy;
+          // 调用克隆接口
+          cloneConfig(
+            targetNamespaceId,
+            cloneConfigItemList,
+            configConflictPolicy
+          ).then((response) => {
+            let result = response.data;
+            if (result.data == true) {
+              this.$message.success('克隆配置成功');
+              // 关闭dialog
+              this.openCloneDialog = false;
+            }else{
+              this.$message.error('克隆配置失败');
+            }
+          });
         } else {
-          console.log("克隆失败");
           return false;
         }
       });
@@ -1305,12 +1367,11 @@ export default {
         if (multipleSelectionData.length == 0) {
           this.$message.error("您还没有选择需要导出的配置");
         } else {
-          let exportConfigIdList = [];
+          let exportConfigIdArray = [];
           for (let index = 0; index < multipleSelectionData.length; index++) {
-            exportConfigIdList.push(multipleSelectionData[index].id);
+            exportConfigIdArray.push(multipleSelectionData[index].id);
           }
-          let exportConfigIdListJSON = JSON.stringify(exportConfigIdList);
-          exportSelectedConfig(exportConfigIdListJSON)
+          exportSelectedConfig(exportConfigIdArray)
             .then((response) => {
               let result = response.data;
               this.$message.success("导出成功,请去 C 盘查看");
@@ -1322,10 +1383,24 @@ export default {
       }
       // 导出当前页的配置
       else if (command == 2) {
-        let page = this.page;
-        let size = this.size;
-        console.log(page);
-        console.log(size);
+        // 获取当前页的数据
+        let tableData = this.tableData;
+        if (tableData.length == 0) {
+          this.$message.error("当前页没有数据,导出失败");
+        } else {
+          let exportConfigIdArray = [];
+          for (let index = 0; index < tableData.length; index++) {
+            exportConfigIdArray.push(tableData[index].id);
+          }
+          exportSelectedConfig(exportConfigIdArray)
+            .then((response) => {
+              let result = response.data;
+              this.$message.success("导出成功,请去 C 盘查看");
+            })
+            .catch((err) => {
+              this.$message.error("导出失败");
+            });
+        }
       }
     },
     // page（当前页）改变时触发

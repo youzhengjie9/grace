@@ -1,6 +1,7 @@
 package com.grace.console.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.grace.common.dto.CloneConfigDTO;
 import com.grace.common.entity.Config;
 import com.grace.console.vo.ConfigListItemVO;
 import org.springframework.core.io.FileSystemResource;
@@ -85,20 +86,45 @@ public interface ConfigService extends IService<Config> {
      */
     long getCurrentVersionId(String namespaceId, String groupName, String dataId);
 
+    /**
+     * 导入配置
+     *
+     * @return {@link Boolean}
+     */
     Boolean importConfig(String namespaceId,String groupName,
                          MultipartFile configFile,String configConflictPolicy,
                          HttpServletRequest request);
 
-    Boolean batchDeleteConfig(List<String> batchDeleteConfigList,HttpServletRequest request);
+    /**
+     * 批量删除配置
+     *
+     * @return {@link Boolean}
+     */
+    Boolean batchDeleteConfig(List<String> batchDeleteConfigIdList, HttpServletRequest request);
 
     /**
      * 根据配置的id列表来导出配置
      *
      * @param exportConfigIdList 配置的id列表
-     * @param response
      * @return {@link ResponseEntity}<{@link FileSystemResource}>
      */
     ResponseEntity<FileSystemResource> exportSelectedConfig(List<String> exportConfigIdList, HttpServletResponse response) throws IOException;
 
+    /**
+     * 克隆配置
+     *
+     * @param cloneConfigDTO 克隆配置DTO
+     * @param request
+     * @return {@link Boolean}
+     */
+    Boolean cloneConfig(CloneConfigDTO cloneConfigDTO,HttpServletRequest request);
+
+
+    /**
+     * 判断配置是否存在
+     *
+     * @return {@link Boolean}
+     */
+    Boolean hasConfig(String namespaceId, String groupName, String dataId);
 
 }
