@@ -256,7 +256,7 @@
     <!-- 表格底部 -->
     <el-row :gutter="24" style="margin-top: 25px">
       <!-- 分页 -->
-      <el-col :span="12" :offset="12">
+      <el-col :span="10" :offset="14">
         <div class="grid-content bg-purple">
           <el-pagination
             background

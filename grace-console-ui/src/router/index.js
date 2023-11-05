@@ -61,6 +61,12 @@ const router = new VueRouter({
                     }
                 },
                 {
+                    // 用户管理
+                    path: '/user/list',
+                    name: 'userList',
+                    component: () => import('../views/user/list/index.vue')
+                },
+                {
                     // 命名空间列表路由
                     path: '/namespace/list',
                     name: 'namespaceList',

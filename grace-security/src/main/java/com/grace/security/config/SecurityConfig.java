@@ -1,5 +1,7 @@
 package com.grace.security.config;
 
+import cn.hutool.core.util.ArrayUtil;
+import com.grace.security.core.IgnoreAuthentication;
 import com.grace.security.filter.JwtAuthenticationFilter;
 import com.grace.security.handler.CustomAccessDeniedHandler;
 import com.grace.security.handler.CustomAuthenticationEntryPoint;
@@ -35,15 +37,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true) //开启SpringSecurity注解鉴权模式
 public class SecurityConfig {
 
-    /**
-     * 下面这些请求《不用登录》（也就是不用携带Token）都可以访问。
-     */
-    private final String[] PERMIT_ALL={
-            "/grace/server/user/login",
-            "/grace/server/refreshToken",
-            "/druid/**"
-    };
-
     private AuthenticationConfiguration authenticationConfiguration;
 
     private JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -53,6 +46,8 @@ public class SecurityConfig {
 
     // 自定义权限不足处理器(权限不足时调用)
     private CustomAccessDeniedHandler customAccessDeniedHandler;
+
+    private IgnoreAuthentication ignoreAuthentication;
 
 
     @Autowired
@@ -72,6 +67,11 @@ public class SecurityConfig {
     @Autowired
     public void setCustomAccessDeniedHandler(CustomAccessDeniedHandler customAccessDeniedHandler) {
         this.customAccessDeniedHandler = customAccessDeniedHandler;
+    }
+
+    @Autowired
+    public void setIgnoreAuthentication(IgnoreAuthentication ignoreAuthentication) {
+        this.ignoreAuthentication = ignoreAuthentication;
     }
 
     @Bean
@@ -97,7 +97,7 @@ public class SecurityConfig {
                 // 配置认证请求
                 .authorizeRequests()
                 // 设置部分请求《不用登录》（也就是不用携带Token）都可以访问
-                .antMatchers(PERMIT_ALL).permitAll()
+                .antMatchers(ArrayUtil.toArray(ignoreAuthentication.getIgnoreUrls(), String.class)).permitAll()
                 // 除了上面的请求之外，其他所有请求《只有登录了》（要携带token）才能访问，否则会被SpringSecurity底层拦截器拦截
                 .anyRequest().authenticated()
                 .and()

@@ -27,6 +27,12 @@
             <artifactId>commons-compress</artifactId>
             <version>1.21</version>
         </dependency>
+        <!-- alibaba easyexcel -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>${easyexcel.version}</version>
+        </dependency>
         <!--        web    -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

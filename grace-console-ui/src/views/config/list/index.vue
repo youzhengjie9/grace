@@ -464,7 +464,7 @@
       </el-col>
 
       <!-- 分页 -->
-      <el-col :span="12" :offset="6">
+      <el-col :span="10" :offset="14">
         <div class="grid-content bg-purple">
           <el-pagination
             background

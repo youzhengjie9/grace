@@ -42,14 +42,27 @@ public class User implements Serializable {
     @TableField("status")
     private Integer status;
 
+    /**
+     * 创建时间
+     */
+    @TableField("create_time")
+    private LocalDate createTime;
+    /**
+     * 更新时间
+     */
+    @TableField("update_time")
+    private LocalDateTime updateTime;
+
     public User() {
     }
 
-    public User(Long id, String username, String password, Integer status) {
+    public User(Long id, String username, String password, Integer status, LocalDate createTime, LocalDateTime updateTime) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.status = status;
+        this.createTime = createTime;
+        this.updateTime = updateTime;
     }
 
     public Long getId() {
@@ -84,13 +97,19 @@ public class User implements Serializable {
         this.status = status;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", status=" + status +
-                '}';
+    public LocalDate getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDate createTime) {
+        this.createTime = createTime;
+    }
+
+    public LocalDateTime getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(LocalDateTime updateTime) {
+        this.updateTime = updateTime;
     }
 }

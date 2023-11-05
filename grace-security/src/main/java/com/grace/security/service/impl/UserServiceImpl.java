@@ -1,17 +1,21 @@
 package com.grace.security.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.grace.security.dto.UserFormDTO;
 import com.grace.common.vo.TokenVO;
 import com.grace.common.vo.UserInfoVO;
 import com.grace.security.constant.JwtConstants;
 import com.grace.common.dto.UserLoginDTO;
 import com.grace.security.entity.User;
+import com.grace.security.entity.UserRole;
 import com.grace.security.mapper.UserMapper;
 import com.grace.security.service.UserService;
 import com.grace.security.token.TokenManagerDelegate;
 import com.grace.security.users.GraceUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +23,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,6 +44,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public TokenVO login(UserLoginDTO userLoginDTO) throws Throwable {
@@ -96,4 +106,98 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .getPrincipal();
         return new UserInfoVO(graceUser.getUsername());
     }
+
+
+    @Override
+    public List<User> getUserList(int page, int size) {
+        return userMapper.getUserList(page, size);
+    }
+
+    @Override
+    public int getUserCount() {
+        return userMapper.getUserCount();
+    }
+
+    @Override
+    public List<User> getUserListByUsername(String username, int page, int size) {
+        return userMapper.getUserListByUsername(username, page, size);
+    }
+
+    @Override
+    public int getUserCountByUsername(String username) {
+        return userMapper.getUserCountByUsername(username);
+    }
+
+    @Override
+    public int addUser(UserFormDTO userFormDTO) {
+
+        User user = new User();
+        BeanUtils.copyProperties(userFormDTO,user);
+
+        user.setStatus(userFormDTO.getStatus() ?0:1);
+        //然后再补充一些前端没有传过来的属性
+        user.setCreateTime(LocalDate.now());
+        user.setUpdateTime(LocalDateTime.now());
+        return userMapper.insert(user);
+    }
+
+    @Override
+    public int updateUser(UserFormDTO userFormDTO) {
+
+        User user = new User();
+        BeanUtils.copyProperties(userFormDTO,user);
+
+        user.setStatus(userFormDTO.getStatus() ?0:1);
+        //然后再补充一些前端没有传过来的属性
+        user.setUpdateTime(LocalDateTime.now());
+        return userMapper.updateUser(user);
+    }
+
+    @Override
+    public boolean deleteUser(long id) {
+        try {
+            //删除用户
+            LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.eq(User::getId,id);
+            userMapper.delete(lambdaQueryWrapper);
+            //删除用户所拥有的所有角色
+            userMapper.deleteUserAllRoles(id);
+            return true;
+        }catch (Exception e){
+            throw new RuntimeException("删除用户失败");
+        }
+    }
+
+    @Override
+    public int deleteUserAllRoles(long userid) {
+        return userMapper.deleteUserAllRoles(userid);
+    }
+
+
+    /**
+     * 将角色分配给用户
+     *
+     * @param userRoleList 用户角色列表
+     * @return boolean
+     */
+    @Override
+    public boolean assignRoleToUser(List<UserRole> userRoleList) {
+        try {
+            //先删除用户所有角色
+            userMapper.deleteUserAllRoles(userRoleList.get(0).getUserId());
+            //再把所有新的角色（包括以前选过的）都重新添加到数据库中
+            userMapper.addRoleToUser(userRoleList);
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException("assignRoleToUser异常,事务已回滚。");
+        }
+    }
+
+    @Override
+    public int addRoleToUser(List<UserRole> userRoleList) {
+        return userMapper.addRoleToUser(userRoleList);
+    }
+
+
 }
