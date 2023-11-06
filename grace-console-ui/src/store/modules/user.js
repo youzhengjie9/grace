@@ -5,6 +5,9 @@ const state = {
     username:'', //用户帐号
     accessToken: localStorage.getItem('accessToken'),
     refreshToken: localStorage.getItem('refreshToken'),
+    dynamicMenu:[], //动态菜单（侧边栏）数组
+    dynamicRouter:[],//动态路由（router）
+    perm:[] //用户权限perm（包括菜单、按钮）,需要配合directive/permission/has-perm自定义指令
 }
 
 const mutations = {
@@ -17,11 +20,20 @@ const mutations = {
     SET_REFRESHTOKEN: (state, refreshToken) => {
         state.refreshToken = refreshToken
     },
+    SET_DYNAMIC_MENU: (state,dynamicMenu)=>{
+        state.dynamicMenu=dynamicMenu
+    },
+    SET_DYNAMIC_ROUTER: (state,dynamicRouter)=>{
+        state.dynamicRouter=dynamicRouter
+    },
+    SET_PERM: (state,perm)=>{
+        state.perm=perm;
+    }
 }
 
 const actions = {
 
-    //用户登录成功
+    //用户登录成功（只需要返回token即可）
     loginSuccess(context,data){
         //将token到localstorage中进行持久化，因为vuex的数据是没有持久化效果的，刷新页面就会丢失，所以要放到localstorage中
         localStorage.setItem('accessToken',data.accessToken)
@@ -40,6 +52,16 @@ const actions = {
             getCurrentUserInfo().then((res)=>{
                 if(res.data.code===200){
                     context.commit('SET_USERNAME',res.data.data.username);
+                    // //用户的动态菜单（侧边栏）
+                    // context.commit('SET_DYNAMIC_MENU',JSON.parse(res.data.data.dynamicMenu))
+                    // //用户的动态路由
+                    // if(res.data.data.dynamicRouter.length!==0){
+                    //     context.commit('SET_DYNAMIC_ROUTER',JSON.parse(res.data.data.dynamicRouter))
+                    // }
+                    // if(res.data.data.perm.length!==0){
+                    //     //用户权限perm
+                    //     context.commit('SET_PERM',JSON.parse(res.data.data.perm))
+                    // }
                     resolve(res);
                 }
                 else{
@@ -51,6 +73,9 @@ const actions = {
                     context.commit('SET_USERNAME','')
                     context.commit('SET_ACCESSTOKEN','');
                     context.commit('SET_REFRESHTOKEN','');
+                    context.commit('SET_DYNAMIC_MENU',[])
+                    context.commit('SET_DYNAMIC_ROUTER',[])
+                    context.commit('SET_PERM',[])
                     //清空localstorage的accessToken和refreshToken
                     localStorage.removeItem('accessToken')
                     localStorage.removeItem('refreshToken')
@@ -66,6 +91,9 @@ const actions = {
                 context.commit('SET_USERNAME','')
                 context.commit('SET_ACCESSTOKEN','');
                 context.commit('SET_REFRESHTOKEN','');
+                context.commit('SET_DYNAMIC_MENU',[])
+                context.commit('SET_DYNAMIC_ROUTER',[])
+                context.commit('SET_PERM',[])
                 //清空localstorage的accessToken和refreshToken
                 localStorage.removeItem('accessToken')
                 localStorage.removeItem('refreshToken')
@@ -80,6 +108,9 @@ const actions = {
         context.commit('SET_USERNAME','')
         context.commit('SET_ACCESSTOKEN','');
         context.commit('SET_REFRESHTOKEN','');
+        context.commit('SET_DYNAMIC_MENU',[])
+        context.commit('SET_DYNAMIC_ROUTER',[])
+        context.commit('SET_PERM',[])
         //清空localstorage的accessToken和refreshToken
         localStorage.removeItem('accessToken')
         localStorage.removeItem('refreshToken')

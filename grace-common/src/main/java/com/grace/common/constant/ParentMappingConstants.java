@@ -44,4 +44,9 @@ public final class ParentMappingConstants {
      */
     public static final String USER_CONTROLLER = GRACE_SERVER_BASE_URL+"/user";
 
+    /**
+     * RoleController接口的顶层路径
+     */
+    public static final String ROLE_CONTROLLER = GRACE_SERVER_BASE_URL+"/role";
+
 }

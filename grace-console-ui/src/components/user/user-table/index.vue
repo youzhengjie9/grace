@@ -10,20 +10,8 @@
 
             </el-table-column>
 
-            <el-table-column prop="userName" label="用户名" width="100" show-overflow-tooltip>
+            <el-table-column prop="username" label="用户名" width="100" show-overflow-tooltip>
                 
-            </el-table-column>
-
-            <el-table-column prop="nickName" label="昵称" width="100" show-overflow-tooltip>
-                
-            </el-table-column>
-            <el-table-column prop="avatar" label="头像" width="60">
-      
-                <!-- 使用slot将默认展示文本的机制替换成展示avatar -->
-                <template slot-scope="scope">
-                    <el-avatar :size="28" :src="scope.row.avatar"></el-avatar>
-                </template>
-            
             </el-table-column>
 
             <el-table-column
@@ -46,43 +34,6 @@
                 </template>
             </el-table-column>
 
-            <el-table-column prop="email" label="邮箱" width="100" show-overflow-tooltip>
-                
-            </el-table-column>
-
-            <el-table-column prop="phone" label="手机号" width="100" show-overflow-tooltip>
-                
-            </el-table-column>
-
-            <el-table-column
-                prop="sex"
-                label="性别"
-                width="78">
-                <template slot-scope="scope">
-                
-                <el-tag
-                    v-if="scope.row.sex === '男'"
-                    type="primary"
-                    disable-transitions
-                    >男
-                </el-tag>
-                
-                <el-tag
-                    v-if="scope.row.sex === '女'"
-                    type="success"
-                    disable-transitions
-                    >女
-                </el-tag>
-
-                <el-tag
-                    v-if="scope.row.sex === '未知'"
-                    type="danger"
-                    disable-transitions
-                    >未知
-                </el-tag>
-                </template>
-            </el-table-column>
-
             <el-table-column prop="createTime" label="创建时间" width="110" show-overflow-tooltip sortable>
                 <template slot-scope="scope">
                     <span>{{scope.row.createTime | dateformat('YYYY-MM-DD')}}</span>
@@ -93,16 +44,16 @@
                 <template slot-scope="scope">
                     <span>{{scope.row.updateTime | dateformat('YYYY-MM-DD HH:mm:ss')}}</span>
                 </template>
-            </el-table-column>   
-
+            </el-table-column> 
            
             <el-table-column label="操作" min-width="180">
                 <template slot-scope="scope">
-                    <el-button v-hasPerm="['sys:user:list:update']" size="mini" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
-                    <el-button v-hasPerm="['sys:user:list:assign-role']" type="warning" size="mini" @click="handleAssignRole(scope.row)">分配角色</el-button>
-                    <el-button v-hasPerm="['sys:user:list:delete']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+                    <el-button v-hasPerm="['user:list:update']" size="mini" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
+                    <el-button v-hasPerm="['user:list:assign-role']" type="warning" size="mini" @click="handleAssignRole(scope.row)">分配角色</el-button>
+                    <el-button v-hasPerm="['user:list:delete']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
+
         </el-table>
         <!-- 分页 -->
         

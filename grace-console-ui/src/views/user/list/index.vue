@@ -11,7 +11,6 @@
         :form="operateForm"
         :operateType="operateType"
         :accesstoken="accesstoken"
-        :imageUrl="formAvatar"
         ref="form"
       ></user-form>
 
@@ -155,8 +154,6 @@ export default {
         //请求头的kv键值对
         accessToken: localStorage.getItem("accessToken"),
       },
-      //传递表单头像
-      formAvatar: "",
       // 动态生成新增或者修改的表单内容
       opertateFormLabel: [
         {
@@ -170,66 +167,21 @@ export default {
           type: "password",
         },
         {
-          model: "nickName",
-          label: "昵称",
-          type: "input",
-        },
-        {
-          model: "sex",
-          label: "性别",
-          type: "select",
-          opts: [
-            {
-              label: "男",
-              value: 0,
-            },
-            {
-              label: "女",
-              value: 1,
-            },
-            {
-              label: "未知",
-              value: 2,
-            },
-          ],
-        },
-        {
-          model: "phone",
-          label: "手机号",
-          type: "input",
-        },
-        {
-          model: "email",
-          label: "邮箱",
-          type: "input",
-        },
-        {
           model: "status",
           label: "是否启用",
           type: "switch",
-        },
-        {
-          model: "avatar",
-          label: "头像",
-          type: "singleUpload",
         },
       ],
       //当新增或者修改时，表单数据就会同步到这里
       operateForm: {
         userName: "",
         password: "",
-        nickName: "",
-        sex: "",
-        phone: "",
-        email: "",
         status: "",
-        avatar: "",
       },
       //后端所有可供选择的角色数据都要存到这(这部分内容可以从后端数据库获取)
       assignRoleTableData: [],
-
       assignRoleSelectedList: [],
-      //搜索框
+      // 搜索框
       formLabel: [
         {
           model: "keyword",
@@ -250,23 +202,8 @@ export default {
   },
   methods: {
     confirm() {
-      //从vuex中获取表单提交过来的新/旧头像地址
-      this.operateForm.avatar = this.$store.state.form.uploadAvatar;
       //从vuex中获取表单提交过来的是否启用开关
       this.operateForm.status = this.$store.state.form.curSwitchStatus;
-
-      //sex
-      if (this.operateForm.sex === 0 || this.operateForm.sex === "男") {
-        this.operateForm.sex = "男";
-      } else if (this.operateForm.sex === 1 || this.operateForm.sex === "女") {
-        this.operateForm.sex = "女";
-      } else if (
-        this.operateForm.sex === 2 ||
-        this.operateForm.sex === "未知"
-      ) {
-        this.operateForm.sex = "未知";
-      }
-
       //如果是添加操作
       if (this.operateType === "add") {
         addUser(this.operateForm)
@@ -278,11 +215,8 @@ export default {
               duration: 1000,
             });
             this.isShow = false;
-
             //成功之后将表单vuex数据还原
             this.$store.dispatch("setCurSwitchStatus", true);
-            this.$store.dispatch("setUploadAvatar", "");
-
             this.getList();
           })
           .catch((err) => {
@@ -308,8 +242,6 @@ export default {
 
             //成功之后将表单vuex数据还原
             this.$store.dispatch("setCurSwitchStatus", true);
-            this.$store.dispatch("setUploadAvatar", "");
-
             this.getList();
           })
           .catch((err) => {
@@ -330,24 +262,14 @@ export default {
         //给新增用户表单设置默认值
         userName: "",
         password: "",
-        nickName: "",
-        sex: "未知",
-        phone: "",
-        email: "",
         status: true,
-        avatar: "",
       };
-      //添加操作时要把表单头像清空
-      this.formAvatar = "";
     },
     //修改用户
     editUser(row) {
       this.operateType = "edit";
       this.isShow = true;
       this.operateForm = row;
-      //修改操作时要把表单头像更新为当前点击的那个记录的头像
-      this.formAvatar = "";
-      this.formAvatar = row.avatar;
     },
     //删除用户
     delUser(row) {
@@ -391,19 +313,8 @@ export default {
             } else {
               res.data[i].status = false;
             }
-
-            //sex
-            if (res.data[i].sex === 0) {
-              res.data[i].sex = "男";
-            } else if (res.data[i].sex === 1) {
-              res.data[i].sex = "女";
-            } else {
-              res.data[i].sex = "未知";
-            }
           }
-
           this.tableData = res.data;
-
           this.config.loading = false;
         });
       } else if (this.currentModel === "search") {
@@ -417,7 +328,6 @@ export default {
       this.currentModel = "search";
       //记录当前搜索的关键字
       this.currentSearchKeyword = keyword;
-
       getUserListByUsername(keyword, this.config.page, 7).then(
         ({ data: res }) => {
           for (let i = 0; i < res.data.length; i++) {
@@ -427,23 +337,11 @@ export default {
             } else {
               res.data[i].status = false;
             }
-
-            //sex
-            if (res.data[i].sex === 0) {
-              res.data[i].sex = "男";
-            } else if (res.data[i].sex === 1) {
-              res.data[i].sex = "女";
-            } else {
-              res.data[i].sex = "未知";
-            }
           }
-
           //更新数据
           this.tableData = res.data;
-
-          //更新分页
+          // 根据用户名获取用户数量,更新分页
           this.getUserCountByUsername(keyword);
-
           this.config.loading = false;
         }
       );

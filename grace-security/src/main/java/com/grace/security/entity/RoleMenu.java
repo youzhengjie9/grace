@@ -5,17 +5,17 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-
 import java.io.Serializable;
 
+
 /**
- * 用户-角色表实体类
+ * 角色-菜单表实体类
  *
  * @author youzhengjie
- * @date 2023/11/06 20:29:51
+ * @date 2023/11/06 20:28:59
  */
-@TableName("sys_user_role")
-public class UserRole implements Serializable {
+@TableName("sys_role_menu")
+public class RoleMenu implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -27,26 +27,20 @@ public class UserRole implements Serializable {
     private Long id;
 
     /**
-     * 用户id
-     */
-    @TableField("user_id")
-    @JsonSerialize(using = ToStringSerializer.class) //解决雪花算法生成的id过长导致前端js精度丢失问题（也就是js拿到的数据和后端不一致问题）
-    private Long userId;
-
-    /**
      * 角色id
      */
     @TableField("role_id")
     @JsonSerialize(using = ToStringSerializer.class) //解决雪花算法生成的id过长导致前端js精度丢失问题（也就是js拿到的数据和后端不一致问题）
     private Long roleId;
 
-    public UserRole() {
-    }
+    /**
+     * 菜单id
+     */
+    @TableField("menu_id")
+    @JsonSerialize(using = ToStringSerializer.class) //解决雪花算法生成的id过长导致前端js精度丢失问题（也就是js拿到的数据和后端不一致问题）
+    private Long menuId;
 
-    public UserRole(Long id, Long userId, Long roleId) {
-        this.id = id;
-        this.userId = userId;
-        this.roleId = roleId;
+    public RoleMenu() {
     }
 
     public Long getId() {
@@ -57,19 +51,19 @@ public class UserRole implements Serializable {
         this.id = id;
     }
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
     public Long getRoleId() {
         return roleId;
     }
 
     public void setRoleId(Long roleId) {
         this.roleId = roleId;
+    }
+
+    public Long getMenuId() {
+        return menuId;
+    }
+
+    public void setMenuId(Long menuId) {
+        this.menuId = menuId;
     }
 }

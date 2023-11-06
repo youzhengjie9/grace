@@ -2,11 +2,13 @@ package com.grace.security.users;
 
 import com.grace.security.entity.User;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 自定义spring security所需要的UserDetails实现类
@@ -20,15 +22,23 @@ public class GraceUser implements UserDetails, Serializable {
 
     private final User user;
 
-    public GraceUser(User user) {
+    private final List<String> permissons;
+
+    public GraceUser(User user, List<String> permissons) {
         this.user=user;
+        this.permissons = permissons;
     }
     public User getUser() {
         return user;
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return new ArrayList<>();
+        return permissons
+                .stream()
+                .distinct()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toSet());
     }
 
     @Override

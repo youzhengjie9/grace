@@ -2,6 +2,7 @@ package com.grace.security.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.grace.common.utils.Result;
 import com.grace.security.dto.UserFormDTO;
 import com.grace.common.vo.TokenVO;
 import com.grace.common.vo.UserInfoVO;
@@ -10,6 +11,8 @@ import com.grace.common.dto.UserLoginDTO;
 import com.grace.security.entity.User;
 import com.grace.security.entity.UserRole;
 import com.grace.security.mapper.UserMapper;
+import com.grace.security.service.MenuService;
+import com.grace.security.service.MenuTreeService;
 import com.grace.security.service.UserService;
 import com.grace.security.token.TokenManagerDelegate;
 import com.grace.security.users.GraceUser;
@@ -23,6 +26,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,6 +51,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private MenuService menuService;
+
+    @Autowired
+    private MenuTreeService menuTreeService;
 
     @Override
     public TokenVO login(UserLoginDTO userLoginDTO) throws Throwable {
@@ -98,13 +108,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public UserInfoVO getCurrentUserInfo() {
-        // 从SpringSecurity中获取当前用户的UserDetails对象
-        GraceUser graceUser=(GraceUser) SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
-        return new UserInfoVO(graceUser.getUsername());
+    public UserInfoVO getCurrentUserInfo(HttpServletRequest request) {
+        // 创建UserInfoVO对象
+        UserInfoVO userInfoVO = new UserInfoVO();
+        // 获取accessToken
+        String accessToken = request.getHeader("accessToken");
+        // 获取这个accessToken对应的用户认证（Authentication）对象
+        Authentication authentication =
+                tokenManagerDelegate.getAuthentication(accessToken, "accessToken");
+        // 从用户认证（Authentication）对象,获取对应的用户信息
+        GraceUser graceUser = (GraceUser) authentication.getPrincipal();
+        userInfoVO.setUsername(graceUser.getUsername());
+        Long userId = graceUser.getUserId();
+        // 获取用户动态菜单（侧边栏）
+        String dynamicMenu = menuTreeService.buildTreeByUserId(userId);
+        //由于VUE动态路由刷新会丢失，所以需要再获取获取该用户的所有路由（只包含类型为菜单，type=1的菜单）
+        String dynamicRouter = menuService.getRouterByUserId(userId);
+        userInfoVO.setDynamicMenu(dynamicMenu);
+        userInfoVO.setDynamicRouter(dynamicRouter);
+        //设置用户权限perm
+        List<String> userPerm = menuService.getUserPermissionByUserId(userId);
+        return userInfoVO;
     }
 
 

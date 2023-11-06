@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 
 
 /**
- * 角色
+ * 角色表实体类
  *
  * @author youzhengjie
  * @date 2023-11-05 12:16:17

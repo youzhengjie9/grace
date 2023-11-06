@@ -278,6 +278,9 @@ public class CachedJwtTokenManager implements TokenManager {
          * <p>
          * 作用: 方便通过token去找到对应的Authentication对象,因为重新创建Authentication对象比较复杂,
          * 又需要去数据库重新查询用户权限。
+         * <p>
+         * 注意,当用户信息被修改后: 可以通过token移除这个TokenAttributes,然后重新生成最新的TokenAttributes对象（
+         * 特别是Authentication属性）
          */
         private Authentication authentication;
 

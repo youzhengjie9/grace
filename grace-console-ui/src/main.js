@@ -12,6 +12,9 @@ import moment from 'moment'
 import store from './store'
 // 全局引入代码差异对比插件
 import CodeDiff from 'v-code-diff'
+//导入自定义指令directive目录
+import directive from './directive'
+
 
 Vue.config.productionTip = false
 
@@ -28,6 +31,9 @@ Vue.filter('dateformat',function (input,fmtstring) {//当input为时间戳时，
   // 使用momentjs这个日期格式化类库实现日期的格式化功能
   return moment(input).format(fmtstring);
 })
+
+//使用自定义指令
+Vue.use(directive)
 
 new Vue({
   el:'#app',

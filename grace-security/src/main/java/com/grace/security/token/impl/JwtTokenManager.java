@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.grace.security.constant.JwtConstants;
 import com.grace.security.entity.User;
 import com.grace.security.mapper.UserMapper;
-import com.grace.security.service.UserService;
 import com.grace.security.token.TokenManager;
 import com.grace.security.users.GraceUser;
 import io.jsonwebtoken.Claims;
@@ -206,10 +205,14 @@ public class JwtTokenManager implements TokenManager {
             User user = userMapper.selectOne(getUserByUserId);
             // 给user对象设置userId
             user.setId(userId);
+            // TODO: 2023/11/6 获取用户的权限（就是查询Menu类中type=1和2的菜单权限标识perms，但是不包括type=0）
+//        List<String> permissions = menuService.getUserPermissionByUserId(user.getId());
+
+            List<String> permissions = Collections.singletonList("service:list");
             // 封装GraceUser对象
-            GraceUser graceUser = new GraceUser(user);
+            GraceUser graceUser = new GraceUser(user, permissions);
             // 创建Authentication对象
-            return new UsernamePasswordAuthenticationToken(graceUser,"",null);
+            return new UsernamePasswordAuthenticationToken(graceUser,"",graceUser.getAuthorities());
         }else if (tokenType.equalsIgnoreCase("refreshToken")) {
             // 根据refreshToken获取userId
             long userId = getUserIdByRefreshToken(token);
@@ -223,10 +226,14 @@ public class JwtTokenManager implements TokenManager {
             User user = userMapper.selectOne(getUserByUserId);
             // 给user对象设置userId
             user.setId(userId);
+            // TODO: 2023/11/6 获取用户的权限（就是查询Menu类中type=1和2的菜单权限标识perms，但是不包括type=0）
+//        List<String> permissions = menuService.getUserPermissionByUserId(user.getId());
+
+            List<String> permissions = Collections.singletonList("service:list");
             // 封装GraceUser对象
-            GraceUser graceUser = new GraceUser(user);
+            GraceUser graceUser = new GraceUser(user, permissions);
             // 创建Authentication对象
-            return new UsernamePasswordAuthenticationToken(graceUser,"",null);
+            return new UsernamePasswordAuthenticationToken(graceUser,"",graceUser.getAuthorities());
         }
         return null;
     }

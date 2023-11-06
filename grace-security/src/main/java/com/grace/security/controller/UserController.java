@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,8 +79,8 @@ public class UserController {
      * @return {@link Result}<{@link UserInfoVO}>
      */
     @GetMapping("/getCurrentUserInfo")
-    public Result<UserInfoVO> getCurrentUserInfo(){
-        return Result.ok(userService.getCurrentUserInfo());
+    public Result<UserInfoVO> getCurrentUserInfo(HttpServletRequest request){
+        return Result.ok(userService.getCurrentUserInfo(request));
     }
 
     /**

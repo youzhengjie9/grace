@@ -3,7 +3,7 @@ package com.grace.common.vo;
 import java.io.Serializable;
 
 /**
- * 封装Token
+ * 封装accessToken和refreshToken（用于登录后的结果返回）
  *
  * @author youzhengjie
  * @date 2023/09/06 19:50:51

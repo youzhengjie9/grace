@@ -21,13 +21,6 @@
                 show-password
             ></el-input>
             <!-- 如果指定的类型是switch -->
-            <!-- <el-switch v-if="item.type === 'switch' && form[item.model]===0"  v-model="T">
-            </el-switch>
-            <el-switch v-if="item.type === 'switch' && form[item.model]===1"  v-model="F">
-            </el-switch>
-            <el-switch v-if="item.type === 'switch' && form[item.model]!==0 && form[item.model]!==1"  v-model="T">
-            </el-switch> -->
-
             <el-switch v-if="item.type === 'switch'" v-model="form[item.model]" @change="changeSwitchStatus">
             </el-switch>
 
@@ -61,25 +54,6 @@
                 ></el-option>
             </el-select>
 
-            
-
-            <!-- 如果指定的类型是singleUpload,单个图片上传，例如头像 -->
-            <el-upload
-                v-if="item.type === 'singleUpload'"
-                class="avatar-uploader"
-                action="http://localhost:8188/upload/avatar"
-                :name="avatarFile"
-                :show-file-list="false"
-                :headers="accesstoken"
-                :on-success="handleAvatarSuccess"
-                :before-upload="beforeAvatarUpload">
-                <!-- 头像展示区域 -->
-                <img v-if="imageUrl" :src="imageUrl" class="avatar">
-
-                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-
-            </el-upload>
-
         </el-form-item>
         <el-form-item><slot></slot></el-form-item>
     </el-form>
@@ -95,79 +69,19 @@ export default {
         inline: Boolean,
         operateType: String,
         //请求头accesstoken，因为我们头像上传需要token，但是又没有使用到axios所以需要手动往header添加token
-        accesstoken: Object,
-        imageUrl: {
-            type: String,
-            default:''
-        }
+        accesstoken: Object
     },
     data () {
         return {
             T:true,
             F:false,
             curSex: '男',
-            //后端接收文件的参数名（如果不设置默认为file）
-            avatarFile:'avatarFile'
         }
     },
     methods:{
-      //图片上传成功回调函数
-      handleAvatarSuccess(res, file) {
-
-        //新头像的展示
-        this.imageUrl=res.data;
-
-        //把头像地址放到vuex中去，实现数据共享
-        this.$store.dispatch('setUploadAvatar',res.data)
-        
-      },
-      //上传头像之前，对头像文件进行校验（比如大小进行校验）
-      beforeAvatarUpload(file) {
-
-        const isImageType = file.type === 'image/jpeg' || file.type === 'image/jpg' ||file.type === 'image/png'
-                      ||file.type === 'image/JPEG' || file.type === 'image/JPG' ||file.type === 'image/PNG'
-        const isLt3M = file.size / 1024 / 1024 < 3;
-
-        //对文件格式进行校验
-        if (!isImageType) {
-          this.$message.error('上传头像图片只能是jpeg/jpg/png格式!');
-        }
-        if (!isLt3M) {
-          this.$message.error('上传头像图片大小不能超过 3MB!');
-        }
-        return isImageType && isLt3M;
-      },
-      //
       changeSwitchStatus: function(status){
 				this.$store.dispatch('setCurSwitchStatus',status)
 			}
     }
 }
 </script>
-
-<style scoped>
-  .avatar-uploader .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .avatar-uploader-icon:hover{
-    border:1px dashed #409EFF
-  }
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 178px;
-    height: 178px;
-    line-height: 178px;
-    text-align: center;
-  }
-  .avatar {
-    width: 178px;
-    height: 178px;
-    display: block;
-  }
-</style>

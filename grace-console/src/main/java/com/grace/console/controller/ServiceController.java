@@ -10,6 +10,7 @@ import com.grace.console.vo.ServiceDetailVO;
 import com.grace.console.vo.ServiceListItem;
 import com.grace.console.vo.ServiceListVO;
 import com.grace.console.vo.ServiceNameListVO;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -76,6 +77,7 @@ public class ServiceController {
      * @return {@link Result}<{@link ServiceNameListVO}>
      */
     @GetMapping("/getServiceList")
+    @PreAuthorize("@pms.hasPermission('service:list')")
     public Result<ServiceListVO> getServiceList(
             @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
             @RequestParam(value = "groupName",required = false, defaultValue = "") String groupName,

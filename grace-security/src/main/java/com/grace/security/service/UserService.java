@@ -8,6 +8,7 @@ import com.grace.common.dto.UserLoginDTO;
 import com.grace.security.entity.User;
 import com.grace.security.entity.UserRole;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -37,7 +38,7 @@ public interface UserService extends IService<User> {
      *
      * @return {@link UserInfoVO}
      */
-    UserInfoVO getCurrentUserInfo();
+    UserInfoVO getCurrentUserInfo(HttpServletRequest request);
 
     /**
      * 查询所有用户并分页（并对分页功能进行性能调优）
