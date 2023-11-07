@@ -11,7 +11,7 @@ export function exportAllUser(){
 export function exportAllRole(){
     return request({
         method:'get',
-        url:'/grace/server/sys/export/excel/exportAllRole',
+        url:'/grace/server/export/excel/exportAllRole',
         responseType: 'blob' //响应类型要设置为blob
     })
 }

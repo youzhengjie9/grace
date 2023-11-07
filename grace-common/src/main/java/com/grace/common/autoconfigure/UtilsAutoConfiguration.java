@@ -1,9 +1,6 @@
 package com.grace.common.autoconfigure;
 
-import com.grace.common.utils.BrowserUtils;
-import com.grace.common.utils.IpToAddressUtils;
-import com.grace.common.utils.IpUtils;
-import com.grace.common.utils.SpringUtils;
+import com.grace.common.utils.*;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -18,7 +15,8 @@ import org.springframework.context.annotation.Import;
         BrowserUtils.class,
         IpToAddressUtils.class,
         IpUtils.class,
-        SpringUtils.class
+        SpringUtils.class,
+        EasyExcelUtils.class
 })
 public class UtilsAutoConfiguration {
 

@@ -1,4 +1,4 @@
-package com.grace.security.converter;
+package com.grace.common.converter;
 
 import com.alibaba.excel.converters.Converter;
 import com.alibaba.excel.enums.CellDataTypeEnum;
@@ -7,54 +7,65 @@ import com.alibaba.excel.metadata.data.ReadCellData;
 import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.metadata.property.ExcelContentProperty;
 
+
 /**
- * del_flag删除标记转换器。
+ * visible转换器
  * <p>
- * 作用是将private Integer delFlag;属性按照如下格式转换：
- * java类（Integer）     =>     excel表（String）
- * delFlag=0   =>     delFlag=未删除
- * delFlag=1   =>     delFlag=已删除
- *
+ * 0显示 1隐藏
  * @author youzhengjie
- * @date 2022/10/23 22:53:24
+ * @date 2023-11-07 12:00:59
  */
-public class DelFlagConverter implements Converter<Integer> {
+public class VisibleConverter implements Converter<Integer> {
 
-    private static final String NOT_DEL="未删除";
+    private static final String SHOW="显示";
 
-    private static final String IS_DEL="已删除";
+    private static final String HIDE="隐藏";
+
 
     @Override
     public Class<?> supportJavaTypeKey() {
         return Integer.class;
     }
 
+
     @Override
     public CellDataTypeEnum supportExcelTypeKey() {
         return CellDataTypeEnum.STRING;
     }
 
+
+    /**
+     * excel表的visible转换为java类中的visible
+     *
+     * @param cellData            单元格数据
+     * @param contentProperty     内容属性
+     * @param globalConfiguration 全局配置
+     * @return {@link Integer}
+     * @throws Exception 异常
+     */
     @Override
     public Integer convertToJavaData(ReadCellData<?> cellData, ExcelContentProperty contentProperty, GlobalConfiguration globalConfiguration) throws Exception {
-
         String stringValue = cellData.getStringValue();
-
-        if(stringValue.equals(NOT_DEL)){
-            return 0;
-        }else {
-            return 1;
-        }
+        return (stringValue.equals(SHOW)) ? 0 : 1  ;
     }
 
+
+    /**
+     * java类中的visible转换为excel表中的visible
+     *
+     * @param value               价值
+     * @param contentProperty     内容属性
+     * @param globalConfiguration 全局配置
+     * @return {@link WriteCellData}<{@link ?}>
+     * @throws Exception 异常
+     */
     @Override
     public WriteCellData<?> convertToExcelData(Integer value, ExcelContentProperty contentProperty, GlobalConfiguration globalConfiguration) throws Exception {
 
-        String del;
         if(value == 0){
-            del=NOT_DEL;
+            return new WriteCellData<>(SHOW);
         }else {
-            del=IS_DEL;
+            return new WriteCellData<>(HIDE);
         }
-        return new WriteCellData<>(del);
     }
 }

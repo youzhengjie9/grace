@@ -21,13 +21,13 @@ public interface MenuMapper extends BaseMapper<Menu> {
     /**
      * 查询指定用户的所有菜单列表（包括目录和菜单，但是不包括按钮）,说白了就是type=0和type=1，后面要构建菜单树
      */
-    List<Menu> getMenuListByUserId(@Param("userid") long userid);
+    List<Menu> getMenuListByUserId(@Param("userId") long userId);
 
 
     /**
      * 根据userid获取用户权限。（说白了就是获取sys_menu表中type=1和type=2的perms），这就是我们访问任何接口和菜单的权限
      */
-    List<String> getUserPermissionByUserId(@Param("userid") long userid);
+    List<String> getUserPermissionByUserId(@Param("userId") long userId);
 
 
     /**
@@ -44,12 +44,12 @@ public interface MenuMapper extends BaseMapper<Menu> {
     List<Menu> getAssignMenuTreePermission();
 
     /**
-     * 通过roleid来查询指定用户当前所拥有的menu菜单列表
+     * 通过角色id去查询该角色已选择的菜单
      *
-     * @param roleid 用户标识
+     * @param roleId 用户标识
      * @return {@link List}<{@link Menu}>
      */
-    List<Menu> selectRoleCheckedMenuByRoleId(@Param("roleid") long roleid);
+    List<Menu> getRoleCheckedMenuByRoleId(@Param("roleId") long roleId);
 
     /**
      * 查询sys_menu表，但是只查询目录（type=0）
@@ -62,20 +62,20 @@ public interface MenuMapper extends BaseMapper<Menu> {
     List<Menu> onlySelectMenu();
 
     /**
-     * 通过菜单id查询菜单名称
+     * 通过菜单id获取菜单名称
      *
-     * @param menuid menuid
+     * @param menuId menuId
      * @return {@link String}
      */
-    String selectMenuNameByMenuId(@Param("menuid") long menuid);
+    String getMenuNameByMenuId(@Param("menuId") long menuId);
 
     /**
      * 根据用户id拿到这个用户的动态路由（也就是只获取type为1的菜单），返回vue实现动态路由添加
      *
-     * @param userid 用户标识
+     * @param userId 用户id
      * @return {@link List}<{@link Menu}>
      */
-    List<Menu> getRouterByUserId(@Param("userid") long userid);
+    List<Menu> getRouterByUserId(@Param("userId") long userId);
 
     /**
      * 添加菜单
@@ -92,6 +92,6 @@ public interface MenuMapper extends BaseMapper<Menu> {
      * @param menu 菜单
      * @return int
      */
-    int updateMenu(Menu menu);
+    int modifyMenu(Menu menu);
 
 }

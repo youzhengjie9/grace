@@ -123,7 +123,7 @@ import {
 } from "@/api/user";
 
 import { selectAllRole, selectUserCheckedRoleByUserId } from "@/api/role";
-import { exportAllUser } from "@/api/export-excel";
+import { exportAllUser } from "@/api/exportExcel";
 
 export default {
   name: "UserList",

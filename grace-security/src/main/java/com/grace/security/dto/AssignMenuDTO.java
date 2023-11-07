@@ -1,29 +1,37 @@
 package com.grace.security.dto;
 
-import io.swagger.annotations.ApiModelProperty;
-import lombok.*;
-
 import java.io.Serializable;
 
 /**
- * 分配菜单dto
+ * 分配菜单DTO
  *
  * @author youzhengjie
- * @date 2022/10/17 23:34:10
+ * @date 2023-11-07 11:48:07
  */
-@AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode
-@Builder
-@Data
 public class AssignMenuDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("该角色新的菜单列表的id数组")
+    /**
+     * 该角色新的菜单列表的id数组
+     */
     private long[] menuList;
-
 
     private long roleid;
 
+    public long[] getMenuList() {
+        return menuList;
+    }
+
+    public void setMenuList(long[] menuList) {
+        this.menuList = menuList;
+    }
+
+    public long getRoleid() {
+        return roleid;
+    }
+
+    public void setRoleid(long roleid) {
+        this.roleid = roleid;
+    }
 }

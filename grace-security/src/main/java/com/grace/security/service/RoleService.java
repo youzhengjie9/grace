@@ -18,17 +18,17 @@ public interface RoleService extends IService<Role> {
     /**
      * 查询所有角色并分页（并对分页功能进行性能调优）
      */
-    List<Role> selectAllRoleByLimit(int page, int size);
+    List<Role> getRoleList(int page, int size);
 
     /**
      * 查询总角色数
      */
-    int selectAllRoleCount();
+    int getRoleCount();
 
     /**
      * 查询所有角色
      */
-    List<Role> selectAllRole();
+    List<Role> getAllRole();
 
     /**
      * 通过userid来查询指定用户当前所拥有的role角色列表
@@ -36,7 +36,7 @@ public interface RoleService extends IService<Role> {
      * @param userid 用户标识
      * @return {@link List}<{@link SysRole}>
      */
-    List<Role> selectUserCheckedRoleByUserId(long userid);
+    List<Role> getUserCheckedRoleByUserId(long userid);
 
     /**
      * 添加角色
@@ -52,7 +52,7 @@ public interface RoleService extends IService<Role> {
      * @param roleFormDTO 角色表单dto
      * @return int
      */
-    int updateRole(RoleFormDTO roleFormDTO);
+    int modifyRole(RoleFormDTO roleFormDTO);
 
 
     /**
@@ -72,20 +72,20 @@ public interface RoleService extends IService<Role> {
     boolean assignMenuToRole(List<RoleMenu> roleMenuList);
 
     /**
-     * mysql通过role的name关键字搜索
+     * 通过角色名称获取角色列表
      *
      * @param roleName 角色名
      * @param page     页面
      * @param size     大小
-     * @return {@link List}<{@link SysRole}>
+     * @return {@link List}<{@link Role}>
      */
-    List<Role> searchRoleByRoleNameAndLimit(String roleName, int page, int size);
+    List<Role> getRoleListByRoleName(String roleName, int page, int size);
 
     /**
-     * 按role的name搜索role数量
+     * 通过角色名称获取角色数量
      *
      * @param roleName 角色名
      * @return int
      */
-    int searchRoleCountByRoleName(String roleName);
+    int getRoleCountByRoleName(String roleName);
 }

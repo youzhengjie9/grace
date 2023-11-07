@@ -1,24 +1,20 @@
 package com.grace.security.controller;
 
 import com.grace.common.constant.ParentMappingConstants;
-import com.petal.common.base.annotation.OperLog;
-import com.petal.common.base.dto.SysAssignMenuDTO;
-import com.petal.common.base.dto.SysRoleFormDTO;
-import com.petal.common.base.entity.SysRole;
-import com.petal.common.base.entity.SysRoleMenu;
-import com.petal.common.base.enums.ResponseType;
-import com.petal.common.base.utils.ResponseResult;
-import com.petal.common.base.utils.SnowId;
-import com.petal.system.service.SysRoleService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import com.grace.common.utils.Result;
+import com.grace.common.utils.SnowId;
+import com.grace.security.dto.AssignMenuDTO;
+import com.grace.security.dto.RoleFormDTO;
+import com.grace.security.entity.Role;
+import com.grace.security.entity.RoleMenu;
+import com.grace.security.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 角色接口
@@ -30,114 +26,99 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @RequestMapping(path = ParentMappingConstants.ROLE_CONTROLLER)
 public class RoleController {
 
-    private SysRoleService sysRoleService;
-
     @Autowired
-    public void setSysRoleService(SysRoleService sysRoleService) {
-        this.sysRoleService = sysRoleService;
+    private RoleService roleService;
+
+    /**
+     * 获取所有角色并分页
+     *
+     * @return {@link Result}<{@link List}<{@link Role}>>
+     */
+    @GetMapping(path = "/getRoleList")
+    public Result<List<Role>> getRoleList(int page, int size){
+        page=(page-1)*size;
+        try {
+            List<Role> roles = roleService.getRoleList(page, size);
+            return Result.ok(roles);
+        }catch (Exception e){
+            return Result.fail(null);
+        }
     }
 
     /**
+     * 获取所有角色数量
      *
-     * @param page
-     * @param size
-     * @return
+     * @return {@link Result}<{@link Integer}>
      */
-    //1 8 = 0 8
-    //2 8 = 8 8
-    //3 8 = 16 8
-    @PreAuthorize("@pms.hasPermission('sys:role:list')")
-    @OperLog("查询所有角色并分页")
-    @GetMapping(path = "/selectAllRoleByLimit")
-    @ApiOperation("查询所有角色并分页")
-    public ResponseResult<List<SysRole>> selectAllRoleByLimit(int page, int size){
-        page=(page-1)*size;
+    @GetMapping(path = "/getRoleCount")
+    public Result<Integer> getRoleCount(){
         try {
-            List<SysRole> sysRoles = sysRoleService.selectAllRoleByLimit(page, size);
-            return ResponseResult.build
-                    (ResponseType.SUCCESS.getCode(), ResponseType.SUCCESS.getMessage(),sysRoles);
+            int count = roleService.getRoleCount();
+            return Result.ok(count);
         }catch (Exception e){
-            return ResponseResult.build
-                    (ResponseType.ERROR.getCode(), ResponseType.ERROR.getMessage(),null);
+            return Result.fail(null);
         }
     }
 
-    @PreAuthorize("@pms.hasPermission('sys:role:list')")
-    @OperLog("查询所有角色数量")
-    @GetMapping(path = "/selectAllRoleCount")
-    @ApiOperation("查询所有角色数量")
-    public ResponseResult<Integer> selectAllRoleCount(){
-
+    /**
+     * 获取所有角色
+     *
+     * @return {@link Result}<{@link List}<{@link Role}>>
+     */
+    @GetMapping(path = "/getAllRole")
+    public Result<List<Role>> getAllRole(){
         try {
-            int count = sysRoleService.selectAllRoleCount();
-            return ResponseResult.build
-                    (ResponseType.SUCCESS.getCode(), ResponseType.SUCCESS.getMessage(),count);
+            List<Role> roles = roleService.getAllRole();
+            return Result.ok(roles);
         }catch (Exception e){
-            return ResponseResult.build
-                    (ResponseType.ERROR.getCode(), ResponseType.ERROR.getMessage(),null);
-        }
-
-    }
-
-    @PreAuthorize("@pms.hasPermission('sys:role:list')")
-    @OperLog("查询所有角色")
-    @GetMapping(path = "/selectAllRole")
-    @ApiOperation("查询所有角色")
-    public ResponseResult<List<SysRole>> selectAllRole(){
-        try {
-            List<SysRole> sysRoles = sysRoleService.selectAllRole();
-            return ResponseResult.build
-                    (ResponseType.SUCCESS.getCode(), ResponseType.SUCCESS.getMessage(),sysRoles);
-        }catch (Exception e){
-            return ResponseResult.build
-                    (ResponseType.ERROR.getCode(), ResponseType.ERROR.getMessage(),null);
+            return Result.fail(null);
         }
     }
 
-    @PreAuthorize("@pms.hasPermission('sys:role:list')")
-    @OperLog("根据用户id查询用户已经选择的角色")
-    @GetMapping(path = "/selectUserCheckedRoleByUserId")
-    @ApiOperation("根据用户id查询用户已经选择的角色")
-    public ResponseResult<List<SysRole>> selectUserCheckedRoleByUserId(@RequestParam("id") String id){
+    /**
+     * 根据用户id获取用户已经选择的角色
+     *
+     * @param id 用户id
+     * @return {@link Result}<{@link List}<{@link Role}>>
+     */
+    @GetMapping(path = "/getUserCheckedRoleByUserId")
+    public Result<List<Role>> getUserCheckedRoleByUserId(@RequestParam("id") String id){
         try {
             long userid = Long.parseLong(id);
-            List<SysRole> sysRoles = sysRoleService.selectUserCheckedRoleByUserId(userid);
-            return ResponseResult.build
-                    (ResponseType.SUCCESS.getCode(), ResponseType.SUCCESS.getMessage(),sysRoles);
+            List<Role> roles = roleService.getUserCheckedRoleByUserId(userid);
+            return Result.ok(roles);
         }catch (Exception e){
-            return ResponseResult.build
-                    (ResponseType.ERROR.getCode(), ResponseType.ERROR.getMessage(),null);
+            return Result.fail(null);
         }
     }
 
-    @PreAuthorize("@pms.hasPermission('sys:role:list:add')")
-    @OperLog("添加角色")
+    /**
+     * 添加角色
+     *
+     * @return {@link Result}<{@link Object}>
+     */
     @PostMapping("/addRole")
-    @ApiOperation("添加角色")
-    public ResponseResult<Object> addRole(@RequestBody @Valid SysRoleFormDTO sysRoleFormDTO){
+    public Result<Object> addRole(@RequestBody @Valid RoleFormDTO roleFormDTO){
         try {
-            sysRoleService.addRole(sysRoleFormDTO);
-            return ResponseResult.build(ResponseType.SUCCESS.getCode(),
-                    ResponseType.SUCCESS.getMessage(),null);
+            roleService.addRole(roleFormDTO);
+            return Result.ok(null);
         }catch (Exception e){
-            return ResponseResult.build(ResponseType.ERROR.getCode(),
-                    ResponseType.ERROR.getMessage(),null);
+            return Result.fail(null);
         }
     }
 
-    @PreAuthorize("@pms.hasPermission('sys:role:list:update')")
-    @OperLog("修改角色")
-    @PostMapping(path = "/updateRole")
-    @ApiOperation("修改角色")
-    public ResponseResult<Object> updateRole(@RequestBody @Valid SysRoleFormDTO sysRoleFormDTO){
-
+    /**
+     * 修改角色
+     *
+     * @return {@link Result}<{@link Object}>
+     */
+    @PostMapping(path = "/modifyRole")
+    public Result<Object> modifyRole(@RequestBody @Valid RoleFormDTO roleFormDTO){
         try {
-            sysRoleService.updateRole(sysRoleFormDTO);
-            return ResponseResult.build(ResponseType.SUCCESS.getCode(),
-                    ResponseType.SUCCESS.getMessage(),null);
+            roleService.modifyRole(roleFormDTO);
+            return Result.ok(null);
         }catch (Exception e){
-            return ResponseResult.build(ResponseType.ERROR.getCode(),
-                    ResponseType.ERROR.getMessage(),null);
+            return Result.fail(null);
         }
     }
 
@@ -145,108 +126,81 @@ public class RoleController {
      * 删除角色
      *
      * @param id id
-     * @return {@link ResponseResult}
+     * @return {@link Result}<{@link Object}>
      */
-    @PreAuthorize("@pms.hasPermission('sys:role:list:delete')")
-    @OperLog("删除角色")
     @DeleteMapping(path = "/deleteRole")
-    @ApiOperation("删除角色")
-    public ResponseResult<Object> deleteRole(@RequestParam("id") long id){
+    public Result<Object> deleteRole(@RequestParam("id") long id){
         try {
-            sysRoleService.deleteRole(id);
-            return ResponseResult.build(ResponseType.SUCCESS.getCode(),
-                    ResponseType.SUCCESS.getMessage(),null);
+            roleService.deleteRole(id);
+            return Result.ok(null);
         }catch (Exception e){
-            return ResponseResult.build(ResponseType.ERROR.getCode(),
-                    ResponseType.ERROR.getMessage(),null);
+            return Result.fail(null);
         }
-
     }
 
     /**
      * 分配菜单
      *
-     * @param sysAssignMenuDTO 分配菜单dto
-     * @return {@link ResponseResult}
+     * @param assignMenuDTO 分配菜单dto
+     * @return {@link Result}<{@link Object}>
      */
-    @PreAuthorize("@pms.hasPermission('sys:role:list:assign-menu')")
-    @OperLog("分配菜单")
     @PostMapping(path = "/assignMenu")
-    @ApiOperation("分配菜单")
-    public ResponseResult<Object> assignMenu(@RequestBody @Valid SysAssignMenuDTO sysAssignMenuDTO){
+    public Result<Object> assignMenu(@RequestBody @Valid AssignMenuDTO assignMenuDTO){
         try {
-            if(sysAssignMenuDTO.getMenuList()==null || sysAssignMenuDTO.getMenuList().length==0){
-                return ResponseResult.build(ResponseType.SUCCESS.getCode(),
-                        ResponseType.SUCCESS.getMessage(),null);
+            if(assignMenuDTO.getMenuList()==null || assignMenuDTO.getMenuList().length==0){
+                return Result.ok(null);
             }
-            List<SysRoleMenu> sysRoleMenus=new CopyOnWriteArrayList<>();
-
-            for (long menuId : sysAssignMenuDTO.getMenuList()) {
-                SysRoleMenu sysRoleMenu = SysRoleMenu
-                        .builder()
-                        //手动使用雪花算法生成分布式id
-                        .id(SnowId.nextId())
-                        .roleId(sysAssignMenuDTO.getRoleid())
-                        .menuId(menuId)
-                        .build();
-                sysRoleMenus.add(sysRoleMenu);
+            List<RoleMenu> roleMenus= Collections.synchronizedList(new ArrayList<>());
+            for (long menuId : assignMenuDTO.getMenuList()) {
+                RoleMenu roleMenu = new RoleMenu();
+                roleMenu.setId(SnowId.nextId());
+                roleMenu.setRoleId(assignMenuDTO.getRoleid());
+                roleMenu.setMenuId(menuId);
+                roleMenus.add(roleMenu);
             }
             //调用分配角色业务类
-            sysRoleService.assignMenuToRole(sysRoleMenus);
-            return ResponseResult.build(ResponseType.SUCCESS.getCode(),
-                    ResponseType.SUCCESS.getMessage(),null);
+            roleService.assignMenuToRole(roleMenus);
+            return Result.ok(null);
         }catch (Exception e){
-            return ResponseResult.build(ResponseType.ERROR.getCode(),
-                    ResponseType.ERROR.getMessage(),null);
+            return Result.fail(null);
         }
-
     }
 
 
     /**
-     * mysql通过role的name关键字搜索
+     * 通过角色名称获取角色列表
      *
-     * @param roleName 角色名
+     * @param roleName 角色名称
      * @param page     页面
      * @param size     大小
-     * @return {@link ResponseResult}
+     * @return {@link Result}<{@link List}<{@link Role}>>
      */
-    @PreAuthorize("@pms.hasPermission('sys:role:list')")
-    @OperLog("根据角色名搜索角色并分页")
-    @GetMapping(path = "/searchRoleByRoleNameAndLimit")
-    @ApiOperation("根据角色名搜索角色并分页")
-    public ResponseResult<List<SysRole>> searchRoleByRoleNameAndLimit(@RequestParam("roleName") String roleName,
-                                                       @RequestParam("page") int page,
-                                                       @RequestParam("size") int size){
+    @GetMapping(path = "/getRoleListByRoleName")
+    public Result<List<Role>> getRoleListByRoleName(@RequestParam("roleName") String roleName,
+                                                    @RequestParam("page") int page,
+                                                    @RequestParam("size") int size){
         page=(page-1)*size;
         try {
-            List<SysRole> sysRoles = sysRoleService.searchRoleByRoleNameAndLimit(roleName, page, size);
-            return ResponseResult.build(ResponseType.SUCCESS.getCode(),
-                    ResponseType.SUCCESS.getMessage(),sysRoles);
+            List<Role> roles = roleService.getRoleListByRoleName(roleName, page, size);
+            return Result.ok(roles);
         }catch (Exception e){
-            return ResponseResult.build(ResponseType.ERROR.getCode(),
-                    ResponseType.ERROR.getMessage(),null);
+            return Result.fail(null);
         }
     }
 
     /**
-     * 按role的name搜索role数量
+     * 通过角色名称获取角色数量
      *
      * @param roleName 角色名
-     * @return {@link ResponseResult}
+     * @return {@link Result}<{@link Integer}>
      */
-    @PreAuthorize("@pms.hasPermission('sys:role:list')")
-    @OperLog("按role的name搜索role数量")
-    @GetMapping(path = "/searchRoleCountByRoleName")
-    @ApiOperation("按role的name搜索role数量")
-    public ResponseResult<Integer> searchRoleCountByRoleName(@RequestParam("roleName") String roleName){
+    @GetMapping(path = "/getRoleCountByRoleName")
+    public Result<Integer> getRoleCountByRoleName(@RequestParam("roleName") String roleName){
         try {
-            int count = sysRoleService.searchRoleCountByRoleName(roleName);
-            return ResponseResult.build(ResponseType.SUCCESS.getCode(),
-                    ResponseType.SUCCESS.getMessage(),count);
+            int count = roleService.getRoleCountByRoleName(roleName);
+            return Result.ok(count);
         }catch (Exception e){
-            return ResponseResult.build(ResponseType.ERROR.getCode(),
-                    ResponseType.ERROR.getMessage(),null);
+            return Result.fail(null);
         }
     }
 

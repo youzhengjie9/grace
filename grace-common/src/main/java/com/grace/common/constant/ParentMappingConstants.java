@@ -49,4 +49,19 @@ public final class ParentMappingConstants {
      */
     public static final String ROLE_CONTROLLER = GRACE_SERVER_BASE_URL+"/role";
 
+    /**
+     * MenuController接口的顶层路径
+     */
+    public static final String MENU_CONTROLLER = GRACE_SERVER_BASE_URL+"/menu";
+
+    /**
+     * MenuTreeController接口的顶层路径
+     */
+    public static final String MENU_TREE_CONTROLLER = GRACE_SERVER_BASE_URL+"/menu/tree";
+
+    /**
+     * ExportExcelController接口的顶层路径
+     */
+    public static final String EXPORT_EXCEL_CONTROLLER = GRACE_SERVER_BASE_URL+"/export/excel";
+
 }

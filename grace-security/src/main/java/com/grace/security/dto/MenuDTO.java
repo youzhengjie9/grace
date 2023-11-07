@@ -6,7 +6,7 @@ import com.grace.security.entity.Menu;
 import java.io.Serializable;
 
 /**
- * 菜单dto
+ * 菜单DTO
  *
  * @author youzhengjie
  * @date 2023-11-06 20:49:50

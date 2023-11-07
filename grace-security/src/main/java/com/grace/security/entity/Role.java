@@ -8,9 +8,9 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.grace.security.converter.DelFlagConverter;
-import com.grace.security.converter.LocalDateTimeConverter;
-import com.grace.security.converter.StatusConverter;
+import com.grace.common.converter.DelFlagConverter;
+import com.grace.common.converter.LocalDateTimeConverter;
+import com.grace.common.converter.StatusConverter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

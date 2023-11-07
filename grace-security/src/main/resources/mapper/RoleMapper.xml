@@ -3,19 +3,19 @@
 <mapper namespace="com.grace.security.mapper.RoleMapper">
 
     <!--   这种增强版的分页sql的子查询一定要加上ORDER BY id，不然数据会不一致 -->
-    <select id="selectAllRoleByLimit" resultType="com.grace.security.entity.Role">
+    <select id="getRoleList" resultType="com.grace.security.entity.Role">
         SELECT *
         FROM sys_role
         WHERE id >= (select id from sys_role ORDER BY id limit #{page},1)
           AND del_flag = 0
         limit #{size}
     </select>
-    <select id="selectAllRoleCount" resultType="java.lang.Integer">
+    <select id="getRoleCount" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM sys_role
         WHERE del_flag=0
     </select>
-    <select id="selectAllRole" resultType="com.grace.security.entity.Role">
+    <select id="getAllRole" resultType="com.grace.security.entity.Role">
         SELECT *
         FROM sys_role
         WHERE del_flag = 0
@@ -24,7 +24,7 @@
     <resultMap id="res1" type="com.grace.security.entity.Role">
         <result property="id" column="role_id"/>
     </resultMap>
-    <select id="selectUserCheckedRoleByUserId" resultMap="res1">
+    <select id="getUserCheckedRoleByUserId" resultMap="res1">
         SELECT DISTINCT role_id
         from sys_user_role
         WHERE user_id = #{userid}
@@ -49,7 +49,7 @@
         </foreach>
     </insert>
 
-    <select id="searchRoleByRoleNameAndLimit" resultType="com.grace.security.entity.Role">
+    <select id="getRoleListByRoleName" resultType="com.grace.security.entity.Role">
         SELECT *
         FROM sys_role
         WHERE id >= (SELECT id FROM sys_role ORDER BY id limit #{page},1)
@@ -57,7 +57,7 @@
           AND `name` LIKE CONCAT('%',#{roleName}, '%')
         limit #{size}
     </select>
-    <select id="searchRoleCountByRoleName" resultType="java.lang.Integer">
+    <select id="getRoleCountByRoleName" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM sys_role
         WHERE `name` LIKE CONCAT('%', #{roleName}, '%')

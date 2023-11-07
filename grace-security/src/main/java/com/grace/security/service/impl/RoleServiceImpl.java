@@ -28,23 +28,23 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     private RoleMapper roleMapper;
 
     @Override
-    public List<Role> selectAllRoleByLimit(int page, int size) {
-        return roleMapper.selectAllRoleByLimit(page, size);
+    public List<Role> getRoleList(int page, int size) {
+        return roleMapper.getRoleList(page, size);
     }
 
     @Override
-    public int selectAllRoleCount() {
-        return roleMapper.selectAllRoleCount();
+    public int getRoleCount() {
+        return roleMapper.getRoleCount();
     }
 
     @Override
-    public List<Role> selectAllRole() {
-        return roleMapper.selectAllRole();
+    public List<Role> getAllRole() {
+        return roleMapper.getAllRole();
     }
 
     @Override
-    public List<Role> selectUserCheckedRoleByUserId(long userid) {
-        return roleMapper.selectUserCheckedRoleByUserId(userid);
+    public List<Role> getUserCheckedRoleByUserId(long userid) {
+        return roleMapper.getUserCheckedRoleByUserId(userid);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     }
 
     @Override
-    public int updateRole(RoleFormDTO roleFormDTO) {
+    public int modifyRole(RoleFormDTO roleFormDTO) {
 
         Role role = new Role();
         BeanUtils.copyProperties(roleFormDTO, role);
@@ -112,12 +112,12 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     }
 
     @Override
-    public List<Role> searchRoleByRoleNameAndLimit(String roleName, int page, int size) {
-        return roleMapper.searchRoleByRoleNameAndLimit(roleName, page, size);
+    public List<Role> getRoleListByRoleName(String roleName, int page, int size) {
+        return roleMapper.getRoleListByRoleName(roleName, page, size);
     }
 
     @Override
-    public int searchRoleCountByRoleName(String roleName) {
-        return roleMapper.searchRoleCountByRoleName(roleName);
+    public int getRoleCountByRoleName(String roleName) {
+        return roleMapper.getRoleCountByRoleName(roleName);
     }
 }

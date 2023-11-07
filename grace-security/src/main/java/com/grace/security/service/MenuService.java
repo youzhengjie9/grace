@@ -22,7 +22,7 @@ public interface MenuService extends IService<Menu> {
     /**
      * 根据userid获取用户权限。（说白了就是获取sys_menu表中type=1和type=2的perms），这就是我们访问任何接口和菜单的权限
      */
-    List<String> getUserPermissionByUserId(long userid);
+    List<String> getUserPermissionByUserId(long userId);
 
     /**
      * 获取菜单管理列表中的树型展示数据（说白了就是获取到sys_menu表中type=0和1和2所有数据）
@@ -38,12 +38,12 @@ public interface MenuService extends IService<Menu> {
     List<Menu> getAssignMenuTreePermission();
 
     /**
-     * 通过roleid来查询指定用户当前所拥有的menu菜单列表
+     * 通过角色id去查询该角色已选择的菜单
      *
-     * @param roleid 用户标识
+     * @param roleId 用户标识
      * @return {@link List}<{@link Menu}>
      */
-    List<Menu> selectRoleCheckedMenuByRoleId(long roleid);
+    List<Menu> getRoleCheckedMenuByRoleId(long roleId);
 
 
     /**
@@ -57,24 +57,24 @@ public interface MenuService extends IService<Menu> {
     List<Menu> onlySelectMenu();
 
     /**
-     * 通过菜单id查询菜单名称
+     * 通过菜单id获取菜单名称
      *
-     * @param menuid menuid
+     * @param menuId menuId
      * @return {@link String}
      */
-    String selectMenuNameByMenuId(long menuid);
+    String getMenuNameByMenuId(long menuId);
 
     /**
      * 根据用户id拿到这个用户的动态路由（也就是只获取type为1的菜单），返回vue实现动态路由添加
      *
-     * @param userid 用户id
+     * @param userId 用户id
      */
-    String getRouterByUserId(long userid);
+    String getRouterByUserId(long userId);
 
     /**
      * 添加菜单
      *
-     * @param menuDTO 菜单dto
+     * @param menuDTO 菜单DTO
      * @return int
      */
     int addMenu(MenuDTO menuDTO);
@@ -82,16 +82,16 @@ public interface MenuService extends IService<Menu> {
     /**
      * 修改菜单
      *
-     * @param sysMenuDto 菜单dto
+     * @param menuDTO 菜单DTO
      * @return int
      */
-    int updateMenu(MenuDTO menuDTO);
+    int modifyMenu(MenuDTO menuDTO);
 
     /**
      * 删除菜单
      *
-     * @param menuid menuid
+     * @param menuId menuId
      * @return int
      */
-    int deleteMenu(long menuid);
+    int deleteMenu(long menuId);
 }

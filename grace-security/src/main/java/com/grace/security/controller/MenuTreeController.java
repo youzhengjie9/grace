@@ -1,11 +1,8 @@
 package com.grace.security.controller;
 
-import com.petal.common.base.annotation.OperLog;
-import com.petal.common.base.enums.ResponseType;
-import com.petal.common.base.utils.ResponseResult;
-import com.petal.system.service.SysMenuTreeService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import com.grace.common.constant.ParentMappingConstants;
+import com.grace.common.utils.Result;
+import com.grace.security.service.MenuTreeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,54 +13,43 @@ import org.springframework.web.bind.annotation.RestController;
  * 菜单树控制器
  *
  * @author youzhengjie
- * @date 2022/10/17 21:10:14
+ * @date 2023-11-07 00:30:50
  */
 @RestController
-@RequestMapping(path = "/sys/menutree")
-@Api("菜单树接口")
+@RequestMapping(path = ParentMappingConstants.MENU_TREE_CONTROLLER)
 public class MenuTreeController {
 
-    private SysMenuTreeService sysMenuTreeService;
-
     @Autowired
-    public void setSysMenuTreeService(SysMenuTreeService sysMenuTreeService) {
-        this.sysMenuTreeService = sysMenuTreeService;
-    }
+    private MenuTreeService menuTreeService;
 
     /**
-     * 根据用户的userid来构建前端的后台管理系统侧边栏菜单
+     * 根据用户的userId来构建前端的后台管理系统侧边栏菜单
+     *
+     * @param userId 用户id
      * @return 菜单的json串
      */
-    @OperLog("根据用户的userid来构建前端的后台管理系统侧边栏菜单")
     @GetMapping(path = "/buildTreeByUserId")
-    @ApiOperation("根据用户的userid来构建前端的后台管理系统侧边栏菜单")
-    public ResponseResult<String> buildTreeByUserId(@RequestParam("userid") String userid){
+    public Result<String> buildTreeByUserId(@RequestParam("userId") String userId){
         try {
-            String menuTree = sysMenuTreeService.buildTreeByUserId(Long.parseLong(userid));
-            return ResponseResult.build(ResponseType.SUCCESS.getCode(),
-                    ResponseType.SUCCESS.getMessage(),menuTree);
+            String menuTree = menuTreeService.buildTreeByUserId(Long.parseLong(userId));
+            return Result.ok(menuTree);
         }catch (Exception e){
-            return ResponseResult.build(ResponseType.ERROR.getCode(),
-                    ResponseType.ERROR.getMessage(),null);
+            return Result.fail(null);
         }
-
     }
 
     /**
      * 将系统所有菜单权限构建成一棵树（应用于菜单管理表格数据）
-     * @return
+     *
+     * @return {@link Result}<{@link String}>
      */
-    @OperLog("将系统所有菜单权限构建成一棵树")
     @GetMapping(path = "/buildAllMenuPermissionTree")
-    @ApiOperation("将系统所有菜单权限构建成一棵树")
-    public ResponseResult<String> buildAllMenuPermissionTree(){
+    public Result<String> buildAllMenuPermissionTree(){
         try {
-            String menuTree = sysMenuTreeService.buildAllMenuPermissionTree();
-            return ResponseResult.build(ResponseType.SUCCESS.getCode(),
-                    ResponseType.SUCCESS.getMessage(),menuTree);
+            String menuTree = menuTreeService.buildAllMenuPermissionTree();
+            return Result.ok(menuTree);
         }catch (Exception e){
-            return ResponseResult.build(ResponseType.ERROR.getCode(),
-                    ResponseType.ERROR.getMessage(),null);
+            return Result.fail(null);
         }
 
     }
@@ -71,21 +57,16 @@ public class MenuTreeController {
     /**
      * 构建分配菜单的树（和上面buildAllMenuPermissionTree方法区别仅仅是这个方法只展示部分需要的字段、而buildAllMenuPermissionTree方法展示所有字段）
      *
-     * @return {@link String}
+     * @return {@link Result}<{@link String}>
      */
-    @OperLog("构建分配菜单的树")
     @GetMapping(path = "/buildAssignMenuTree")
-    @ApiOperation("构建分配菜单的树")
-    public ResponseResult<String> buildAssignMenuTree(){
+    public Result<String> buildAssignMenuTree(){
         try {
-            String menuTree = sysMenuTreeService.buildAssignMenuTree();
-            return ResponseResult.build(ResponseType.SUCCESS.getCode(),
-                    ResponseType.SUCCESS.getMessage(),menuTree);
+            String menuTree = menuTreeService.buildAssignMenuTree();
+            return Result.ok(menuTree);
         }catch (Exception e){
-            return ResponseResult.build(ResponseType.ERROR.getCode(),
-                    ResponseType.ERROR.getMessage(),null);
+            return Result.fail(null);
         }
-
     }
 
     /**
@@ -95,20 +76,17 @@ public class MenuTreeController {
      * 如果新增的是菜单type=1（可以选择的所属菜单有）：顶层目录（也就是第一层目录）、其他目录
      * 如果新增的是按钮type=2（可以选择的所属菜单有）：菜单
      *
+     * @param type 菜单类型
+     * @return {@link Result}<{@link String}>
      */
-    @OperLog("根据新增的菜单的菜单类型来构建可以选择的菜单树")
     @GetMapping(path = "/buildCanChooseMenuTreeByNewMenuType")
-    @ApiOperation("根据新增的菜单的菜单类型来构建可以选择的菜单树")
-    public ResponseResult<String> buildCanChooseMenuTreeByNewMenuType(@RequestParam("type") int type){
+    public Result<String> buildCanChooseMenuTreeByNewMenuType(@RequestParam("type") int type){
         try {
-            String menuTree = sysMenuTreeService.buildCanChooseMenuTreeByNewMenuType(type);
-            return ResponseResult.build(ResponseType.SUCCESS.getCode(),
-                    ResponseType.SUCCESS.getMessage(),menuTree);
+            String menuTree = menuTreeService.buildCanChooseMenuTreeByNewMenuType(type);
+            return Result.ok(menuTree);
         }catch (Exception e){
-            return ResponseResult.build(ResponseType.ERROR.getCode(),
-                    ResponseType.ERROR.getMessage(),null);
+            return Result.fail(null);
         }
-
     }
 
 }

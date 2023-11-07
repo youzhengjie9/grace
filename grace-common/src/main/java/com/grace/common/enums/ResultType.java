@@ -40,6 +40,11 @@ public enum ResultType {
     LOGOUT_SUCCESS(800,"退出登录成功"),
     LOGOUT_ERROR(801,"退出登录失败"),
 
+    /**
+     * 导出excel状态
+     */
+    EXPORT_EXCEL_ERROR(1001,"导出excel失败"),
+
     ;
 
 

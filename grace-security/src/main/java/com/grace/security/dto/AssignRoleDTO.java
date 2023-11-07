@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 分配角色dto
+ * 分配角色DTO
  *
  * @author youzhengjie
  * @date 2023-11-05 13:38:13

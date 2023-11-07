@@ -23,26 +23,26 @@ public interface RoleMapper extends BaseMapper<Role> {
     /**
      * 查询所有角色并分页（并对分页功能进行性能调优）
      */
-    List<Role> selectAllRoleByLimit(@Param("page") int page, @Param("size") int size);
+    List<Role> getRoleList(@Param("page") int page, @Param("size") int size);
 
     /**
      * 查询总角色数
      */
-    int selectAllRoleCount();
+    int getRoleCount();
 
     /**
      * 查询所有角色
      */
-    List<Role> selectAllRole();
+    List<Role> getAllRole();
 
 
     /**
      * 通过userid来查询指定用户当前所拥有的role角色列表
      *
      * @param userid 用户标识
-     * @return {@link List}<{@link SysRole}>
+     * @return {@link List}<{@link Role}>
      */
-    List<Role> selectUserCheckedRoleByUserId(@Param("userid") long userid);
+    List<Role> getUserCheckedRoleByUserId(@Param("userid") long userid);
 
 
     /**
@@ -62,23 +62,23 @@ public interface RoleMapper extends BaseMapper<Role> {
     int addMenuToRole(@Param("roleMenuList") List<RoleMenu> roleMenuList);
 
     /**
-     * mysql通过role的name关键字搜索
+     * 通过角色名称获取角色列表
      *
      * @param roleName 角色名
      * @param page     页面
      * @param size     大小
-     * @return {@link List}<{@link SysRole}>
+     * @return {@link List}<{@link Role}>
      */
-    List<Role> searchRoleByRoleNameAndLimit(@Param("roleName") String roleName,
-                                               @Param("page") int page,
-                                               @Param("size") int size);
+    List<Role> getRoleListByRoleName(@Param("roleName") String roleName,
+                                     @Param("page") int page,
+                                     @Param("size") int size);
 
     /**
-     * 按role的name搜索role数量
+     * 通过角色名称获取角色数量
      *
      * @param roleName 角色名
      * @return int
      */
-    int searchRoleCountByRoleName(@Param("roleName") String roleName);
+    int getRoleCountByRoleName(@Param("roleName") String roleName);
 
 }

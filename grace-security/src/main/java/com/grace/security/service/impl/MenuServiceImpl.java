@@ -36,8 +36,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     @Override
-    public List<String> getUserPermissionByUserId(long userid) {
-        return menuMapper.getUserPermissionByUserId(userid);
+    public List<String> getUserPermissionByUserId(long userId) {
+        return menuMapper.getUserPermissionByUserId(userId);
     }
 
     @Override
@@ -51,9 +51,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     @Override
-    public List<Menu> selectRoleCheckedMenuByRoleId(long roleid) {
+    public List<Menu> getRoleCheckedMenuByRoleId(long roleId) {
 
-        return menuMapper.selectRoleCheckedMenuByRoleId(roleid);
+        return menuMapper.getRoleCheckedMenuByRoleId(roleId);
     }
 
     @Override
@@ -67,14 +67,14 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     @Override
-    public String selectMenuNameByMenuId(long menuid) {
+    public String getMenuNameByMenuId(long menuId) {
 
-        return menuMapper.selectMenuNameByMenuId(menuid);
+        return menuMapper.getMenuNameByMenuId(menuId);
     }
 
     @Override
-    public String getRouterByUserId(long userid) {
-        List<Menu> router = menuMapper.getRouterByUserId(userid);
+    public String getRouterByUserId(long userId) {
+        List<Menu> router = menuMapper.getRouterByUserId(userId);
         //这个代码十分重要，解决登陆时，前端因为有些用户没有菜单/路由（也就是这个getRouterByUserId方法查不到数据导致一直死循环）
         //设置一个默认的路由，不管是什么用户、有没有菜单都会有这个默认的路由。防止前端死循环
 //        // TODO: 2023/11/6 默认路由需要进行更换
@@ -105,7 +105,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     @Override
-    public int updateMenu(MenuDTO menuDTO) {
+    public int modifyMenu(MenuDTO menuDTO) {
         Menu menu = menuDTO.getMenu();
         //设置parentid
         menu.setParentId(menuDTO.getParentId());
@@ -113,13 +113,13 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         menu.setType(menuDTO.getMenuType());
         //修改时间
         menu.setUpdateTime(LocalDateTime.now());
-        return menuMapper.updateMenu(menu);
+        return menuMapper.modifyMenu(menu);
     }
 
     @Override
-    public int deleteMenu(long menuid) {
+    public int deleteMenu(long menuId) {
         LambdaQueryWrapper<Menu> menuLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        menuLambdaQueryWrapper.eq(Menu::getId,menuid);
+        menuLambdaQueryWrapper.eq(Menu::getId,menuId);
         return menuMapper.delete(menuLambdaQueryWrapper);
     }
 
