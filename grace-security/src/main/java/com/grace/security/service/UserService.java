@@ -78,40 +78,33 @@ public interface UserService extends IService<User> {
      * @param userFormDTO 用户表单dto
      * @return int
      */
-    int updateUser(UserFormDTO userFormDTO);
+    int modifyUser(UserFormDTO userFormDTO);
 
 
     /**
      * 删除用户
      *
-     * @param id 用户id
+     * @param userId 用户id
      * @return int
      */
-    boolean deleteUser(long id);
+    boolean deleteUser(long userId);
 
     /**
      * 删除用户所有角色
      *
-     * @param userid 用户标识
+     * @param userId 用户id
      * @return int
      */
-    int deleteUserAllRoles(long userid);
+    int deleteUserAllRoles(long userId);
 
     /**
-     * 将角色分配给用户
+     * 给用户分配角色
      *
+     * @param userId 用户id
      * @param userRoleList 用户角色列表
      * @return boolean
      */
-    boolean assignRoleToUser(List<UserRole> userRoleList);
-
-    /**
-     * 给用户添加角色
-     *
-     * @param userRoleList 用户角色列表
-     * @return int
-     */
-    int addRoleToUser(List<UserRole> userRoleList);
+    boolean assignRoleToUser(Long userId,List<UserRole> userRoleList);
 
 
 }

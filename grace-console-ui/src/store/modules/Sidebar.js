@@ -48,14 +48,14 @@ const state = {
             icon: "el-icon-s-home",
             children: [],
         },
-        // {
-        //     id: 401,
-        //     path: "/namespace/list",
-        //     component: "../views/namespace/list/index.vue",
-        //     menuName: "角色管理",
-        //     icon: "el-icon-s-home",
-        //     children: [],
-        // },
+        {
+            id: 401,
+            path: "/role/list",
+            component: "../views/role/list/index.vue",
+            menuName: "角色管理",
+            icon: "el-icon-s-home",
+            children: [],
+        },
         // {
         //     id: 501,
         //     path: "/namespace/list",

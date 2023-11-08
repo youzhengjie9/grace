@@ -24,14 +24,6 @@ export function buildAssignMenuTree(){
     })
 }
 
-export function assignMenu(assignMenu){
-    return request({
-        method:'post',
-        url:'/grace/server/role/assignMenu',
-        data: assignMenu
-    })
-}
-
 export function buildCanChooseMenuTreeByNewMenuType(type){
     return request({
         method:'get',

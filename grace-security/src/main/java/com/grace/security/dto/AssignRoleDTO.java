@@ -22,14 +22,9 @@ public class AssignRoleDTO implements Serializable {
     private List<Role> roles;
 
     @NotBlank(message = "需要分配角色的用户id不能为空")
-    private String userid;
+    private String userId;
 
     public AssignRoleDTO() {
-    }
-
-    public AssignRoleDTO(List<Role> roles, String userid) {
-        this.roles = roles;
-        this.userid = userid;
     }
 
     public List<Role> getRoles() {
@@ -40,11 +35,11 @@ public class AssignRoleDTO implements Serializable {
         this.roles = roles;
     }
 
-    public String getUserid() {
-        return userid;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserid(String userid) {
-        this.userid = userid;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

@@ -11,7 +11,6 @@ public class RoleFormDTO implements Serializable {
 
     private Long id;
 
-
     /**
      * 角色名称
      */

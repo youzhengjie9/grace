@@ -67,6 +67,12 @@ const router = new VueRouter({
                     component: () => import('../views/user/list/index.vue')
                 },
                 {
+                    // 角色管理
+                    path: '/role/list',
+                    name: 'roleList',
+                    component: () => import('../views/role/list/index.vue')
+                },
+                {
                     // 命名空间列表路由
                     path: '/namespace/list',
                     name: 'namespaceList',

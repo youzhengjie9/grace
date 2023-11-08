@@ -1,9 +1,9 @@
 import request from '@/utils/request'
 
-export function selectAllRoleByLimit(page,size){
+export function getRoleList(page,size){
     return request({
         method:'get',
-        url:'/grace/server/role/selectAllRoleByLimit',
+        url:'/grace/server/role/getRoleList',
         params:{
             page:page,
             size:size
@@ -11,27 +11,31 @@ export function selectAllRoleByLimit(page,size){
     })
 }
 
-export function selectAllRoleCount(){
+export function getRoleListByRoleName(roleName, page, size){
     return request({
         method:'get',
-        url:'/grace/server/role/selectAllRoleCount'
-    })
-}
-
-
-export function selectAllRole(){
-    return request({
-        method:'get',
-        url:'/grace/server/role/selectAllRole'
-    })
-}
-
-export function selectUserCheckedRoleByUserId(userid){
-    return request({
-        method:'get',
-        url:'/grace/server/role/selectUserCheckedRoleByUserId',
+        url:'/grace/server/role/getRoleListByRoleName',
         params:{
-            id:userid
+            roleName:roleName,
+            page:page,
+            size:size
+        }
+    })
+}
+
+export function getAllRole(){
+    return request({
+        method:'get',
+        url:'/grace/server/role/getAllRole'
+    })
+}
+
+export function getUserCheckedRoleByUserId(userId){
+    return request({
+        method:'get',
+        url:'/grace/server/role/getUserCheckedRoleByUserId',
+        params:{
+            id:userId
         }
     })
 }
@@ -44,20 +48,20 @@ export function addRole(roleFormDTO){
     })
 }
 
-export function updateRole(roleFormDTO){
+export function modifyRole(roleFormDTO){
     return request({
         method:'post',
-        url:'/grace/server/role/updateRole',
+        url:'/grace/server/role/modifyRole',
         data:roleFormDTO
     })
 }
 
-export function deleteRole(roleid){
+export function deleteRole(roleId){
     return request({
         method:'delete',
         url:'/grace/server/role/deleteRole',
         params:{
-            id:roleid
+            roleId:roleId
         }
     })
 }
@@ -70,24 +74,3 @@ export function assignMenu(assignMenuDTO){
     })
 }
 
-export function searchRoleByRoleNameAndLimit(roleName, page, size){
-    return request({
-        method:'get',
-        url:'/grace/server/role/searchRoleByRoleNameAndLimit',
-        params:{
-            roleName:roleName,
-            page:page,
-            size:size
-        }
-    })
-}
-
-export function searchRoleCountByRoleName(roleName){
-    return request({
-        method:'get',
-        url:'/grace/server/role/searchRoleCountByRoleName',
-        params:{
-            roleName:roleName
-        }
-    })
-}

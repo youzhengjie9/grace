@@ -1,20 +1,21 @@
 package com.grace.security.controller;
 
+import com.grace.common.constant.Constants;
 import com.grace.common.constant.ParentMappingConstants;
-import com.grace.security.dto.AssignRoleDTO;
-import com.grace.security.dto.UserFormDTO;
+import com.grace.common.dto.UserLoginDTO;
 import com.grace.common.enums.ResultType;
+import com.grace.common.utils.PageData;
 import com.grace.common.utils.Result;
 import com.grace.common.utils.SnowId;
 import com.grace.common.vo.TokenVO;
 import com.grace.common.vo.UserInfoVO;
-import com.grace.common.dto.UserLoginDTO;
+import com.grace.security.dto.AssignRoleDTO;
+import com.grace.security.dto.UserFormDTO;
 import com.grace.security.entity.Role;
 import com.grace.security.entity.User;
 import com.grace.security.entity.UserRole;
 import com.grace.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -86,28 +87,27 @@ public class UserController {
     /**
      * 获取所有用户信息并分页
      */
-    @PreAuthorize("@pms.hasPermission('user:list')")
     @GetMapping(path = "/getUserList")
-    public Result<List<User>> getUserList(int page, int size){
-        page=(page-1)*size;
-        try {
-            List<User> users = userService.getUserList(page, size);
-            return Result.ok(users);
-        }catch (Exception e){
-            return Result.fail(null);
+    public Result<PageData<User>> getUserList(int page, int size){
+        // 如果 page < 1 ,则要把page恢复成 1 ,因为page的最小值就为 1
+        if(page < 1){
+            page = 1;
         }
-    }
-    /**
-     * 查询所有用户数量
-     *
-     * @return {@link Result}
-     */
-    @PreAuthorize("@pms.hasPermission('user:list')")
-    @GetMapping(path = "/getUserCount")
-    public Result<Integer> getUserCount(){
+        // 如果 size <= 0 ,则要把size恢复成 1 ,因为size的最小值为 1
+        if(size <= 0 ){
+            size = 1;
+        }
+        // 将当前页转成MySQL分页的起始位置！
+        page = (page-1)*size;
+        // 对size的大小进行限制,防止一次性获取太多的数据（下面的代码意思是一次“最多”获取500条记录,如果size的值小于500,则size还是原来的值不变）
+        size = Math.min(size,500);
         try {
-            int count = userService.getUserCount();
-            return Result.ok(count);
+            PageData<User> pageData = new PageData<>();
+            List<User> users = userService.getUserList(page, size);
+            int totalCount = userService.getUserCount();
+            pageData.setPagedList(users);
+            pageData.setTotalCount(totalCount);
+            return Result.ok(pageData);
         }catch (Exception e){
             return Result.fail(null);
         }
@@ -121,33 +121,29 @@ public class UserController {
      * @param size     大小
      * @return {@link Result}
      */
-    @PreAuthorize("@pms.hasPermission('user:list')")
     @GetMapping(path = "/getUserListByUsername")
-    public Result<List<User>> getUserListByUsername(@RequestParam("username") String username,
+    public Result<PageData<User>> getUserListByUsername(@RequestParam("username") String username,
                                                     @RequestParam("page") int page,
                                                     @RequestParam("size") int size){
-        page=(page-1)*size;
-        try {
-            List<User> users = userService.getUserListByUsername(username, page, size);
-            return Result.ok(users);
-        }catch (Exception e){
-            return Result.fail(null);
+        // 如果 page < 1 ,则要把page恢复成 1 ,因为page的最小值就为 1
+        if(page < 1){
+            page = 1;
         }
-    }
-
-    /**
-     * 根据用户名获取用户数量
-     *
-     * @param username 用户名
-     * @return {@link Result}
-     */
-    @PreAuthorize("@pms.hasPermission('user:list')")
-    @GetMapping(path = "/getUserCountByUsername")
-    public Result<Integer> getUserCountByUsername(@RequestParam("username") String username){
-
+        // 如果 size <= 0 ,则要把size恢复成 1 ,因为size的最小值为 1
+        if(size <= 0 ){
+            size = 1;
+        }
+        // 将当前页转成MySQL分页的起始位置！
+        page = (page-1)*size;
+        // 对size的大小进行限制,防止一次性获取太多的数据（下面的代码意思是一次“最多”获取500条记录,如果size的值小于500,则size还是原来的值不变）
+        size = Math.min(size,500);
         try {
+            PageData<User> pageData = new PageData<>();
+            List<User> users = userService.getUserListByUsername(username, page, size);
             int count = userService.getUserCountByUsername(username);
-            return Result.ok(count);
+            pageData.setPagedList(users);
+            pageData.setTotalCount(count);
+            return Result.ok(pageData);
         }catch (Exception e){
             return Result.fail(null);
         }
@@ -159,10 +155,14 @@ public class UserController {
      * @param userFormDTO 用户表单dto
      * @return {@link Result}
      */
-    @PreAuthorize("@pms.hasPermission('user:list:add')")
     @PostMapping("/addUser")
     public Result<Object> addUser(@RequestBody @Valid UserFormDTO userFormDTO){
         try {
+            String username = userFormDTO.getUsername();
+            // 如果用户名是默认的grace,则不允许创建
+            if(username.equals(Constants.DEFAULT_USERNAME)){
+                return Result.fail(null);
+            }
             //将密码进行加密
             String encodePassword = passwordEncoder.encode(userFormDTO.getPassword());
             userFormDTO.setPassword(encodePassword);
@@ -179,17 +179,21 @@ public class UserController {
      * @param userFormDTO 用户表单dto
      * @return {@link Result}
      */
-    @PreAuthorize("@pms.hasPermission('user:list:update')")
-    @PostMapping(path = "/updateUser")
-    public Result<Object> updateUser(@RequestBody @Valid UserFormDTO userFormDTO){
+    @PostMapping(path = "/modifyUser")
+    public Result<Object> modifyUser(@RequestBody @Valid UserFormDTO userFormDTO){
         try {
+            String username = userFormDTO.getUsername();
+            // 如果用户名是默认的grace,则不允许修改
+            if(username.equals(Constants.DEFAULT_USERNAME)){
+                return Result.fail(null);
+            }
             //如果密码不为空，则进行加密再存储到数据库中
             if(StringUtils.hasText(userFormDTO.getPassword())){
                 //将密码进行加密
                 String encodePassword = passwordEncoder.encode(userFormDTO.getPassword());
                 userFormDTO.setPassword(encodePassword);
             }
-            userService.updateUser(userFormDTO);
+            userService.modifyUser(userFormDTO);
             return Result.ok();
         }catch (Exception e){
             return Result.fail(null);
@@ -199,14 +203,19 @@ public class UserController {
     /**
      * 删除用户
      *
-     * @param id 用户id
+     * @param userId 用户id
      * @return {@link Result}
      */
-    @PreAuthorize("@pms.hasPermission('user:list:delete')")
     @DeleteMapping(path = "/deleteUser")
-    public Result<Object> deleteUser(@RequestParam("id") long id){
+    public Result<Object> deleteUser(@RequestParam("userId") long userId){
         try {
-            userService.deleteUser(id);
+            // 默认grace用户的id为1001,不允许删除这个默认的用户
+            final long graceUserId = 1001L;
+            // 不允许删除默认的grace用户（ id为1001 ）
+            if(userId == graceUserId){
+                return Result.fail(null);
+            }
+            userService.deleteUser(userId);
             return Result.ok();
         }catch (Exception e){
             return Result.fail(null);
@@ -223,34 +232,41 @@ public class UserController {
      * @param assignRoleDTO 分配角色dto
      * @return {@link Result}
      */
-    @PreAuthorize("@pms.hasPermission('user:list:assign-role')")
     @PostMapping(path = "/assignRole")
     public Result<Object> assignRole(@RequestBody @Valid AssignRoleDTO assignRoleDTO){
 
         try {
-            if(assignRoleDTO.getRoles()==null || assignRoleDTO.getRoles().size()==0){
-                return Result.ok();
+            // 用户需要分配的角色集合
+            List<Role> roles = assignRoleDTO.getRoles();
+            List<Long> roleIds;
+            // 如果用户不需要分配任何角色
+            if(roles == null || roles.size()==0){
+                // 空集合
+                roleIds = new ArrayList<>();
             }
-            //通过stream流把role的id组成一个新的集合
-            List<Long> roleIds = assignRoleDTO
-                    .getRoles()
-                    .stream()
-                    .map(Role::getId)
-                    //要进行去重
-                    .distinct()
-                    .collect(Collectors.toList());
-            long userid = Long.parseLong(assignRoleDTO.getUserid());
-
-            List<UserRole> userRoleList= Collections.synchronizedList(new ArrayList<UserRole>());
+            // 如果用户需要分配角色
+            else {
+                // 获取用户需要分配的角色id集合
+                roleIds = assignRoleDTO
+                        .getRoles()
+                        .stream()
+                        .map(Role::getId)
+                        //要进行去重
+                        .distinct()
+                        .collect(Collectors.toList());
+            }
+            // 获取需要分配角色的用户id
+            long userId = Long.parseLong(assignRoleDTO.getUserId());
+            List<UserRole> userRoleList= Collections.synchronizedList(new ArrayList<>());
             for (Long roleId : roleIds) {
                 UserRole userRole = new UserRole();
                 userRole.setId(SnowId.nextId());
                 userRole.setRoleId(roleId);
-                userRole.setUserId(userid);
+                userRole.setUserId(userId);
                 userRoleList.add(userRole);
             }
             //调用分配角色业务类
-            userService.assignRoleToUser(userRoleList);
+            userService.assignRoleToUser(userId,userRoleList);
             return Result.ok();
         }catch (Exception e){
             return Result.fail(null);

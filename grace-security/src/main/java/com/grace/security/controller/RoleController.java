@@ -1,6 +1,7 @@
 package com.grace.security.controller;
 
 import com.grace.common.constant.ParentMappingConstants;
+import com.grace.common.utils.PageData;
 import com.grace.common.utils.Result;
 import com.grace.common.utils.SnowId;
 import com.grace.security.dto.AssignMenuDTO;
@@ -35,26 +36,40 @@ public class RoleController {
      * @return {@link Result}<{@link List}<{@link Role}>>
      */
     @GetMapping(path = "/getRoleList")
-    public Result<List<Role>> getRoleList(int page, int size){
+    public Result<PageData<Role>> getRoleList(int page, int size){
         page=(page-1)*size;
         try {
+            PageData<Role> pageData = new PageData<>();
             List<Role> roles = roleService.getRoleList(page, size);
-            return Result.ok(roles);
+            int count = roleService.getRoleCount();
+            pageData.setPagedList(roles);
+            pageData.setTotalCount(count);
+            return Result.ok(pageData);
         }catch (Exception e){
             return Result.fail(null);
         }
     }
 
     /**
-     * 获取所有角色数量
+     * 通过角色名称获取角色列表
      *
-     * @return {@link Result}<{@link Integer}>
+     * @param roleName 角色名称
+     * @param page     页面
+     * @param size     大小
+     * @return {@link Result}<{@link List}<{@link Role}>>
      */
-    @GetMapping(path = "/getRoleCount")
-    public Result<Integer> getRoleCount(){
+    @GetMapping(path = "/getRoleListByRoleName")
+    public Result<PageData<Role>> getRoleListByRoleName(@RequestParam("roleName") String roleName,
+                                                        @RequestParam("page") int page,
+                                                        @RequestParam("size") int size){
+        page=(page-1)*size;
         try {
-            int count = roleService.getRoleCount();
-            return Result.ok(count);
+            PageData<Role> pageData = new PageData<>();
+            List<Role> roles = roleService.getRoleListByRoleName(roleName, page, size);
+            int count = roleService.getRoleCountByRoleName(roleName);
+            pageData.setPagedList(roles);
+            pageData.setTotalCount(count);
+            return Result.ok(pageData);
         }catch (Exception e){
             return Result.fail(null);
         }
@@ -115,6 +130,10 @@ public class RoleController {
     @PostMapping(path = "/modifyRole")
     public Result<Object> modifyRole(@RequestBody @Valid RoleFormDTO roleFormDTO){
         try {
+            // 如果修改的是“超级管理员”角色
+            if(roleFormDTO.getId() == 2001L){
+                return Result.fail(null);
+            }
             roleService.modifyRole(roleFormDTO);
             return Result.ok(null);
         }catch (Exception e){
@@ -125,13 +144,17 @@ public class RoleController {
     /**
      * 删除角色
      *
-     * @param id id
+     * @param roleId roleId
      * @return {@link Result}<{@link Object}>
      */
     @DeleteMapping(path = "/deleteRole")
-    public Result<Object> deleteRole(@RequestParam("id") long id){
+    public Result<Object> deleteRole(@RequestParam("roleId") long roleId){
         try {
-            roleService.deleteRole(id);
+            // 如果删除的是“超级管理员”角色
+            if(roleId == 2001L){
+                return Result.fail(null);
+            }
+            roleService.deleteRole(roleId);
             return Result.ok(null);
         }catch (Exception e){
             return Result.fail(null);
@@ -147,61 +170,22 @@ public class RoleController {
     @PostMapping(path = "/assignMenu")
     public Result<Object> assignMenu(@RequestBody @Valid AssignMenuDTO assignMenuDTO){
         try {
-            if(assignMenuDTO.getMenuList()==null || assignMenuDTO.getMenuList().length==0){
-                return Result.ok(null);
-            }
+            long roleId = assignMenuDTO.getRoleId();
             List<RoleMenu> roleMenus= Collections.synchronizedList(new ArrayList<>());
             for (long menuId : assignMenuDTO.getMenuList()) {
                 RoleMenu roleMenu = new RoleMenu();
                 roleMenu.setId(SnowId.nextId());
-                roleMenu.setRoleId(assignMenuDTO.getRoleid());
+                roleMenu.setRoleId(assignMenuDTO.getRoleId());
                 roleMenu.setMenuId(menuId);
                 roleMenus.add(roleMenu);
             }
             //调用分配角色业务类
-            roleService.assignMenuToRole(roleMenus);
+            roleService.assignMenuToRole(roleId,roleMenus);
             return Result.ok(null);
         }catch (Exception e){
             return Result.fail(null);
         }
     }
 
-
-    /**
-     * 通过角色名称获取角色列表
-     *
-     * @param roleName 角色名称
-     * @param page     页面
-     * @param size     大小
-     * @return {@link Result}<{@link List}<{@link Role}>>
-     */
-    @GetMapping(path = "/getRoleListByRoleName")
-    public Result<List<Role>> getRoleListByRoleName(@RequestParam("roleName") String roleName,
-                                                    @RequestParam("page") int page,
-                                                    @RequestParam("size") int size){
-        page=(page-1)*size;
-        try {
-            List<Role> roles = roleService.getRoleListByRoleName(roleName, page, size);
-            return Result.ok(roles);
-        }catch (Exception e){
-            return Result.fail(null);
-        }
-    }
-
-    /**
-     * 通过角色名称获取角色数量
-     *
-     * @param roleName 角色名
-     * @return {@link Result}<{@link Integer}>
-     */
-    @GetMapping(path = "/getRoleCountByRoleName")
-    public Result<Integer> getRoleCountByRoleName(@RequestParam("roleName") String roleName){
-        try {
-            int count = roleService.getRoleCountByRoleName(roleName);
-            return Result.ok(count);
-        }catch (Exception e){
-            return Result.fail(null);
-        }
-    }
 
 }

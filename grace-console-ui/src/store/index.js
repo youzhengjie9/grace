@@ -3,6 +3,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import sidebar from '@/store/modules/Sidebar'
 import user from '@/store/modules/User'
+import form from '@/store/modules/form'
 
 //使用vuex插件
 Vue.use(Vuex);
@@ -13,7 +14,8 @@ export default new Vuex.Store({
     modules: {
         // vuex的子模块
         sidebar,
-        user
+        user,
+        form
     }
 
 })

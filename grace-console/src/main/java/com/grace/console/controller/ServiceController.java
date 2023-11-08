@@ -2,15 +2,14 @@ package com.grace.console.controller;
 
 import com.grace.common.constant.Constants;
 import com.grace.common.constant.ParentMappingConstants;
+import com.grace.common.dto.ServiceDTO;
 import com.grace.common.entity.Service;
 import com.grace.common.utils.Result;
 import com.grace.console.core.GroupManager;
-import com.grace.common.dto.ServiceDTO;
 import com.grace.console.vo.ServiceDetailVO;
 import com.grace.console.vo.ServiceListItem;
 import com.grace.console.vo.ServiceListVO;
 import com.grace.console.vo.ServiceNameListVO;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -77,7 +76,6 @@ public class ServiceController {
      * @return {@link Result}<{@link ServiceNameListVO}>
      */
     @GetMapping("/getServiceList")
-    @PreAuthorize("@pms.hasPermission('service:list')")
     public Result<ServiceListVO> getServiceList(
             @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
             @RequestParam(value = "groupName",required = false, defaultValue = "") String groupName,

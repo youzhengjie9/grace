@@ -54,18 +54,15 @@
         DELETE
         FROM
             sys_user_role
-        WHERE user_id=#{userid}
+        WHERE user_id=#{userId}
     </delete>
 
-    <update id="updateUser" parameterType="com.grace.security.entity.User">
-        UPDATE sys_user SET user_name=#{userName},nick_name=#{nickName},
+    <update id="modifyUser" parameterType="com.grace.security.entity.User">
+        UPDATE sys_user SET username=#{username},
         <if test="password != null and password != ''">
             password=#{password},
         </if>
-        status=#{status},email=#{email},phone=#{phone},sex=#{sex},
-        <if test="avatar != null and avatar != ''">
-            avatar=#{avatar},
-        </if>
+        status=#{status},
         update_time=#{updateTime}
         WHERE id =#{id}
     </update>

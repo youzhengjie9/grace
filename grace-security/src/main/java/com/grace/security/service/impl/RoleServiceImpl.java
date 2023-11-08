@@ -82,15 +82,15 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     }
 
     @Override
-    public boolean deleteRole(long id) {
+    public boolean deleteRole(long roleId) {
 
         try {
             //删除角色
             LambdaQueryWrapper<Role> roleLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            roleLambdaQueryWrapper.eq(Role::getId,id);
+            roleLambdaQueryWrapper.eq(Role::getId,roleId);
             roleMapper.delete(roleLambdaQueryWrapper);
             //删除角色对应的所有菜单
-            roleMapper.deleteRoleAllMenu(id);
+            roleMapper.deleteRoleAllMenu(roleId);
             return true;
         }catch (Exception e){
             throw new RuntimeException("删除角色失败");
@@ -98,12 +98,15 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     }
 
     @Override
-    public boolean assignMenuToRole(List<RoleMenu> roleMenuList) {
+    public boolean assignMenuToRole(Long roleId, List<RoleMenu> roleMenuList) {
         try {
             //先删除角色对应的所有菜单
-            roleMapper.deleteRoleAllMenu(roleMenuList.get(0).getRoleId());
-            //再把所有新的菜单（包括以前选过的）都重新添加到数据库中
-            roleMapper.addMenuToRole(roleMenuList);
+            roleMapper.deleteRoleAllMenu(roleId);
+            // 如果需要给角色分配菜单
+            if(roleMenuList != null && roleMenuList.size()>0) {
+                //再把所有新的菜单（包括以前选过的）都重新添加到数据库中
+                roleMapper.addMenuToRole(roleMenuList);
+            }
             return true;
         }catch (Exception e){
             e.printStackTrace();

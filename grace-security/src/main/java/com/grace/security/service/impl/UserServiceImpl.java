@@ -1,8 +1,9 @@
 package com.grace.security.service.impl;
 
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.grace.common.utils.Result;
+import com.grace.common.utils.SnowId;
 import com.grace.security.dto.UserFormDTO;
 import com.grace.common.vo.TokenVO;
 import com.grace.common.vo.UserInfoVO;
@@ -122,15 +123,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Long userId = graceUser.getUserId();
         // 获取用户动态菜单（侧边栏）
         String dynamicMenu = menuTreeService.buildTreeByUserId(userId);
-        //由于VUE动态路由刷新会丢失，所以需要再获取获取该用户的所有路由（只包含类型为菜单，type=1的菜单）
+        // 由于VUE动态路由刷新会丢失，所以需要再获取获取该用户的所有路由（只包含类型为菜单，type=1的菜单）
         String dynamicRouter = menuService.getRouterByUserId(userId);
         userInfoVO.setDynamicMenu(dynamicMenu);
         userInfoVO.setDynamicRouter(dynamicRouter);
-        //设置用户权限perm
-        List<String> userPerm = menuService.getUserPermissionByUserId(userId);
+        // 设置用户权限perm
+        List<String> perms = menuService.getUserPermissionByUserId(userId);
+        userInfoVO.setPerm(JSON.toJSONString(perms));
         return userInfoVO;
     }
-
 
     @Override
     public List<User> getUserList(int page, int size) {
@@ -154,10 +155,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public int addUser(UserFormDTO userFormDTO) {
-
         User user = new User();
-        BeanUtils.copyProperties(userFormDTO,user);
-
+        // 生成id
+        user.setId(SnowId.nextId());
+        user.setUsername(userFormDTO.getUsername());
+        user.setPassword(userFormDTO.getPassword());
         user.setStatus(userFormDTO.getStatus() ?0:1);
         //然后再补充一些前端没有传过来的属性
         user.setCreateTime(LocalDate.now());
@@ -166,26 +168,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public int updateUser(UserFormDTO userFormDTO) {
-
+    public int modifyUser(UserFormDTO userFormDTO) {
         User user = new User();
-        BeanUtils.copyProperties(userFormDTO,user);
-
+        user.setId(userFormDTO.getId());
+        user.setUsername(userFormDTO.getUsername());
+        user.setPassword(userFormDTO.getPassword());
         user.setStatus(userFormDTO.getStatus() ?0:1);
         //然后再补充一些前端没有传过来的属性
         user.setUpdateTime(LocalDateTime.now());
-        return userMapper.updateUser(user);
+        return userMapper.modifyUser(user);
     }
 
     @Override
-    public boolean deleteUser(long id) {
+    public boolean deleteUser(long userId) {
         try {
             //删除用户
             LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-            lambdaQueryWrapper.eq(User::getId,id);
+            lambdaQueryWrapper.eq(User::getId,userId);
             userMapper.delete(lambdaQueryWrapper);
             //删除用户所拥有的所有角色
-            userMapper.deleteUserAllRoles(id);
+            userMapper.deleteUserAllRoles(userId);
             return true;
         }catch (Exception e){
             throw new RuntimeException("删除用户失败");
@@ -193,35 +195,33 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public int deleteUserAllRoles(long userid) {
-        return userMapper.deleteUserAllRoles(userid);
+    public int deleteUserAllRoles(long userId) {
+        return userMapper.deleteUserAllRoles(userId);
     }
 
 
     /**
-     * 将角色分配给用户
+     * 给用户分配角色
      *
+     * @param userId 用户id
      * @param userRoleList 用户角色列表
      * @return boolean
      */
     @Override
-    public boolean assignRoleToUser(List<UserRole> userRoleList) {
+    public boolean assignRoleToUser(Long userId,List<UserRole> userRoleList) {
         try {
             //先删除用户所有角色
-            userMapper.deleteUserAllRoles(userRoleList.get(0).getUserId());
-            //再把所有新的角色（包括以前选过的）都重新添加到数据库中
-            userMapper.addRoleToUser(userRoleList);
+            userMapper.deleteUserAllRoles(userId);
+            // 如果需要分配角色
+            if(userRoleList != null && userRoleList.size() > 0) {
+                //再把所有新的角色（包括以前选过的）都重新添加到数据库中
+                userMapper.addRoleToUser(userRoleList);
+            }
             return true;
         }catch (Exception e){
             e.printStackTrace();
             throw new RuntimeException("assignRoleToUser异常,事务已回滚。");
         }
     }
-
-    @Override
-    public int addRoleToUser(List<UserRole> userRoleList) {
-        return userMapper.addRoleToUser(userRoleList);
-    }
-
 
 }

@@ -17,7 +17,7 @@ public class AssignMenuDTO implements Serializable {
      */
     private long[] menuList;
 
-    private long roleid;
+    private long roleId;
 
     public long[] getMenuList() {
         return menuList;
@@ -27,11 +27,11 @@ public class AssignMenuDTO implements Serializable {
         this.menuList = menuList;
     }
 
-    public long getRoleid() {
-        return roleid;
+    public long getRoleId() {
+        return roleId;
     }
 
-    public void setRoleid(long roleid) {
-        this.roleid = roleid;
+    public void setRoleId(long roleId) {
+        this.roleId = roleId;
     }
 }

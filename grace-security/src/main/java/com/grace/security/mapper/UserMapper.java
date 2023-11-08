@@ -47,7 +47,7 @@ public interface UserMapper extends BaseMapper<User> {
     /**
      * 用户信息修改
      */
-    int updateUser(User user);
+    int modifyUser(User user);
 
 
     /**
@@ -61,10 +61,10 @@ public interface UserMapper extends BaseMapper<User> {
     /**
      * 删除用户所有角色
      *
-     * @param userid 用户id
+     * @param userId 用户id
      * @return int
      */
-    int deleteUserAllRoles(@Param("userid") long userid);
+    int deleteUserAllRoles(@Param("userId") long userId);
 
 
     /**

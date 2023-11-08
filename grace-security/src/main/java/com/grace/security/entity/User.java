@@ -56,15 +56,6 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(Long id, String username, String password, Integer status, LocalDate createTime, LocalDateTime updateTime) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.status = status;
-        this.createTime = createTime;
-        this.updateTime = updateTime;
-    }
-
     public Long getId() {
         return id;
     }
@@ -111,5 +102,17 @@ public class User implements Serializable {
 
     public void setUpdateTime(LocalDateTime updateTime) {
         this.updateTime = updateTime;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", status=" + status +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                '}';
     }
 }

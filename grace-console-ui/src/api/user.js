@@ -29,8 +29,6 @@ export function getCurrentUserInfo(){
     })
 }
 
-//
-
 export function getUserList(page,size){
     return request({
         method:'get',
@@ -39,13 +37,6 @@ export function getUserList(page,size){
             page:page,
             size:size
         }
-    })
-}
-
-export function getUserCount(){
-    return request({
-        method:'get',
-        url:'/grace/server/user/getUserCount'
     })
 }
 
@@ -61,17 +52,6 @@ export function getUserListByUsername(username, page, size){
     })
 }
 
-export function getUserCountByUsername(username){
-    return request({
-        method:'get',
-        url:'/grace/server/user/getUserCountByUsername',
-        params:{
-            username:username
-        }
-    })
-}
-
-
 export function addUser(operateForm){
     return request({
         method:'post',
@@ -80,20 +60,20 @@ export function addUser(operateForm){
     })
 }
 
-export function updateUser(operateForm){
+export function modifyUser(operateForm){
     return request({
         method:'post',
-        url:'/grace/server/user/updateUser',
+        url:'/grace/server/user/modifyUser',
         data:operateForm
     })
 }
 
-export function deleteUser(userid){
+export function deleteUser(userId){
     return request({
         method:'delete',
         url:'/grace/server/user/deleteUser',
         params:{
-            id:userid
+            userId:userId
         }
     })
 }

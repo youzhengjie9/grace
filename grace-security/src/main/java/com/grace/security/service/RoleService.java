@@ -34,7 +34,7 @@ public interface RoleService extends IService<Role> {
      * 通过userid来查询指定用户当前所拥有的role角色列表
      *
      * @param userid 用户标识
-     * @return {@link List}<{@link SysRole}>
+     * @return {@link List}<{@link Role}>
      */
     List<Role> getUserCheckedRoleByUserId(long userid);
 
@@ -58,18 +58,19 @@ public interface RoleService extends IService<Role> {
     /**
      * 删除角色
      *
-     * @param id id
+     * @param roleId roleId
      * @return int
      */
-    boolean deleteRole(long id);
+    boolean deleteRole(long roleId);
 
     /**
      * 给角色分配菜单权限
      *
+     * @param roleId 角色id
      * @param roleMenuList 角色菜单列表
      * @return boolean
      */
-    boolean assignMenuToRole(List<RoleMenu> roleMenuList);
+    boolean assignMenuToRole(Long roleId,List<RoleMenu> roleMenuList);
 
     /**
      * 通过角色名称获取角色列表

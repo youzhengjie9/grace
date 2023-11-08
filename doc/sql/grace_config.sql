@@ -11,7 +11,7 @@
  Target Server Version : 80028
  File Encoding         : 65001
 
- Date: 06/11/2023 18:09:58
+ Date: 07/11/2023 22:08:23
 */
 
 SET NAMES utf8mb4;
@@ -162,42 +162,42 @@ CREATE TABLE `sys_menu`  (
 -- Records of sys_menu
 -- ----------------------------
 INSERT INTO `sys_menu` VALUES (3001, 0, '配置管理', NULL, NULL, 0, 0, NULL, 0, 'el-icon-eleme', '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 1, 'bz');
-INSERT INTO `sys_menu` VALUES (3002, 3001, '配置列表', '/config/list', '/config/list/index', 0, 0, 'sys:config:list', 1, 'el-icon-s-order', '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 2, 'bz');
-INSERT INTO `sys_menu` VALUES (3003, 3002, '创建配置', NULL, NULL, 0, 0, 'sys:config:add', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 3, 'bz');
-INSERT INTO `sys_menu` VALUES (3004, 3002, '修改配置', NULL, NULL, 0, 0, 'sys:config:modify', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 4, 'bz');
-INSERT INTO `sys_menu` VALUES (3005, 3002, '删除配置', NULL, NULL, 0, 0, 'sys:config:delete', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 5, 'bz');
-INSERT INTO `sys_menu` VALUES (3006, 3002, '配置详情', NULL, NULL, 0, 0, 'sys:config:detail', 2, '', '2023-11-06 17:03:20', '2023-11-06 17:03:23', 0, 6, 'bz');
-INSERT INTO `sys_menu` VALUES (3007, 3002, '导入配置', NULL, NULL, 0, 0, 'sys:config:import', 2, '', '2023-11-06 17:03:20', '2023-11-06 17:03:23', 0, 7, 'bz');
-INSERT INTO `sys_menu` VALUES (3008, 3002, '导出配置', NULL, NULL, 0, 0, 'sys:config:export', 2, '', '2023-11-06 17:03:20', '2023-11-06 17:03:23', 0, 8, 'bz');
-INSERT INTO `sys_menu` VALUES (3009, 3002, '克隆配置', NULL, NULL, 0, 0, 'sys:config:clone', 2, '', '2023-11-06 17:03:20', '2023-11-06 17:03:23', 0, 9, 'bz');
-INSERT INTO `sys_menu` VALUES (3010, 3001, '配置版本', '/config/version/list', '/config/version/list/index', 0, 0, 'sys:config:version:list', 1, 'el-icon-s-order', '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 10, 'bz');
-INSERT INTO `sys_menu` VALUES (3011, 3010, '版本详情', NULL, NULL, 0, 0, 'sys:config:version:detail', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 11, 'bz');
-INSERT INTO `sys_menu` VALUES (3012, 3010, '版本回滚', NULL, NULL, 0, 0, 'sys:config:version:rollback', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 12, 'bz');
+INSERT INTO `sys_menu` VALUES (3002, 3001, '配置列表', '/config/list', '/config/list/index', 0, 0, 'config:list', 1, 'el-icon-s-order', '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 2, 'bz');
+INSERT INTO `sys_menu` VALUES (3003, 3002, '创建配置', NULL, NULL, 0, 0, 'config:add', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 3, 'bz');
+INSERT INTO `sys_menu` VALUES (3004, 3002, '修改配置', NULL, NULL, 0, 0, 'config:modify', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 4, 'bz');
+INSERT INTO `sys_menu` VALUES (3005, 3002, '删除配置', NULL, NULL, 0, 0, 'config:delete', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 5, 'bz');
+INSERT INTO `sys_menu` VALUES (3006, 3002, '配置详情', NULL, NULL, 0, 0, 'config:detail', 2, '', '2023-11-06 17:03:20', '2023-11-06 17:03:23', 0, 6, 'bz');
+INSERT INTO `sys_menu` VALUES (3007, 3002, '导入配置', NULL, NULL, 0, 0, 'config:import', 2, '', '2023-11-06 17:03:20', '2023-11-06 17:03:23', 0, 7, 'bz');
+INSERT INTO `sys_menu` VALUES (3008, 3002, '导出配置', NULL, NULL, 0, 0, 'config:export', 2, '', '2023-11-06 17:03:20', '2023-11-06 17:03:23', 0, 8, 'bz');
+INSERT INTO `sys_menu` VALUES (3009, 3002, '克隆配置', NULL, NULL, 0, 0, 'config:clone', 2, '', '2023-11-06 17:03:20', '2023-11-06 17:03:23', 0, 9, 'bz');
+INSERT INTO `sys_menu` VALUES (3010, 3001, '配置版本', '/config/version/list', '/config/version/list/index', 0, 0, 'config:version:list', 1, 'el-icon-s-order', '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 10, 'bz');
+INSERT INTO `sys_menu` VALUES (3011, 3010, '版本详情', NULL, NULL, 0, 0, 'version:detail', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 11, 'bz');
+INSERT INTO `sys_menu` VALUES (3012, 3010, '版本回滚', NULL, NULL, 0, 0, 'version:rollback', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 12, 'bz');
 INSERT INTO `sys_menu` VALUES (3013, 0, '服务管理', '', '', 0, 0, '', 0, 'el-icon-s-order', '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 2, 'bz');
-INSERT INTO `sys_menu` VALUES (3014, 3013, '服务列表', '/service/list', '/service/list/index', 0, 0, 'sys:service:list', 1, 'el-icon-s-order', '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 2, 'bz');
-INSERT INTO `sys_menu` VALUES (3015, 3013, '服务详情', NULL, NULL, 0, 0, 'sys:service:detail', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 14, 'bz');
-INSERT INTO `sys_menu` VALUES (3016, 3013, '删除服务', NULL, NULL, 0, 0, 'sys:service:delete', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 14, 'bz');
-INSERT INTO `sys_menu` VALUES (3017, 3013, '修改服务', NULL, NULL, 0, 0, 'sys:service:modify', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 14, 'bz');
-INSERT INTO `sys_menu` VALUES (3018, 3013, '修改服务实例', NULL, NULL, 0, 0, 'sys:instance:modify', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 14, 'bz');
-INSERT INTO `sys_menu` VALUES (3019, 0, '用户管理', '/user/list', '/user/list/index', 0, 0, 'sys:user:list', 1, 'el-icon-s-order', '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 13, 'bz');
-INSERT INTO `sys_menu` VALUES (3020, 3019, '新增用户', NULL, NULL, 0, 0, 'sys:user:add', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 14, 'bz');
-INSERT INTO `sys_menu` VALUES (3021, 3019, '修改用户', NULL, NULL, 0, 0, 'sys:user:modify', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 15, 'bz');
-INSERT INTO `sys_menu` VALUES (3022, 3019, '删除用户', NULL, NULL, 0, 0, 'sys:user:delete', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 16, 'bz');
-INSERT INTO `sys_menu` VALUES (3023, 3019, '分配角色', NULL, NULL, 0, 0, 'sys:user:assign-role', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 17, 'bz');
-INSERT INTO `sys_menu` VALUES (3024, 0, '角色管理', '/role/list', '/role/list/index', 0, 0, 'sys:role:list', 1, 'el-icon-suitcase', '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 18, 'bz');
-INSERT INTO `sys_menu` VALUES (3025, 3024, '新增角色', NULL, NULL, 0, 0, 'sys:role:add', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 19, 'bz');
-INSERT INTO `sys_menu` VALUES (3026, 3024, '修改角色', NULL, NULL, 0, 0, 'sys:role:modify', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 20, 'bz');
-INSERT INTO `sys_menu` VALUES (3027, 3024, '删除角色', NULL, NULL, 0, 0, 'sys:role:delete', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 21, 'bz');
-INSERT INTO `sys_menu` VALUES (3028, 3024, '分配菜单', NULL, NULL, 0, 0, 'sys:role:assign-menu', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 22, 'bz');
-INSERT INTO `sys_menu` VALUES (3029, 0, '菜单管理', '/menu/list', '/menu/list/index', 0, 0, 'sys:menu:list', 1, 'el-icon-s-custom', '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 23, 'bz');
-INSERT INTO `sys_menu` VALUES (3030, 3029, '新增菜单', NULL, NULL, 0, 0, 'sys:menu:add', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 24, 'bz');
-INSERT INTO `sys_menu` VALUES (3031, 3029, '修改菜单', NULL, NULL, 0, 0, 'sys:menu:modify', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 25, 'bz');
-INSERT INTO `sys_menu` VALUES (3032, 3029, '删除菜单', NULL, NULL, 0, 0, 'sys:menu:delete', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 26, 'bz');
-INSERT INTO `sys_menu` VALUES (3033, 0, '命名空间', '/namespace/list', '/namespace/list/index', 0, 0, 'sys:namespace:list', 1, 'el-icon-s-custom', '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 27, 'bz');
-INSERT INTO `sys_menu` VALUES (3034, 3033, '创建命名空间', NULL, NULL, 0, 0, 'sys:namespace:add', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 28, 'bz');
-INSERT INTO `sys_menu` VALUES (3035, 3033, '修改命名空间', NULL, NULL, 0, 0, 'sys:namespace:modify', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 29, 'bz');
-INSERT INTO `sys_menu` VALUES (3036, 3033, '删除命名空间', NULL, NULL, 0, 0, 'sys:namespace:delete', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 30, 'bz');
-INSERT INTO `sys_menu` VALUES (3037, 3033, '命名空间详情', NULL, NULL, 0, 0, 'sys:namespace:detail', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 31, 'bz');
+INSERT INTO `sys_menu` VALUES (3014, 3013, '服务列表', '/service/list', '/service/list/index', 0, 0, 'service:list', 1, 'el-icon-s-order', '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 2, 'bz');
+INSERT INTO `sys_menu` VALUES (3015, 3013, '服务详情', NULL, NULL, 0, 0, 'service:detail', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 14, 'bz');
+INSERT INTO `sys_menu` VALUES (3016, 3013, '删除服务', NULL, NULL, 0, 0, 'service:delete', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 14, 'bz');
+INSERT INTO `sys_menu` VALUES (3017, 3013, '修改服务', NULL, NULL, 0, 0, 'service:modify', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 14, 'bz');
+INSERT INTO `sys_menu` VALUES (3018, 3013, '修改服务实例', NULL, NULL, 0, 0, 'instance:modify', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 14, 'bz');
+INSERT INTO `sys_menu` VALUES (3019, 0, '用户管理', '/user/list', '/user/list/index', 0, 0, 'user:list', 1, 'el-icon-s-order', '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 13, 'bz');
+INSERT INTO `sys_menu` VALUES (3020, 3019, '新增用户', NULL, NULL, 0, 0, 'user:add', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 14, 'bz');
+INSERT INTO `sys_menu` VALUES (3021, 3019, '修改用户', NULL, NULL, 0, 0, 'user:modify', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 15, 'bz');
+INSERT INTO `sys_menu` VALUES (3022, 3019, '删除用户', NULL, NULL, 0, 0, 'user:delete', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 16, 'bz');
+INSERT INTO `sys_menu` VALUES (3023, 3019, '分配角色', NULL, NULL, 0, 0, 'assign:role', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 17, 'bz');
+INSERT INTO `sys_menu` VALUES (3024, 0, '角色管理', '/role/list', '/role/list/index', 0, 0, 'role:list', 1, 'el-icon-suitcase', '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 18, 'bz');
+INSERT INTO `sys_menu` VALUES (3025, 3024, '新增角色', NULL, NULL, 0, 0, 'role:add', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 19, 'bz');
+INSERT INTO `sys_menu` VALUES (3026, 3024, '修改角色', NULL, NULL, 0, 0, 'role:modify', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 20, 'bz');
+INSERT INTO `sys_menu` VALUES (3027, 3024, '删除角色', NULL, NULL, 0, 0, 'role:delete', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 21, 'bz');
+INSERT INTO `sys_menu` VALUES (3028, 3024, '分配菜单', NULL, NULL, 0, 0, 'assign:menu', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 22, 'bz');
+INSERT INTO `sys_menu` VALUES (3029, 0, '菜单管理', '/menu/list', '/menu/list/index', 0, 0, 'menu:list', 1, 'el-icon-s-custom', '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 23, 'bz');
+INSERT INTO `sys_menu` VALUES (3030, 3029, '新增菜单', NULL, NULL, 0, 0, 'menu:add', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 24, 'bz');
+INSERT INTO `sys_menu` VALUES (3031, 3029, '修改菜单', NULL, NULL, 0, 0, 'menu:modify', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 25, 'bz');
+INSERT INTO `sys_menu` VALUES (3032, 3029, '删除菜单', NULL, NULL, 0, 0, 'menu:delete', 2, NULL, '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 26, 'bz');
+INSERT INTO `sys_menu` VALUES (3033, 0, '命名空间', '/namespace/list', '/namespace/list/index', 0, 0, 'namespace:list', 1, 'el-icon-s-custom', '2022-09-26 23:46:02', '2022-09-28 23:46:02', 0, 27, 'bz');
+INSERT INTO `sys_menu` VALUES (3034, 3033, '创建命名空间', NULL, NULL, 0, 0, 'namespace:add', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 28, 'bz');
+INSERT INTO `sys_menu` VALUES (3035, 3033, '修改命名空间', NULL, NULL, 0, 0, 'namespace:modify', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 29, 'bz');
+INSERT INTO `sys_menu` VALUES (3036, 3033, '删除命名空间', NULL, NULL, 0, 0, 'namespace:delete', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 30, 'bz');
+INSERT INTO `sys_menu` VALUES (3037, 3033, '命名空间详情', NULL, NULL, 0, 0, 'namespace:detail', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 31, 'bz');
 
 -- ----------------------------
 -- Table structure for sys_namespace

@@ -1,13 +1,18 @@
-import Vue from 'vue'
 import {getCurrentUserInfo} from '../../api/user'
 
 const state = {
-    username:'', //用户帐号
+    //用户名
+    username:'',
+    // accessToken
     accessToken: localStorage.getItem('accessToken'),
+    // refreshToken
     refreshToken: localStorage.getItem('refreshToken'),
-    dynamicMenu:[], //动态菜单（侧边栏）数组
-    dynamicRouter:[],//动态路由（router）
-    perm:[] //用户权限perm（包括菜单、按钮）,需要配合directive/permission/has-perm自定义指令
+    // 动态菜单（侧边栏）数组
+    dynamicMenu:[],
+    // 动态路由（router）
+    dynamicRouter:[],
+    // 用户权限perm（包括菜单、按钮）,需要配合directive/permission/has-perm自定义指令
+    perm:[]
 }
 
 const mutations = {
@@ -49,20 +54,27 @@ const actions = {
     // 获取当前用户信息
     getCurrentUserInfo(context){
         return new Promise((resolve,reject)=>{
-            getCurrentUserInfo().then((res)=>{
-                if(res.data.code===200){
-                    context.commit('SET_USERNAME',res.data.data.username);
-                    // //用户的动态菜单（侧边栏）
-                    // context.commit('SET_DYNAMIC_MENU',JSON.parse(res.data.data.dynamicMenu))
-                    // //用户的动态路由
-                    // if(res.data.data.dynamicRouter.length!==0){
-                    //     context.commit('SET_DYNAMIC_ROUTER',JSON.parse(res.data.data.dynamicRouter))
-                    // }
-                    // if(res.data.data.perm.length!==0){
-                    //     //用户权限perm
-                    //     context.commit('SET_PERM',JSON.parse(res.data.data.perm))
-                    // }
-                    resolve(res);
+            getCurrentUserInfo().then((response)=>{
+                let result = response.data;
+                if(result.code===200){
+                    let username = result.data.username;
+                    let dynamicMenu = result.data.dynamicMenu;
+                    let dynamicRouter = result.data.dynamicRouter;
+                    let perm = result.data.perm;
+                    context.commit('SET_USERNAME',username);
+                    // 用户的动态菜单（侧边栏）
+                    if(dynamicMenu != null && dynamicMenu.length > 0){
+                        context.commit('SET_DYNAMIC_MENU',JSON.parse(dynamicMenu))
+                    }
+                    // 用户的动态路由
+                    if(dynamicRouter != null && dynamicRouter.length > 0){
+                        context.commit('SET_DYNAMIC_ROUTER',JSON.parse(dynamicRouter))
+                    }
+                    // 用户权限perm（包括菜单、按钮）,需要配合directive/permission/has-perm自定义指令
+                    if(perm != null && perm.length > 0){
+                        context.commit('SET_PERM',JSON.parse(perm))
+                    }
+                    resolve(response);
                 }
                 else{
                     //防止accessToken和refreshToken过期了
@@ -79,10 +91,11 @@ const actions = {
                     //清空localstorage的accessToken和refreshToken
                     localStorage.removeItem('accessToken')
                     localStorage.removeItem('refreshToken')
-                    resolve(res);
+                    resolve(response);
                 }
                 
             }).catch((err)=>{
+                console.log(err)
                 //防止accessToken和refreshToken过期了
                 //而这两个token会一直存在localstorage，需要客户手动删除才可以进入/login页面
                 //（因为我们设置了路由守卫，一旦有token在localstorage中就无法访问login页面的配置）
