@@ -13,6 +13,7 @@
             size="medium"
             style="margin-right: 10px"
             @click="clickOpenModifyServiceDialog"
+            v-hasPerm="['service:modify']"
             >编辑服务</el-button
           >
           <el-button type="primary" size="medium" @click="back">返回</el-button>
@@ -262,6 +263,7 @@
             size="mini"
             type="primary"
             @click="clickOpenModifyInstanceDialog(scope.row)"
+            v-hasPerm="['instance:modify']"
             >编辑</el-button
           >
 
@@ -271,6 +273,7 @@
             size="mini"
             type="danger"
             @click="offline(scope.row)"
+            v-hasPerm="['instance:modify']"
             >下线</el-button
           >
 
@@ -280,6 +283,7 @@
             size="mini"
             type="success"
             @click="online(scope.row)"
+            v-hasPerm="['instance:modify']"
             >上线</el-button
           >
         </template>

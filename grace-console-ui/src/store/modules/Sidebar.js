@@ -56,14 +56,14 @@ const state = {
             icon: "el-icon-s-home",
             children: [],
         },
-        // {
-        //     id: 501,
-        //     path: "/namespace/list",
-        //     component: "../views/namespace/list/index.vue",
-        //     menuName: "菜单管理",
-        //     icon: "el-icon-s-home",
-        //     children: [],
-        // },
+        {
+            id: 501,
+            path: "/menu/list",
+            component: "../views/menu/list/index.vue",
+            menuName: "菜单管理",
+            icon: "el-icon-s-home",
+            children: [],
+        },
         {
             id: 601,
             path: "/namespace/list",

@@ -60,7 +60,11 @@
     <el-row :gutter="24">
       <!-- 创建配置按钮 -->
       <el-col :span="2" style="margin-top: 10px; margin-right: 8px">
-        <el-button type="primary" size="medium" @click="createConfig"
+        <el-button
+          type="primary"
+          size="medium"
+          @click="createConfig"
+          v-hasPerm="['config:add']"
           >创建配置</el-button
         >
       </el-col>
@@ -145,13 +149,18 @@
           type="primary"
           size="medium"
           @click="clickOpenImportConfigDialog"
+          v-hasPerm="['config:import']"
           >导入配置</el-button
         >
       </el-col>
 
       <!-- 最右侧的用于创建配置的“+”号 -->
       <el-col :span="1" style="margin-top: 10px">
-        <i class="el-icon-plus create-config-plus" @click="createConfig"></i>
+        <i
+          class="el-icon-plus create-config-plus"
+          @click="createConfig"
+          v-hasPerm="['config:add']"
+        ></i>
       </el-col>
     </el-row>
 
@@ -354,6 +363,7 @@
                 scope.row.dataId
               )
             "
+            v-hasPerm="['config:detail']"
             >详情</span
           >
           <span style="margin-right: 5px">|</span>
@@ -382,6 +392,7 @@
                 scope.row.dataId
               )
             "
+            v-hasPerm="['config:modify']"
             >编辑</span
           >
           <span style="margin-right: 5px">|</span>
@@ -396,6 +407,7 @@
                 scope.row.dataId
               )
             "
+            v-hasPerm="['config:delete']"
             >删除</span
           >
           <span style="margin-right: 5px">|</span>
@@ -419,6 +431,7 @@
                     scope.row.dataId
                   )
                 "
+                v-hasPerm="['config:version:list']"
               >
                 配置版本
               </el-dropdown-item>
@@ -436,17 +449,22 @@
           type="danger"
           size="medium"
           @click="clickOpenBatchDeleteDialog"
+          v-hasPerm="['config:delete']"
           >批量删除</el-button
         >
       </el-col>
       <!-- 克隆按钮 -->
       <el-col :span="1" style="margin-right: 30px">
-        <el-button type="primary" size="medium" @click="clickOpenCloneDialog"
+        <el-button
+          type="primary"
+          size="medium"
+          @click="clickOpenCloneDialog"
+          v-hasPerm="['config:clone']"
           >克隆</el-button
         >
       </el-col>
       <!-- “导出”下拉菜单 -->
-      <el-col :span="2">
+      <el-col :span="2" v-hasPerm="['config:export']">
         <el-dropdown
           trigger="click"
           @command="clickExportDropdownItem"
@@ -1306,12 +1324,12 @@ export default {
         let multipleSelectionData = this.multipleSelectionData;
         // 清空克隆配置表单数据
         this.cloneConfigTableData = [];
-        for(let i =0;i<multipleSelectionData.length;i++){
+        for (let i = 0; i < multipleSelectionData.length; i++) {
           this.cloneConfigTableData.push({
             id: multipleSelectionData[i].id,
             groupName: multipleSelectionData[i].groupName,
             dataId: multipleSelectionData[i].dataId,
-          })
+          });
         }
 
         let namespaceData = this.namespaceData;
@@ -1337,7 +1355,8 @@ export default {
         if (valid) {
           let targetNamespaceId = this.cloneConfigDialogForm.targetNamespaceId;
           let cloneConfigItemList = this.cloneConfigTableData;
-          let configConflictPolicy = this.cloneConfigDialogForm.cloneConfigIfExistPolicy;
+          let configConflictPolicy =
+            this.cloneConfigDialogForm.cloneConfigIfExistPolicy;
           // 调用克隆接口
           cloneConfig(
             targetNamespaceId,
@@ -1346,11 +1365,11 @@ export default {
           ).then((response) => {
             let result = response.data;
             if (result.data == true) {
-              this.$message.success('克隆配置成功');
+              this.$message.success("克隆配置成功");
               // 关闭dialog
               this.openCloneDialog = false;
-            }else{
-              this.$message.error('克隆配置失败');
+            } else {
+              this.$message.error("克隆配置失败");
             }
           });
         } else {

@@ -218,7 +218,6 @@
 <script>
 import UserForm from "../../../components/user/user-form/index.vue";
 import SearchForm from "@/components/common/SearchForm.vue";
-import UserTable from "../../../components/user/user-table/index.vue";
 import {
   getUserList,
   getUserListByUsername,

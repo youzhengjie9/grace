@@ -1,7 +1,8 @@
 import store from '@/store'
 
 /**
- * 设置操作权限标识符
+ * 设置操作权限标识符。
+ * 使用方法:  v-hasPerm="['sys:role:list:add']"
  */
 export default {
     inserted(el, binding, vnode) {

@@ -24,6 +24,7 @@
           size="medium"
           style="margin-left: 30px; margin-right: 10px"
           @click="clickOpenCreateNamespaceDialog"
+          v-hasPerm="['namespace:add']"
           >新建命名空间</el-button
         >
         <!-- 刷新 -->
@@ -126,6 +127,7 @@
           <span
             class="operation"
             @click="clickOpenNamespaceDetailDialog(scope.row)"
+            v-hasPerm="['namespace:detail']"
             >详情</span
           >
           <span style="margin-right: 5px">|</span>
@@ -135,11 +137,15 @@
             class="operation"
             v-if="scope.row.namespaceId != ''"
             @click="clickOpenModifyNamespaceDialog(scope.row)"
+            v-hasPerm="['namespace:modify']"
             >编辑</span
           >
 
           <!-- 修改命名空间（不能进行点击操作）。只有默认的public命名空间才会用这个 “编辑”  -->
-          <span class="not-operation" v-if="scope.row.namespaceId == ''"
+          <span
+            class="not-operation"
+            v-if="scope.row.namespaceId == ''"
+            v-hasPerm="['namespace:modify']"
             >编辑</span
           >
 
@@ -150,10 +156,14 @@
             class="operation"
             v-if="scope.row.namespaceId != ''"
             @click="clickOpenDeleteNamespaceDialog(scope.row)"
+            v-hasPerm="['namespace:delete']"
             >删除</span
           >
           <!-- 删除命名空间（不能进行点击操作）。只有默认的public命名空间才会用这个 “删除”  -->
-          <span class="not-operation" v-if="scope.row.namespaceId == ''"
+          <span
+            class="not-operation"
+            v-if="scope.row.namespaceId == ''"
+            v-hasPerm="['namespace:delete']"
             >删除</span
           >
         </template>
@@ -461,7 +471,6 @@ export default {
       };
 
       this.openModifyNamespaceDialog = true;
-
     },
     // 修改命名空间
     modifyNamespace() {

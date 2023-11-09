@@ -180,13 +180,13 @@
       <el-table-column label="操作" min-width="180">
         <template slot-scope="scope">
           <!-- 版本详情 -->
-          <span class="operation" @click="versionDetail(scope.row.id)"
+          <span class="operation" @click="versionDetail(scope.row.id)" v-hasPerm="['version:detail']"
             >版本详情</span
           >
           <span style="margin-right: 5px">|</span>
 
           <!-- 版本回滚 -->
-          <span class="operation" @click="versionRollback(scope.row.id)"
+          <span class="operation" @click="versionRollback(scope.row.id)" v-hasPerm="['version:rollback']"
             >版本回滚</span
           >
         </template>

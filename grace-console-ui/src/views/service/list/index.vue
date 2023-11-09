@@ -166,6 +166,7 @@
                 scope.row.serviceName
               )
             "
+            v-hasPerm="['service:detail']"
             >服务详情</span
           >
           <span style="margin-right: 5px">|</span>
@@ -178,6 +179,7 @@
                 scope.row.serviceName
               )
             "
+            v-hasPerm="['service:delete']"
             >删除服务</span
           >
         </template>
