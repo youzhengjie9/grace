@@ -10,6 +10,7 @@ import com.grace.security.entity.Role;
 import com.grace.security.entity.RoleMenu;
 import com.grace.security.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -35,6 +36,7 @@ public class RoleController {
      *
      * @return {@link Result}<{@link List}<{@link Role}>>
      */
+    @PreAuthorize("@pms.hasPermission('role:list')")
     @GetMapping(path = "/getRoleList")
     public Result<PageData<Role>> getRoleList(int page, int size){
         page=(page-1)*size;
@@ -58,6 +60,7 @@ public class RoleController {
      * @param size     大小
      * @return {@link Result}<{@link List}<{@link Role}>>
      */
+    @PreAuthorize("@pms.hasPermission('role:list')")
     @GetMapping(path = "/getRoleListByRoleName")
     public Result<PageData<Role>> getRoleListByRoleName(@RequestParam("roleName") String roleName,
                                                         @RequestParam("page") int page,
@@ -80,6 +83,7 @@ public class RoleController {
      *
      * @return {@link Result}<{@link List}<{@link Role}>>
      */
+    @PreAuthorize("@pms.hasPermission('role:list')")
     @GetMapping(path = "/getAllRole")
     public Result<List<Role>> getAllRole(){
         try {
@@ -112,6 +116,7 @@ public class RoleController {
      *
      * @return {@link Result}<{@link Object}>
      */
+    @PreAuthorize("@pms.hasPermission('role:add')")
     @PostMapping("/addRole")
     public Result<Object> addRole(@RequestBody @Valid RoleFormDTO roleFormDTO){
         try {
@@ -127,6 +132,7 @@ public class RoleController {
      *
      * @return {@link Result}<{@link Object}>
      */
+    @PreAuthorize("@pms.hasPermission('role:modify')")
     @PostMapping(path = "/modifyRole")
     public Result<Object> modifyRole(@RequestBody @Valid RoleFormDTO roleFormDTO){
         try {
@@ -147,6 +153,7 @@ public class RoleController {
      * @param roleId roleId
      * @return {@link Result}<{@link Object}>
      */
+    @PreAuthorize("@pms.hasPermission('role:delete')")
     @DeleteMapping(path = "/deleteRole")
     public Result<Object> deleteRole(@RequestParam("roleId") long roleId){
         try {
@@ -167,6 +174,7 @@ public class RoleController {
      * @param assignMenuDTO 分配菜单dto
      * @return {@link Result}<{@link Object}>
      */
+    @PreAuthorize("@pms.hasPermission('assign:menu')")
     @PostMapping(path = "/assignMenu")
     public Result<Object> assignMenu(@RequestBody @Valid AssignMenuDTO assignMenuDTO){
         try {

@@ -4,6 +4,7 @@ import com.grace.common.constant.ParentMappingConstants;
 import com.grace.common.utils.Result;
 import com.grace.security.service.MenuTreeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,6 +44,7 @@ public class MenuTreeController {
      *
      * @return {@link Result}<{@link String}>
      */
+    @PreAuthorize("@pms.hasPermission('menu:list')")
     @GetMapping(path = "/buildAllMenuPermissionTree")
     public Result<String> buildAllMenuPermissionTree(){
         try {

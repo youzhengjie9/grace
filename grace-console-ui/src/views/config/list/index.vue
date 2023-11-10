@@ -64,7 +64,7 @@
           type="primary"
           size="medium"
           @click="createConfig"
-          v-hasPerm="['config:add']"
+          v-hasPerm="['config:publish']"
           >创建配置</el-button
         >
       </el-col>
@@ -159,7 +159,7 @@
         <i
           class="el-icon-plus create-config-plus"
           @click="createConfig"
-          v-hasPerm="['config:add']"
+          v-hasPerm="['config:publish']"
         ></i>
       </el-col>
     </el-row>
@@ -392,7 +392,7 @@
                 scope.row.dataId
               )
             "
-            v-hasPerm="['config:modify']"
+            v-hasPerm="['config:publish']"
             >编辑</span
           >
           <span style="margin-right: 5px">|</span>

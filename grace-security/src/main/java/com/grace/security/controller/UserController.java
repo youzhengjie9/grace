@@ -16,6 +16,7 @@ import com.grace.security.entity.User;
 import com.grace.security.entity.UserRole;
 import com.grace.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -87,6 +88,7 @@ public class UserController {
     /**
      * 获取所有用户信息并分页
      */
+    @PreAuthorize("@pms.hasPermission('user:list')")
     @GetMapping(path = "/getUserList")
     public Result<PageData<User>> getUserList(int page, int size){
         // 如果 page < 1 ,则要把page恢复成 1 ,因为page的最小值就为 1
@@ -121,6 +123,7 @@ public class UserController {
      * @param size     大小
      * @return {@link Result}
      */
+    @PreAuthorize("@pms.hasPermission('user:list')")
     @GetMapping(path = "/getUserListByUsername")
     public Result<PageData<User>> getUserListByUsername(@RequestParam("username") String username,
                                                     @RequestParam("page") int page,
@@ -155,6 +158,7 @@ public class UserController {
      * @param userFormDTO 用户表单dto
      * @return {@link Result}
      */
+    @PreAuthorize("@pms.hasPermission('user:add')")
     @PostMapping("/addUser")
     public Result<Object> addUser(@RequestBody @Valid UserFormDTO userFormDTO){
         try {
@@ -179,8 +183,9 @@ public class UserController {
      * @param userFormDTO 用户表单dto
      * @return {@link Result}
      */
+    @PreAuthorize("@pms.hasPermission('user:modify')")
     @PostMapping(path = "/modifyUser")
-    public Result<Object> modifyUser(@RequestBody @Valid UserFormDTO userFormDTO){
+    public Result<Object> modifyUser(@RequestBody @Valid UserFormDTO userFormDTO,HttpServletRequest request){
         try {
             String username = userFormDTO.getUsername();
             // 如果用户名是默认的grace,则不允许修改
@@ -193,7 +198,7 @@ public class UserController {
                 String encodePassword = passwordEncoder.encode(userFormDTO.getPassword());
                 userFormDTO.setPassword(encodePassword);
             }
-            userService.modifyUser(userFormDTO);
+            userService.modifyUser(userFormDTO,request);
             return Result.ok();
         }catch (Exception e){
             return Result.fail(null);
@@ -206,6 +211,7 @@ public class UserController {
      * @param userId 用户id
      * @return {@link Result}
      */
+    @PreAuthorize("@pms.hasPermission('user:delete')")
     @DeleteMapping(path = "/deleteUser")
     public Result<Object> deleteUser(@RequestParam("userId") long userId){
         try {
@@ -232,6 +238,7 @@ public class UserController {
      * @param assignRoleDTO 分配角色dto
      * @return {@link Result}
      */
+    @PreAuthorize("@pms.hasPermission('assign:role')")
     @PostMapping(path = "/assignRole")
     public Result<Object> assignRole(@RequestBody @Valid AssignRoleDTO assignRoleDTO){
 

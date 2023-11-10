@@ -114,6 +114,7 @@
               type="primary"
               style="margin-right: 10px"
               @click="publishConfig('createConfigForm')"
+              v-hasPerm="['config:publish']"
               >发布配置</el-button
             >
             <el-button size="medium" @click="back">返回</el-button>

@@ -76,9 +76,10 @@ public interface UserService extends IService<User> {
      * 修改用户
      *
      * @param userFormDTO 用户表单dto
+     * @param request
      * @return int
      */
-    int modifyUser(UserFormDTO userFormDTO);
+    int modifyUser(UserFormDTO userFormDTO,HttpServletRequest request);
 
 
     /**

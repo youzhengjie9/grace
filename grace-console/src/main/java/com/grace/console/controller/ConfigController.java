@@ -14,6 +14,7 @@ import com.grace.console.vo.ConfigListItemVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -61,6 +62,7 @@ public class ConfigController {
      * @param publishConfigDTO publishConfigDTO
      * @return {@link Boolean}
      */
+    @PreAuthorize("@pms.hasPermission('config:publish')")
     @PostMapping("/publishConfig")
     public Result<Boolean> publishConfig(@RequestBody PublishConfigDTO publishConfigDTO, HttpServletRequest request) {
         // 校验必填项
@@ -84,6 +86,7 @@ public class ConfigController {
      * @param fuzzySearch 是否为模糊查询
      * @return {@link Result}<{@link PageData}<{@link ConfigListItemVO}>>
      */
+    @PreAuthorize("@pms.hasPermission('config:list')")
     @GetMapping("/getConfigList")
     public Result<PageData<ConfigListItemVO>> getConfigList(
             @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
@@ -118,6 +121,7 @@ public class ConfigController {
      * @param configFile 单个配置文件
      * @return {@link Result}<{@link Boolean}>
      */
+    @PreAuthorize("@pms.hasPermission('config:import')")
     @PostMapping("/importConfig")
     public Result<Boolean> importConfig(String namespaceId,String groupName,
                                         MultipartFile configFile,String configConflictPolicy,
@@ -132,6 +136,7 @@ public class ConfigController {
      * @param exportConfigIdArray 导出的配置的id数组
      * @return {@link Result}<{@link Boolean}>
      */
+    @PreAuthorize("@pms.hasPermission('config:export')")
     @GetMapping("/exportSelectedConfig")
     public ResponseEntity<FileSystemResource> exportSelectedConfig(
             @RequestParam("exportConfigIdArray[]") String[] exportConfigIdArray,
@@ -141,6 +146,7 @@ public class ConfigController {
         return configService.exportSelectedConfig(Arrays.asList(exportConfigIdArray), response);
     }
 
+    @PreAuthorize("@pms.hasPermission('config:detail')")
     @GetMapping("/getConfig")
     public Result<Config> getConfig(
             @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
@@ -159,6 +165,7 @@ public class ConfigController {
      * @param request request
      * @return {@link Result}<{@link Boolean}>
      */
+    @PreAuthorize("@pms.hasPermission('config:delete')")
     @DeleteMapping("/deleteConfig")
     public Result<Boolean> deleteConfig(
             @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
@@ -176,6 +183,7 @@ public class ConfigController {
      * @param batchDeleteConfigIdArray 批量删除的配置的id数组
      * @return {@link Result}<{@link Boolean}>
      */
+    @PreAuthorize("@pms.hasPermission('config:delete')")
     @DeleteMapping("/batchDeleteConfig")
     public Result<Boolean> batchDeleteConfig(
             @RequestParam("batchDeleteConfigIdArray[]") String[] batchDeleteConfigIdArray,
@@ -190,6 +198,7 @@ public class ConfigController {
      * @param cloneConfigDTO 克隆配置DTO
      * @return {@link Result}<{@link Boolean}>
      */
+    @PreAuthorize("@pms.hasPermission('config:clone')")
     @PostMapping("/cloneConfig")
     public Result<Boolean> cloneConfig(@RequestBody CloneConfigDTO cloneConfigDTO,HttpServletRequest request){
         return Result.ok(configService.cloneConfig(cloneConfigDTO,request));

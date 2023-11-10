@@ -8,6 +8,7 @@ import com.grace.common.dto.ModifyNamespaceDTO;
 import com.grace.console.service.NamespaceService;
 import com.grace.console.vo.NamespaceVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,11 +31,13 @@ public class NamespaceController {
      *
      * @return {@link Result}<{@link List}<{@link Namespace}>>
      */
+    @PreAuthorize("@pms.hasPermission('namespace:list')")
     @GetMapping("/getNamespaceList")
     public Result<List<NamespaceVO>> getNamespaceList() {
         return Result.ok(namespaceService.getNamespaceList());
     }
 
+    @PreAuthorize("@pms.hasPermission('namespace:add')")
     @PostMapping("/createNamespace")
     public Result<Boolean> createNamespace(@RequestBody CreateNamespaceDTO createNamespaceDTO){
         // 校验必填项
@@ -46,6 +49,7 @@ public class NamespaceController {
         return Result.ok(namespaceService.createNamespace(namespace));
     }
 
+    @PreAuthorize("@pms.hasPermission('namespace:modify')")
     @PutMapping("/modifyNamespace")
     public Result<Boolean> modifyNamespace(@RequestBody ModifyNamespaceDTO modifyNamespaceDTO){
         // 校验必填项
@@ -56,6 +60,8 @@ public class NamespaceController {
         Namespace namespace = modifyNamespaceDTO.buildNamespaceByModifyNamespaceDTO();
         return Result.ok(namespaceService.modifyNamespace(namespace));
     }
+
+    @PreAuthorize("@pms.hasPermission('namespace:delete')")
     @DeleteMapping("/deleteNamespace")
     public Result<Boolean> deleteNamespace(@RequestParam("namespaceId") String namespaceId){
 

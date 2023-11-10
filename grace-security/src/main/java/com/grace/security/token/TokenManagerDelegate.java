@@ -124,6 +124,11 @@ public class TokenManagerDelegate implements TokenManager {
     }
 
     @Override
+    public void updateAuthentication(String token, String tokenType) {
+        getTokenManager().updateAuthentication(token, tokenType);
+    }
+
+    @Override
     public boolean isAccessTokenExpired(String accessToken) {
         return getTokenManager().isAccessTokenExpired(accessToken);
     }

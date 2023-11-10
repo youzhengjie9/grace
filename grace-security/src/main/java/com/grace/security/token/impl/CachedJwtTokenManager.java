@@ -1,5 +1,6 @@
 package com.grace.security.token.impl;
 
+import com.grace.common.constant.TokenTypeConstants;
 import com.grace.security.constant.JwtConstants;
 import com.grace.security.token.TokenManager;
 import io.jsonwebtoken.Claims;
@@ -221,7 +222,7 @@ public class CachedJwtTokenManager implements TokenManager {
      */
     @Override
     public Authentication getAuthentication(String token, String tokenType) {
-        if(tokenType.equalsIgnoreCase("accessToken")){
+        if(tokenType.equalsIgnoreCase(TokenTypeConstants.ACCESS_TOKEN)){
             // 如果这个accessToken在accessTokenMap缓存中
             if(accessTokenMap.containsKey(token)){
                 // 从accessTokenMap中获取这个accessToken的属性（TokenAttributes）
@@ -229,7 +230,7 @@ public class CachedJwtTokenManager implements TokenManager {
                 // 返回accessToken属性（TokenAttributes）中的Authentication对象
                 return accessTokenAttributes.getAuthentication();
             }
-        }else if (tokenType.equalsIgnoreCase("refreshToken")) {
+        }else if (tokenType.equalsIgnoreCase(TokenTypeConstants.REFRESH_TOKEN)) {
             // 如果这个refreshToken在refreshTokenMap缓存中
             if(accessTokenMap.containsKey(token)){
                 // 从refreshTokenMap中获取这个refreshToken的属性（TokenAttributes）
@@ -239,6 +240,34 @@ public class CachedJwtTokenManager implements TokenManager {
             }
         }
         return null;
+    }
+
+    @Override
+    public void updateAuthentication(String token, String tokenType) {
+
+        if(tokenType.equalsIgnoreCase(TokenTypeConstants.ACCESS_TOKEN)){
+            TokenAttributes oldTokenAttributes = accessTokenMap.get(token);
+            // 创建新的Authentication对象
+            Authentication newAuthentication =
+                    this.createAuthentication(token, TokenTypeConstants.ACCESS_TOKEN);
+            TokenAttributes newTokenAttributes = new TokenAttributes();
+            newTokenAttributes.setUserId(oldTokenAttributes.getUserId());
+            newTokenAttributes.setExpiredTimeMillis(oldTokenAttributes.getExpiredTimeMillis());
+            newTokenAttributes.setAuthentication(newAuthentication);
+            accessTokenMap.put(token,newTokenAttributes);
+        }
+        else if (tokenType.equalsIgnoreCase(TokenTypeConstants.REFRESH_TOKEN)) {
+            TokenAttributes oldTokenAttributes = refreshTokenMap.get(token);
+            // 创建新的Authentication对象
+            Authentication newAuthentication =
+                    this.createAuthentication(token, TokenTypeConstants.REFRESH_TOKEN);
+            TokenAttributes newTokenAttributes = new TokenAttributes();
+            newTokenAttributes.setUserId(oldTokenAttributes.getUserId());
+            newTokenAttributes.setExpiredTimeMillis(oldTokenAttributes.getExpiredTimeMillis());
+            newTokenAttributes.setAuthentication(newAuthentication);
+            refreshTokenMap.put(token,newTokenAttributes);
+        }
+
     }
 
     @Override
@@ -279,8 +308,8 @@ public class CachedJwtTokenManager implements TokenManager {
          * 作用: 方便通过token去找到对应的Authentication对象,因为重新创建Authentication对象比较复杂,
          * 又需要去数据库重新查询用户权限。
          * <p>
-         * 注意,当用户信息被修改后: 可以通过token移除这个TokenAttributes,然后重新生成最新的TokenAttributes对象（
-         * 特别是Authentication属性）
+         * 注意,当有关用户的信息被修改后: 可以通过token移除这个TokenAttributes,然后重新生成最新的TokenAttributes对象（
+         * 特别是Authentication属性（用户名、密码、权限列表））
          */
         private Authentication authentication;
 

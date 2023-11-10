@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.grace.security.constant.JwtConstants;
 import com.grace.security.entity.User;
 import com.grace.security.mapper.UserMapper;
+import com.grace.security.service.MenuService;
 import com.grace.security.token.TokenManager;
 import com.grace.security.users.GraceUser;
 import io.jsonwebtoken.Claims;
@@ -60,6 +61,9 @@ public class JwtTokenManager implements TokenManager {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private MenuService menuService;
 
     /**
      * @return 随机的id
@@ -183,6 +187,11 @@ public class JwtTokenManager implements TokenManager {
         throw new RuntimeException("JwtTokenManager类不能获取Authentication对象,请使用CachedJwtTokenManager类进行获取");
     }
 
+    @Override
+    public void updateAuthentication(String token, String tokenType) {
+        throw new RuntimeException("JwtTokenManager类不能更新Authentication对象,请使用CachedJwtTokenManager类进行获取");
+    }
+
     /**
      * 创建Authentication对象。
      *
@@ -205,10 +214,8 @@ public class JwtTokenManager implements TokenManager {
             User user = userMapper.selectOne(getUserByUserId);
             // 给user对象设置userId
             user.setId(userId);
-            // TODO: 2023/11/6 获取用户的权限（就是查询Menu类中type=1和2的菜单权限标识perms，但是不包括type=0）
-//        List<String> permissions = menuService.getUserPermissionByUserId(user.getId());
-
-            List<String> permissions = Collections.singletonList("service:list");
+            // 获取用户的权限（就是查询Menu类中type=1和2的菜单权限标识perms，但是不包括type=0）
+            List<String> permissions = menuService.getUserPermissionByUserId(user.getId());
             // 封装GraceUser对象
             GraceUser graceUser = new GraceUser(user, permissions);
             // 创建Authentication对象
@@ -226,10 +233,8 @@ public class JwtTokenManager implements TokenManager {
             User user = userMapper.selectOne(getUserByUserId);
             // 给user对象设置userId
             user.setId(userId);
-            // TODO: 2023/11/6 获取用户的权限（就是查询Menu类中type=1和2的菜单权限标识perms，但是不包括type=0）
-//        List<String> permissions = menuService.getUserPermissionByUserId(user.getId());
-
-            List<String> permissions = Collections.singletonList("service:list");
+            // 获取用户的权限（就是查询Menu类中type=1和2的菜单权限标识perms，但是不包括type=0）
+            List<String> permissions = menuService.getUserPermissionByUserId(user.getId());
             // 封装GraceUser对象
             GraceUser graceUser = new GraceUser(user, permissions);
             // 创建Authentication对象

@@ -3,6 +3,8 @@ package com.grace.security.service.impl;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.grace.common.constant.Constants;
+import com.grace.common.constant.TokenTypeConstants;
 import com.grace.common.utils.SnowId;
 import com.grace.security.dto.UserFormDTO;
 import com.grace.common.vo.TokenVO;
@@ -19,7 +21,6 @@ import com.grace.security.token.TokenManagerDelegate;
 import com.grace.security.users.GraceUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -168,9 +169,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public int modifyUser(UserFormDTO userFormDTO) {
+    public int modifyUser(UserFormDTO userFormDTO, HttpServletRequest request) {
         User user = new User();
-        user.setId(userFormDTO.getId());
+        Long modifyUserId = userFormDTO.getId();
+        user.setId(modifyUserId);
         user.setUsername(userFormDTO.getUsername());
         user.setPassword(userFormDTO.getPassword());
         user.setStatus(userFormDTO.getStatus() ?0:1);

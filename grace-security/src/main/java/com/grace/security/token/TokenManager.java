@@ -120,6 +120,14 @@ public interface TokenManager {
     Authentication getAuthentication(String token,String tokenType);
 
     /**
+     * 更新指定token所对应的TokenAttributes属性中的Authentication对象
+     *
+     * @param token token
+     * @param tokenType token类型
+     */
+    void updateAuthentication(String token,String tokenType);
+
+    /**
      * 判断accessToken是否过期
      *
      * @param accessToken accessToken

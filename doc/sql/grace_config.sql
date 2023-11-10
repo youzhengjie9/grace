@@ -11,7 +11,7 @@
  Target Server Version : 80028
  File Encoding         : 65001
 
- Date: 07/11/2023 22:08:23
+ Date: 09/11/2023 20:55:51
 */
 
 SET NAMES utf8mb4;
@@ -161,10 +161,9 @@ CREATE TABLE `sys_menu`  (
 -- ----------------------------
 -- Records of sys_menu
 -- ----------------------------
-INSERT INTO `sys_menu` VALUES (3001, 0, '配置管理', NULL, NULL, 0, 0, NULL, 0, 'el-icon-eleme', '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 1, 'bz');
-INSERT INTO `sys_menu` VALUES (3002, 3001, '配置列表', '/config/list', '/config/list/index', 0, 0, 'config:list', 1, 'el-icon-s-order', '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 2, 'bz');
-INSERT INTO `sys_menu` VALUES (3003, 3002, '创建配置', NULL, NULL, 0, 0, 'config:add', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 3, 'bz');
-INSERT INTO `sys_menu` VALUES (3004, 3002, '修改配置', NULL, NULL, 0, 0, 'config:modify', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 4, 'bz');
+INSERT INTO `sys_menu` VALUES (3001, 0, '配置管理', NULL, NULL, 0, 0, NULL, 0, 'el-icon-eleme', '2023-11-06 23:46:02', '2023-11-09 09:27:07', 0, 1, NULL);
+INSERT INTO `sys_menu` VALUES (3002, 3001, '配置列表', '/config/list', '/config/list/index', 0, 0, 'config:list', 1, 'el-icon-s-order', '2023-11-06 23:46:02', '2023-11-09 09:26:38', 0, 2, NULL);
+INSERT INTO `sys_menu` VALUES (3003, 3002, '发布配置', NULL, NULL, 0, 0, 'config:publish', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 3, 'bz');
 INSERT INTO `sys_menu` VALUES (3005, 3002, '删除配置', NULL, NULL, 0, 0, 'config:delete', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 5, 'bz');
 INSERT INTO `sys_menu` VALUES (3006, 3002, '配置详情', NULL, NULL, 0, 0, 'config:detail', 2, '', '2023-11-06 17:03:20', '2023-11-06 17:03:23', 0, 6, 'bz');
 INSERT INTO `sys_menu` VALUES (3007, 3002, '导入配置', NULL, NULL, 0, 0, 'config:import', 2, '', '2023-11-06 17:03:20', '2023-11-06 17:03:23', 0, 7, 'bz');
@@ -197,7 +196,6 @@ INSERT INTO `sys_menu` VALUES (3033, 0, '命名空间', '/namespace/list', '/nam
 INSERT INTO `sys_menu` VALUES (3034, 3033, '创建命名空间', NULL, NULL, 0, 0, 'namespace:add', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 28, 'bz');
 INSERT INTO `sys_menu` VALUES (3035, 3033, '修改命名空间', NULL, NULL, 0, 0, 'namespace:modify', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 29, 'bz');
 INSERT INTO `sys_menu` VALUES (3036, 3033, '删除命名空间', NULL, NULL, 0, 0, 'namespace:delete', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 30, 'bz');
-INSERT INTO `sys_menu` VALUES (3037, 3033, '命名空间详情', NULL, NULL, 0, 0, 'namespace:detail', 2, NULL, '2023-11-06 23:46:02', '2023-11-06 23:46:02', 0, 31, 'bz');
 
 -- ----------------------------
 -- Table structure for sys_namespace
@@ -238,18 +236,20 @@ CREATE TABLE `sys_role`  (
 -- Records of sys_role
 -- ----------------------------
 INSERT INTO `sys_role` VALUES (2001, '超级管理员', 'admin', 0, 0, '2022-09-26 23:46:02', '2022-09-28 23:46:02', '超级管理员角色');
-INSERT INTO `sys_role` VALUES (2002, '普通角色', 'user', 0, 0, '2022-09-25 10:23:02', '2022-09-28 10:33:02', '普通角色');
+INSERT INTO `sys_role` VALUES (2002, '普通角色', 'user', 0, 0, '2022-09-25 10:23:02', '2023-11-08 21:00:55', '普通角色');
 INSERT INTO `sys_role` VALUES (2003, '黑名单角色', 'blackListUser', 0, 0, '2022-09-25 10:23:02', '2022-09-28 10:33:02', '黑名单角色');
-INSERT INTO `sys_role` VALUES (2004, '测试角色1', 'testRole1', 0, 0, '2022-09-25 10:23:02', '2022-09-28 10:33:02', '测试角色1');
+INSERT INTO `sys_role` VALUES (2004, '测试角色1', 'testRole1', 1, 0, '2022-09-25 10:23:02', '2023-11-08 20:52:49', '测试角色1');
 INSERT INTO `sys_role` VALUES (2005, '测试角色2', 'testRole2', 0, 0, '2022-09-25 10:23:02', '2022-09-28 10:33:02', '测试角色2');
-INSERT INTO `sys_role` VALUES (2006, '测试角色3', 'testRole3', 0, 0, '2022-09-25 10:23:02', '2022-09-28 10:33:02', '测试角色3');
+INSERT INTO `sys_role` VALUES (2006, '测试角色3', 'testRole3', 1, 0, '2022-09-25 10:23:02', '2023-11-08 20:52:52', '测试角色3');
 INSERT INTO `sys_role` VALUES (2007, '测试角色4', 'testRole4', 0, 0, '2022-09-25 10:23:02', '2022-09-28 10:33:02', '测试角色4');
 INSERT INTO `sys_role` VALUES (2008, '测试角色5', 'testRole5', 0, 0, '2022-09-25 10:23:02', '2022-09-28 10:33:02', '测试角色5');
-INSERT INTO `sys_role` VALUES (2009, '测试角色6', 'testRole6', 0, 0, '2022-09-25 10:23:02', '2022-09-28 10:33:02', '测试角色6');
+INSERT INTO `sys_role` VALUES (2009, '测试角色6', 'testRole6', 1, 0, '2022-09-25 10:23:02', '2023-11-08 20:52:57', '测试角色6');
 INSERT INTO `sys_role` VALUES (2010, '测试角色7', 'testRole7', 0, 0, '2022-09-25 10:23:02', '2022-09-28 10:33:02', '测试角色7');
 INSERT INTO `sys_role` VALUES (2011, '测试角色8', 'testRole8', 0, 0, '2022-09-25 10:23:02', '2022-09-28 10:33:02', '测试角色8');
-INSERT INTO `sys_role` VALUES (1581238859201536002, '测试角色9', 'testRole9', 0, 0, '2022-09-25 10:23:02', '2022-09-28 10:33:02', '测试角色9');
-INSERT INTO `sys_role` VALUES (1581238859201581195, '测试角色10', 'testRole10', 0, 0, '2022-09-25 10:23:02', '2022-09-28 10:33:02', '测试角色10');
+INSERT INTO `sys_role` VALUES (1581238859201536002, '测试角色9', 'testRole9', 1, 0, '2022-09-25 10:23:02', '2023-11-08 20:53:01', '测试角色9');
+INSERT INTO `sys_role` VALUES (1581238859201581195, '测试角色10', 'testRole10', 0, 1, '2022-09-25 10:23:02', '2023-11-08 20:52:42', '测试角色10');
+INSERT INTO `sys_role` VALUES (1722226792577753090, 'test123', '123', 1, 1, '2023-11-08 20:17:19', '2023-11-08 20:17:19', '456');
+INSERT INTO `sys_role` VALUES (1722236106486943746, 'admin', '12345', 1, 1, '2023-11-08 20:54:20', '2023-11-08 20:54:20', '132');
 
 -- ----------------------------
 -- Table structure for sys_role_menu
@@ -268,7 +268,6 @@ CREATE TABLE `sys_role_menu`  (
 INSERT INTO `sys_role_menu` VALUES (5001, 2001, 3001);
 INSERT INTO `sys_role_menu` VALUES (5002, 2001, 3002);
 INSERT INTO `sys_role_menu` VALUES (5003, 2001, 3003);
-INSERT INTO `sys_role_menu` VALUES (5004, 2001, 3004);
 INSERT INTO `sys_role_menu` VALUES (5005, 2001, 3005);
 INSERT INTO `sys_role_menu` VALUES (5006, 2001, 3006);
 INSERT INTO `sys_role_menu` VALUES (5007, 2001, 3007);
@@ -301,7 +300,6 @@ INSERT INTO `sys_role_menu` VALUES (5033, 2001, 3033);
 INSERT INTO `sys_role_menu` VALUES (5034, 2001, 3034);
 INSERT INTO `sys_role_menu` VALUES (5035, 2001, 3035);
 INSERT INTO `sys_role_menu` VALUES (5036, 2001, 3036);
-INSERT INTO `sys_role_menu` VALUES (5037, 2001, 3037);
 INSERT INTO `sys_role_menu` VALUES (5038, 2002, 3001);
 INSERT INTO `sys_role_menu` VALUES (5039, 2002, 3002);
 INSERT INTO `sys_role_menu` VALUES (5040, 2002, 3003);
@@ -310,7 +308,6 @@ INSERT INTO `sys_role_menu` VALUES (5042, 2002, 3013);
 INSERT INTO `sys_role_menu` VALUES (5043, 2002, 3014);
 INSERT INTO `sys_role_menu` VALUES (5044, 2002, 3015);
 INSERT INTO `sys_role_menu` VALUES (5045, 2002, 3033);
-INSERT INTO `sys_role_menu` VALUES (5046, 2002, 3037);
 INSERT INTO `sys_role_menu` VALUES (5047, 2003, 3001);
 
 -- ----------------------------
@@ -324,7 +321,8 @@ CREATE TABLE `sys_user`  (
   `status` tinyint(1) NULL DEFAULT 0 COMMENT '用户状态（0正常 1停用）',
   `create_time` datetime(0) NOT NULL,
   `update_time` datetime(0) NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `username`(`username`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
@@ -349,6 +347,6 @@ CREATE TABLE `sys_user_role`  (
 -- ----------------------------
 INSERT INTO `sys_user_role` VALUES (4001, 1001, 2001);
 INSERT INTO `sys_user_role` VALUES (4002, 1001, 2002);
-INSERT INTO `sys_user_role` VALUES (4003, 1002, 2002);
+INSERT INTO `sys_user_role` VALUES (7686373715084293, 1002, 2002);
 
 SET FOREIGN_KEY_CHECKS = 1;

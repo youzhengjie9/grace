@@ -6,6 +6,7 @@ import com.grace.security.dto.MenuDTO;
 import com.grace.security.entity.Menu;
 import com.grace.security.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -47,6 +48,7 @@ public class MenuController {
      * @param menuDTO 菜单DTO
      * @return {@link Result}<{@link Object}>
      */
+    @PreAuthorize("@pms.hasPermission('menu:add')")
     @PostMapping("/addMenu")
     public Result<Object> addMenu(@RequestBody @Valid MenuDTO menuDTO){
         try {
@@ -63,6 +65,7 @@ public class MenuController {
      * @param menuDTO 菜单DTO
      * @return {@link Result}<{@link Object}>
      */
+    @PreAuthorize("@pms.hasPermission('menu:modify')")
     @PostMapping("/modifyMenu")
     public Result<Object> modifyMenu(@RequestBody @Valid MenuDTO menuDTO){
         try {
@@ -79,6 +82,7 @@ public class MenuController {
      * @param menuId menuId
      * @return {@link Result}<{@link Object}>
      */
+    @PreAuthorize("@pms.hasPermission('menu:delete')")
     @DeleteMapping(path = "/deleteMenu")
     public Result<Object> deleteMenu(@RequestParam("menuId") long menuId){
         try {

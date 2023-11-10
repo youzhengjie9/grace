@@ -12,6 +12,7 @@ import com.grace.console.service.InstanceService;
 import com.grace.common.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -67,6 +68,7 @@ public class InstanceController {
         return Result.ok(instanceService.registerInstance(namespaceId,groupName,serviceName,instance));
     }
 
+    @PreAuthorize("@pms.hasPermission('instance:modify')")
     @PutMapping(path = "/modifyInstance")
     public Result<Boolean> modifyInstance(@RequestBody ModifyInstanceDTO modifyInstanceDTO){
         // 校验modifyInstanceDTO对象的必填属性是否为空,为空则抛出异常

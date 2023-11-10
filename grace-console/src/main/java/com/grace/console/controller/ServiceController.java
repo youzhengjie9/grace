@@ -10,6 +10,7 @@ import com.grace.console.vo.ServiceDetailVO;
 import com.grace.console.vo.ServiceListItem;
 import com.grace.console.vo.ServiceListVO;
 import com.grace.console.vo.ServiceNameListVO;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -44,6 +45,7 @@ public class ServiceController {
         return Result.ok(groupManager.createServiceByServiceDTO(serviceDTO));
     }
 
+    @PreAuthorize("@pms.hasPermission('service:delete')")
     @DeleteMapping("/deleteService")
     public Result<Boolean> deleteService(
             @RequestParam(value = "namespaceId",required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
@@ -59,6 +61,7 @@ public class ServiceController {
      * @param serviceDTO serviceDTO
      * @return {@link Result}<{@link Boolean}>
      */
+    @PreAuthorize("@pms.hasPermission('service:modify')")
     @PutMapping(path = "/modifyService")
     public Result<Boolean> modifyService(@RequestBody ServiceDTO serviceDTO){
         // 校验必填属性
@@ -75,6 +78,7 @@ public class ServiceController {
      * @param size 每一页的大小（最小值为: 1）
      * @return {@link Result}<{@link ServiceNameListVO}>
      */
+    @PreAuthorize("@pms.hasPermission('service:list')")
     @GetMapping("/getServiceList")
     public Result<ServiceListVO> getServiceList(
             @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
@@ -127,6 +131,7 @@ public class ServiceController {
     /**
      * 分页获取服务名称列表
      */
+    @PreAuthorize("@pms.hasPermission('service:list')")
     @GetMapping("/getServiceNameList")
     public Result<ServiceNameListVO> getServiceNameList(
             @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
@@ -183,6 +188,8 @@ public class ServiceController {
         }
         return pagedServices;
     }
+
+    @PreAuthorize("@pms.hasPermission('service:detail')")
     @GetMapping("/getServiceDetail")
     public Result<ServiceDetailVO> getServiceDetail(
             @RequestParam(value = "namespaceId",required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
@@ -191,11 +198,5 @@ public class ServiceController {
 
         return Result.ok(groupManager.getServiceDetail(namespaceId, groupName, serviceName));
     }
-
-
-
-
-
-
 
 }

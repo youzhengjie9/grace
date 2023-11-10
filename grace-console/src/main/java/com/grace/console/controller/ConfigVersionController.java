@@ -10,6 +10,7 @@ import com.grace.console.utils.ConfigVersionListPageData;
 import com.grace.console.vo.ConfigVersionInputSuggestionDataVO;
 import com.grace.console.vo.ConfigVersionListItemVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +42,7 @@ public class ConfigVersionController {
      * @param size        每一页的大小（最小值为: 1）
      * @return {@link Result}<{@link ConfigVersionListPageData}<{@link ConfigVersionListItemVO}>>
      */
+    @PreAuthorize("@pms.hasPermission('config:version:list')")
     @GetMapping(path = "/getConfigVersionList")
     public Result<ConfigVersionListPageData> getConfigVersionList(
             @RequestParam(value = "namespaceId", required = false, defaultValue = Constants.DEFAULT_NAMESPACE_ID) String namespaceId,
@@ -98,6 +100,7 @@ public class ConfigVersionController {
      * @param configVersionId 配置版本id
      * @return {@link Result}<{@link ConfigVersion}>
      */
+    @PreAuthorize("@pms.hasPermission('version:detail')")
     @GetMapping(path = "/getConfigVersion")
     public Result<ConfigVersion> getConfigVersion(@RequestParam("configVersionId") Long configVersionId){
 
@@ -116,6 +119,7 @@ public class ConfigVersionController {
      * @param request request
      * @return {@link Result}<{@link Boolean}>
      */
+    @PreAuthorize("@pms.hasPermission('version:rollback')")
     @PostMapping(path = "/rollbackConfig")
     public Result<Boolean> rollbackConfig(@RequestParam("configVersionId") Long configVersionId,
                                           HttpServletRequest request){
