@@ -366,7 +366,7 @@
             v-hasPerm="['config:detail']"
             >详情</span
           >
-          <span style="margin-right: 5px">|</span>
+          <span style="margin-right: 5px" v-hasPerm="['config:detail']">|</span>
 
           <!-- 示例代码 -->
           <!-- <span
@@ -395,7 +395,7 @@
             v-hasPerm="['config:publish']"
             >编辑</span
           >
-          <span style="margin-right: 5px">|</span>
+          <span style="margin-right: 5px" v-hasPerm="['config:publish']">|</span>
 
           <!-- 删除配置 -->
           <span
@@ -410,7 +410,7 @@
             v-hasPerm="['config:delete']"
             >删除</span
           >
-          <span style="margin-right: 5px">|</span>
+          <span style="margin-right: 5px" v-hasPerm="['config:delete']">|</span>
 
           <!-- “更多” 下拉菜单 -->
           <el-dropdown

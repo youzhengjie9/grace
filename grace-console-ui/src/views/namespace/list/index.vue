@@ -127,7 +127,6 @@
           <span
             class="operation"
             @click="clickOpenNamespaceDetailDialog(scope.row)"
-            v-hasPerm="['namespace:detail']"
             >详情</span
           >
           <span style="margin-right: 5px">|</span>
@@ -149,7 +148,7 @@
             >编辑</span
           >
 
-          <span style="margin-right: 5px">|</span>
+          <span style="margin-right: 5px" v-hasPerm="['namespace:modify']">|</span>
 
           <!-- 删除命名空间（可以进行点击操作）。除了默认的public命名空间之外,其他命名空间都会用这个 “删除” -->
           <span

@@ -13,9 +13,9 @@ export default new Vuex.Store({
     //vuex的模块化
     modules: {
         // vuex的子模块
-        sidebar,
         user,
-        form
+        form,
+        sidebar,
     }
 
 })

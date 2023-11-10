@@ -8,6 +8,7 @@ import 'nprogress/nprogress.css'
 // 导入我们后台系统整体布局组件Layout
 import Layout from '../layout/index.vue'
 import store from "@/store";
+import { initDynamicRouter } from '@/utils/permission'
 
 //解决Vue路由重复跳转报错,要放到Vue.use(VueRouter)之前
 const routerPush = VueRouter.prototype.push;
@@ -27,64 +28,15 @@ const router = new VueRouter({
         {
             path: '/',
             /*
-             访问“/”路径时自动重定向到“/service/list路径”,从而实现既访问到Layout组件,
-             又将当前的url（由于已经重定向到 /service/list ,所以当前url是 /service/list）所对应的组件
+             访问“/”路径时自动重定向到“/config/list路径”,从而实现既访问到Layout组件,
+             又将当前的url（由于已经重定向到 /config/list ,所以当前url是 /config/list）所对应的组件
              展示在Layout组件中的router-view标签上（从而实现vue组件的嵌套效果）
              */
-            redirect: '/service/list',
+            redirect: '/config/list',
             // Layout是我们后台系统的整体布局组件
             component: Layout,
-            // 需要展示在Layout组件中的router-view标签上的路由（也就是嵌套路由）
-            children: [
-                {
-                    path: '/service/list',
-                    name: 'serviceList',
-                    component: () => import('../views/service/list/index.vue')
-                },
-                {
-                    path: '/config/list',
-                    name: 'configList',
-                    component: () => import('../views/config/list/index.vue'),
-                    meta: {
-                        // 该路由组件是否可以被缓存
-                        keepAlive: true
-                    }
-                },
-                {
-                    // 配置版本列表路由
-                    path: '/config/version/list',
-                    name: 'configVersionList',
-                    component: () => import('../views/config/version/list/index.vue'),
-                    meta: {
-                        // 该路由组件是否可以被缓存
-                        keepAlive: true
-                    }
-                },
-                {
-                    // 用户管理
-                    path: '/user/list',
-                    name: 'userList',
-                    component: () => import('../views/user/list/index.vue')
-                },
-                {
-                    // 角色管理
-                    path: '/role/list',
-                    name: 'roleList',
-                    component: () => import('../views/role/list/index.vue')
-                },
-                {
-                    // 菜单管理
-                    path: '/menu/list',
-                    name: 'menuList',
-                    component: () => import('../views/menu/list/index.vue')
-                },
-                {
-                    // 命名空间列表路由
-                    path: '/namespace/list',
-                    name: 'namespaceList',
-                    component: () => import('../views/namespace/list/index.vue')
-                },
-            ]
+            // 动态路由。需要展示在Layout组件中的router-view标签上的路由（也就是嵌套路由）
+            children: []
         },
         {
             // 服务详情路由
@@ -166,6 +118,12 @@ router.beforeEach((to, from, next) => {
             if (store.state.user.username.length === 0) {
 
                 store.dispatch('getCurrentUserInfo').then(res => {
+                    // 从user模块中获取动态菜单（侧边栏）
+                    let dynamicMenu = store.state.user.dynamicMenu;
+                    // 给sidebar模块设置动态菜单（侧边栏）,不然没有侧边栏显示
+                    store.dispatch('setSidebarMenu',dynamicMenu);
+                    //初始化动态路由，防止刷新丢失
+                    initDynamicRouter();
                     next({ ...to, replace: true })
                 }).catch(() => {
                     next({ path: '/login' })

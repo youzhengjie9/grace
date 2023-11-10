@@ -169,7 +169,7 @@
             v-hasPerm="['service:detail']"
             >服务详情</span
           >
-          <span style="margin-right: 5px">|</span>
+          <span style="margin-right: 5px" v-hasPerm="['service:detail']">|</span>
           <span
             class="operation"
             href="#"

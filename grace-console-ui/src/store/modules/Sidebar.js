@@ -1,78 +1,7 @@
 const state = {
 
     // 侧边栏菜单
-    sidebarMenu: [
-        {
-            id: 101,
-            menuName: "服务管理",
-            icon: "el-icon-s-home",
-            children: [
-                {
-                    id: 1001,
-                    path: "/service/list",
-                    component: "../views/service/list/index.vue",
-                    menuName: "服务列表",
-                    icon: "el-icon-s-home",
-                    children: []
-                },
-            ],
-        },
-        {
-            id: 201,
-            menuName: "配置管理",
-            icon: "el-icon-s-home",
-            children: [
-                {
-                    id: 2001,
-                    path: "/config/list",
-                    component: "../views/config/list/index.vue",
-                    menuName: "配置列表",
-                    icon: "el-icon-s-home",
-                    children: []
-                },
-                {
-                    id: 2002,
-                    path: "/config/version/list",
-                    component: "../views/config/version/list/index.vue",
-                    menuName: "配置版本",
-                    icon: "el-icon-s-home",
-                    children: []
-                },
-            ],
-        },
-        {
-            id: 301,
-            path: "/user/list",
-            component: "../views/user/list/index.vue",
-            menuName: "用户管理",
-            icon: "el-icon-s-home",
-            children: [],
-        },
-        {
-            id: 401,
-            path: "/role/list",
-            component: "../views/role/list/index.vue",
-            menuName: "角色管理",
-            icon: "el-icon-s-home",
-            children: [],
-        },
-        {
-            id: 501,
-            path: "/menu/list",
-            component: "../views/menu/list/index.vue",
-            menuName: "菜单管理",
-            icon: "el-icon-s-home",
-            children: [],
-        },
-        {
-            id: 601,
-            path: "/namespace/list",
-            component: "../views/namespace/list/index.vue",
-            menuName: "命名空间",
-            icon: "el-icon-s-home",
-            children: [],
-        },
-    ],
+    sidebarMenu: [],
     // 当前高亮的侧边栏菜单的路由路径,（注意：高亮的菜单所在的目录也会被自动展开）
     currentSidebarMenuHighlightPath: '',
 

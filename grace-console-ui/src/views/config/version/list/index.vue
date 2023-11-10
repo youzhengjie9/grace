@@ -183,7 +183,7 @@
           <span class="operation" @click="versionDetail(scope.row.id)" v-hasPerm="['version:detail']"
             >版本详情</span
           >
-          <span style="margin-right: 5px">|</span>
+          <span style="margin-right: 5px" v-hasPerm="['version:detail']">|</span>
 
           <!-- 版本回滚 -->
           <span class="operation" @click="versionRollback(scope.row.id)" v-hasPerm="['version:rollback']"
