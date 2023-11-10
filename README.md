@@ -47,6 +47,10 @@
 
 ![17.png](https://gitee.com/youzhengjie/grace/raw/main/doc/images/17.png)
 
+- **项目代码量**图（已除去空白行）
+
+![18.png](https://gitee.com/youzhengjie/grace/raw/main/doc/images/18.png)
+![19.png](https://gitee.com/youzhengjie/grace/raw/main/doc/images/19.png)
 
 
 ### 基本插件安装
