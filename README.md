@@ -8,7 +8,7 @@
 
 ## 使用技术
 
-SpringBoot、SpringCloud、SpringSecurity、MyBatis-Plus、JWT、Vue2、ElementUI、
+SpringBoot、SpringCloud、SpringSecurity、MyBatis-Plus、JWT、Vue2、ElementUI等
 
 ## 功能描述
 
