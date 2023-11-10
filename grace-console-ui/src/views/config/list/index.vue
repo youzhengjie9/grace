@@ -489,7 +489,7 @@
             layout="sizes, prev, pager, next"
             prev-text="上一页"
             next-text="下一页"
-            :page-sizes="[10, 20, 30, 50, 100]"
+            :page-sizes="[7,10, 20, 30, 50, 100]"
             :total="totalCount"
             :current-page.sync="page"
             :page-size="size"
@@ -692,7 +692,7 @@
           <!-- 展示克隆数量 -->
           <el-col :span="24" style="margin-bottom: 10px">
             已选中需要进行克隆的配置数量为:
-            <span style="color: rgb(73, 210, 231)">-1</span>
+            <span style="color: rgb(73, 210, 231)">{{cloneConfigTableData.length}}</span>
           </el-col>
 
           <!-- 克隆配置的目标命名空间(也就是指定将配置克隆到哪个命名空间上) -->

@@ -285,7 +285,7 @@
             layout="total, sizes, prev, pager, next"
             prev-text="上一页"
             next-text="下一页"
-            :page-sizes="[10, 20, 30, 50, 100]"
+            :page-sizes="[7,10, 20, 30, 50, 100]"
             :total="totalCount"
             :current-page.sync="page"
             :page-size="size"

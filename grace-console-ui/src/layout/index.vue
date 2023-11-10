@@ -10,7 +10,7 @@
         <!-- 侧边栏 -->
         <el-aside width="200px" style="height:560px;">
             <!-- 项目版本号 -->
-            <p class="version">v2.0.0</p>
+            <p class="version">grace</p>
             <sidebar />
         </el-aside>
 

@@ -64,7 +64,7 @@ const actions = {
                     context.commit('SET_USERNAME',username);
                     // 用户的动态菜单（侧边栏）
                     if(dynamicMenu != null && dynamicMenu.length > 0){
-                        context.commit('SET_DYNAMIC_MENU',JSON.parse(dynamicMenu))
+                        context.commit('SET_DYNAMIC_MENU',JSON.parse(dynamicMenu));
                     }
                     // 用户的动态路由
                     if(dynamicRouter != null && dynamicRouter.length > 0){

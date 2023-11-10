@@ -32,13 +32,33 @@ export function initDynamicRouter() {
     if (dynamicRouterList.length > 0) {
 
         dynamicRouterList.forEach(menu => {
-            //封装动态路由对象
-            let routerObj = {
-                // 路由的路径
-                path: menu.path,
-                //巨坑：这里的常量前缀必须是'../views'，不能把/view写到component里面，不然一样会找不到模块
-                component: resolve => require(['../views' + menu.component], resolve)
+            // 封装动态路由对象
+            let routerObj = {};
+            // 封装“需要”使用keepalive缓存的路由对象
+            if (menu.path == '/config/list' || menu.path == '/config/version/list') {
+                //封装动态路由对象
+                routerObj = {
+                    // 路由的路径
+                    path: menu.path,
+                    //巨坑：这里的常量前缀必须是'../views'，不能把/view写到component里面，不然一样会找不到模块
+                    component: resolve => require(['../views' + menu.component], resolve),
+                    meta: {
+                        // 该路由组件是否可以被缓存
+                        keepAlive: true
+                    }
+                }
+            } 
+            // 封装“不需要”使用keepalive缓存的路由对象
+            else {
+                //封装动态路由对象
+                routerObj = {
+                    // 路由的路径
+                    path: menu.path,
+                    //巨坑：这里的常量前缀必须是'../views'，不能把/view写到component里面，不然一样会找不到模块
+                    component: resolve => require(['../views' + menu.component], resolve)
+                }
             }
+
             // 把这个路由放到root变量中
             root.children.push(routerObj);
         });
