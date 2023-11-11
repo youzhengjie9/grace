@@ -19,7 +19,7 @@
 
     <properties>
         <!--    grace项目版本   -->
-        <revision>2.0.0</revision>
+        <revision>3.0.0</revision>
         <!--    JDK版本和项目编码方式    -->
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
