@@ -61,7 +61,7 @@ SpringBoot、SpringCloud、SpringSecurity、MyBatis-Plus、JWT、Vue2、ElementU
 ![19.png](https://gitee.com/youzhengjie/grace/raw/main/doc/images/19.png)
 
 ## 用例图
-![用户用例图.png](https://gitee.com/youzhengjie/grace/raw/main/doc/images/用户用例图.png)
+![用户用例图.jpg](https://gitee.com/youzhengjie/grace/raw/main/doc/images/用户用例图.jpg)
 
 
 
