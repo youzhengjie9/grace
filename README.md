@@ -12,8 +12,7 @@ SpringBoot、SpringCloud、SpringSecurity、MyBatis-Plus、JWT、Vue2、ElementU
 
 ## 功能描述
 
-服务注册、服务发现、服务健康检测、动态配置、导入和导出配置、克隆配置、配置回滚、用户管理、角色管理、菜单管理等
-
+服务注册、服务发现、服务健康检测、配置的热部署、导入和导出配置、克隆配置、配置回滚、用户管理、角色管理、菜单管理等
 
 ## 效果图
 
@@ -60,6 +59,10 @@ SpringBoot、SpringCloud、SpringSecurity、MyBatis-Plus、JWT、Vue2、ElementU
 
 ![18.png](https://gitee.com/youzhengjie/grace/raw/main/doc/images/18.png)
 ![19.png](https://gitee.com/youzhengjie/grace/raw/main/doc/images/19.png)
+
+## 用例图
+![用户用例图.png](https://gitee.com/youzhengjie/grace/raw/main/doc/images/用户用例图.png)
+
 
 
 ### 基本插件安装
