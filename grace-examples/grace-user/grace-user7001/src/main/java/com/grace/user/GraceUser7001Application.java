@@ -18,22 +18,22 @@ import java.util.List;
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 public class GraceUser7001Application {
 
-    private static final Logger log = LoggerFactory.getLogger(GraceUser7001Application.class);
-
-    @Autowired
-    private RegistryService registryService;
-
-    /**
-     * 测试服务发现
-     */
-    @PostConstruct
-    public void serviceDiscovery(){
-
-        // 获取grace-order服务的所有实例（服务发现）
-        List<Instance> allInstance = registryService.getAllInstance(Constants.DEFAULT_NAMESPACE_ID,
-                Constants.DEFAULT_GROUP_NAME, "grace-order");
-        log.info("获取到grace-order服务的所有实例。{}",allInstance);
-    }
+//    private static final Logger log = LoggerFactory.getLogger(GraceUser7001Application.class);
+//
+//    @Autowired
+//    private RegistryService registryService;
+//
+//    /**
+//     * 测试服务发现
+//     */
+//    @PostConstruct
+//    public void serviceDiscovery(){
+//
+//        // 获取grace-order服务的所有实例（服务发现）
+//        List<Instance> allInstance = registryService.getAllInstance(Constants.DEFAULT_NAMESPACE_ID,
+//                Constants.DEFAULT_GROUP_NAME, "grace-order");
+//        log.info("获取到grace-order服务的所有实例。{}",allInstance);
+//    }
 
     public static void main(String[] args) {
         SpringApplication.run(GraceUser7001Application.class);
